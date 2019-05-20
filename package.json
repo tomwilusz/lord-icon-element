@@ -1,0 +1,31 @@
+{
+  "name": "lord-icon-element",
+  "version": "1.0.0",
+  "private": true,
+  "description": "",
+  "main": "./build/lord-icon-element.js",
+  "module": "./build/lord-icon-element.js",
+  "typings": "./build/lord-icon-element.d.ts",
+  "devDependencies": {
+    "@types/node": "^11.11.6",
+    "typescript": "^3.2.4",
+    "tslint": "^5.14.0",
+    "klaw-sync": "6.0.0",
+    "serve-static": "^1.13.2",
+    "express": "^4.16.4",
+    "lottie-web": "^5.5.1"
+  },
+  "scripts": {
+    "build": "tsc",
+    "start": "npm run build && npm run serve-examples",
+    "serve-examples": "node serve-examples.js",
+    "prepare": "npm run build"
+  },
+  "keywords": [
+    "lottie",
+    "icons"
+  ],
+  "sideEffects": false,
+  "author": "Marcin Baszczewski <marcin@baszczewski.pl> (https://www.baszczewski.pl/)",
+  "license": "MIT"
+}
