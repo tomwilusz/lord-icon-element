@@ -5,13 +5,13 @@ import { Basic } from './basic.js';
  */
 export class Morph extends Basic {
     connectedCallback() {
-        this.element.addEventListener('mouseenter', this.enterBound);
-        this.element.addEventListener('mouseleave', this.leaveBound);
+        this.target.addEventListener('mouseenter', this.enterBound);
+        this.target.addEventListener('mouseleave', this.leaveBound);
     }
 
     disconnectedCallback() {
-        this.element.removeEventListener('mouseenter', this.enterBound);
-        this.element.removeEventListener('mouseleave', this.leaveBound);
+        this.target.removeEventListener('mouseenter', this.enterBound);
+        this.target.removeEventListener('mouseleave', this.leaveBound);
 
         this.setDirection(1);
     }

@@ -3,8 +3,8 @@ import { defineLordIconElement, LordIconElement, BasicAnimation } from '../build
 const CLICK_EVENTS = [ 'mousedown', 'touchstart' ];
 
 class Custom extends BasicAnimation {
-    constructor(element, lottie) {
-        super(element, lottie);
+    constructor(element, target, lottie) {
+        super(element, target, lottie);
 
         this.direction = this.reverse ? -1 : 1;
         this.setDirection(this.direction);
@@ -13,13 +13,13 @@ class Custom extends BasicAnimation {
     connectedCallback() {
         for (const event of CLICK_EVENTS) {
             const options = event === 'touchstart' ? { passive: true } : undefined;
-            this.element.addEventListener(event, this.enterBound, options);
+            this.target.addEventListener(event, this.enterBound, options);
         }
     }
 
     disconnectedCallback() {
         for (const event of CLICK_EVENTS) {
-            this.element.removeEventListener(event, this.enterBound);
+            this.target.removeEventListener(event, this.enterBound);
         }
 
         this.setDirection(1);

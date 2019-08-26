@@ -9,13 +9,13 @@ export class Click extends Basic {
     connectedCallback() {
         for (const event of CLICK_EVENTS) {
             const options = event === 'touchstart' ? { passive: true } : undefined;
-            this.element.addEventListener(event, this.enterBound, options);
+            this.target.addEventListener(event, this.enterBound, options);
         }
     }
 
     disconnectedCallback() {
         for (const event of CLICK_EVENTS) {
-            this.element.removeEventListener(event, this.enterBound);
+            this.target.removeEventListener(event, this.enterBound);
         }
     }
 

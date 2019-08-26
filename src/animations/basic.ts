@@ -12,6 +12,7 @@ export class Basic implements IAnimation {
 
     constructor(
         protected readonly element: HTMLElement,
+        protected readonly target: HTMLElement,
         protected readonly lottie: LottiePlayer,
     ) {
         this.myEnterBound = this.enter.bind(this);

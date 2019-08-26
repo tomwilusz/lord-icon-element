@@ -42,9 +42,10 @@ const OBSERVED_ATTRIBUTES = [
     'icon',
     'animation',
     'speed',
+    'target',
 ];
 
-type SUPPORTED_ATTRIBUTES = 'palette'|'src'|'icon'|'animation'|'speed';
+type SUPPORTED_ATTRIBUTES = 'palette'|'src'|'icon'|'animation'|'speed'|'target';
 
 export class Element extends HTMLElement {
     protected isReady: boolean = false;
@@ -56,6 +57,7 @@ export class Element extends HTMLElement {
     protected palette?: string;
     protected animation?: string;
     protected speed?: string;
+    protected target?: string;
 
     /**
      * Register Lottie library.
@@ -111,7 +113,9 @@ export class Element extends HTMLElement {
         this[name] = newValue;
 
         const method = (this as any)[`${name}Changed`];
-        method.call(this);
+        if (method) {
+            method.call(this);
+        }
     }
 
     protected init() {
@@ -203,7 +207,10 @@ export class Element extends HTMLElement {
         if (this.animation && this.lottie) {
             const AnimationClass = getAnimation(this.animation);
             if (AnimationClass) {
-                this.myConnectedAnimation = new AnimationClass(this, this.lottie);
+                // find target event listener
+                const target = this.target ? this.closest(this.target) : null;
+
+                this.myConnectedAnimation = new AnimationClass(this, target || this, this.lottie);
                 this.myConnectedAnimation!.connectedCallback();
             }
         }

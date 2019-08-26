@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>Example 6</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <script type="module" src="./node_modules/lottie-web/build/player/lottie_svg.min.js"></script>
+        <script type="module" src="./example5.js"></script>
+        <style>
+            a {
+                display: flex;
+                flex-direction: row;
+                align-items: center;
+                text-decoration: none;
+                color: black;
+            }
+            a:hover {
+                color: rgb(8, 168, 138);
+            }
+
+            lord-icon {
+                width: 64px;
+                height: 64px;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>Example 6</h1>
+        <p>An element can listen of defined closest parent with <b>target</b> property.</p>
+
+        <a href="#">
+            sample text
+            <lord-icon animation="hover" src="./icons/36-bulb-idea-outline.json" target="a"></lord-icon>
+        </a>
+    </body>
+</html>

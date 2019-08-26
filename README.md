@@ -24,6 +24,15 @@ From markup:
 <lord-icon animation="hover" src="/my-icon.json"></lord-icon>               
 ```
 
+## Examples
+For more usage examples visit our repository. It's recommended to run them with:
+
+```bash
+npm i
+npm start
+```
+
+After that your browser will start automatically with our [examples](https://github.com/tomwilusz/lord-icon-element/tree/master/examples).
 
 ## Notice
 ### Compatibility
@@ -31,6 +40,3 @@ This library support at the moment only modern browsers which allows to use __We
 
 ### Modules
 It's recommended to use this library with _module bundler_ tools like __webpack__. If you  want use this library without bundler, remember to import modules by path, not by package name.
-
-### Examples
-For more usage examples visit our repository.
