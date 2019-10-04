@@ -8,7 +8,7 @@ function fromUnitVector(n: number) {
     return Math.round(n * 255);
 }
 
-function colorsIterator(data: any, callback: any) {
+function colorsIterator(data: any, callback: any, asset: number = -1) {
     if (!data) {
         return;
     }
@@ -32,6 +32,7 @@ function colorsIterator(data: any, callback: any) {
                         b = fromUnitVector(b);
 
                         callback({
+                            asset,
                             i,
                             j,
                             k,
@@ -61,6 +62,15 @@ export function colors(data: any): string[] {
             colors.push(color);
         }
     });
+
+    for (const [i, asset] of (data.assets || []).entries()) {
+        colorsIterator(asset.layers, (row: any) => {
+            const { color } = row;
+            if (!colors.includes(color)) {
+                colors.push(color);
+            }
+        }, i);
+    }
 
     return colors;
 }
@@ -116,6 +126,7 @@ export function replacePalette(data: any, paletteData: any) {
 
     const clonedData = JSON.parse(JSON.stringify(data));
 
+    // update layers colors
     colorsIterator(clonedData.layers, (row: any) => {
         const { i, j, k, a, color } = row;
         if (!parsedPalette![color]) {
@@ -131,6 +142,25 @@ export function replacePalette(data: any, paletteData: any) {
             a,
         ];
     });
+
+    // update assets colors
+    for (const [i, asset] of (clonedData.assets || []).entries()) {
+        colorsIterator(asset.layers, (row: any) => {
+            const { i, j, k, a, color, asset } = row;
+            if (!parsedPalette![color]) {
+                return;
+            }
+    
+            const { r, g, b } = hexToRgb(parsedPalette![color]);
+        
+            clonedData.assets[asset].layers[i].shapes[j].it[k].c.k = [
+                toUnitVector(r),
+                toUnitVector(g),
+                toUnitVector(b),
+                a,
+            ];
+        }, i);
+    }
 
     return clonedData;
 }
