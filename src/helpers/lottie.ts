@@ -1,4 +1,5 @@
 import { rgbToHex, hexToRgb } from './colors.js';
+import { deepClone } from './utils.js';
 
 function toUnitVector(n: number) {
     return Math.round(n / 255 * 1000) / 1000;
@@ -6,80 +7,6 @@ function toUnitVector(n: number) {
 
 function fromUnitVector(n: number) {
     return Math.round(n * 255);
-}
-
-function clone(o: any, m?: any){
-    if('object' !== typeof o) {
-        return o;
-    }
-
-    if('object' !== typeof m || null === m) {
-        m = new WeakMap();
-    }
-
-    let n = m.get(o);
-
-    if ('undefined' !== typeof n) {
-        return n;
-    }
-
-    let c = Object.getPrototypeOf(o).constructor;
-
-    switch(c) {
-    case Boolean:
-    case Error:
-    case Function:
-    case Number:
-    case Promise:
-    case String:
-    case Symbol:
-    case WeakMap:
-    case WeakSet:
-        n = o;
-        break;
-    case Array:
-        m.set(o, n = o.slice(0));
-        n.forEach((v: any, i: any) => {
-            if('object' ===typeof v) {
-                n[i] = clone(v, m);
-            }
-        });
-        break;
-    case ArrayBuffer:
-        m.set(o, n = o.slice(0));
-        break;
-    case DataView:
-        m.set(o, n = new (c)(clone(o.buffer, m), o.byteOffset, o.byteLength));
-        break;
-    case Map:
-    case Set:
-        m.set(o, n = new (c)(clone(Array.from(o.entries()), m)));
-        break;
-    case Int8Array:
-    case Uint8Array:
-    case Uint8ClampedArray:
-    case Int16Array:
-    case Uint16Array:
-    case Int32Array:
-    case Uint32Array:
-    case Float32Array:
-    case Float64Array:
-        m.set(o, n = new (c)(clone(o.buffer, m), o.byteOffset, o.length));
-        break;
-    case Date:
-    case RegExp:
-        m.set(o, n = new (c)(o));
-        break;
-    default:
-        m.set(o, n = Object.assign(new (c)(), o));
-        for(c in n) {
-            if('object' === typeof n[c]) {
-                n[c] = clone(n[c], m);
-            }
-        }
-    }
-
-    return n;
 }
 
 function colorsIterator(data: any, callback: any, asset: number = -1) {
@@ -198,7 +125,7 @@ export function replacePalette(data: any, paletteData: any) {
         return data;
     }
 
-    const clonedData = clone(data);
+    const clonedData = deepClone(data);
 
     // update layers colors
     colorsIterator(clonedData.layers, (row: any) => {

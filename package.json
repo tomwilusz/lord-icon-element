@@ -1,19 +1,19 @@
 {
   "name": "lord-icon-element",
-  "version": "1.1.2",
+  "version": "1.1.4",
   "private": false,
   "main": "./build/lord-icon-element.js",
   "module": "./build/lord-icon-element.js",
   "typings": "./build/lord-icon-element.d.ts",
   "devDependencies": {
-    "@types/node": "^11.13.19",
+    "@types/node": "^11.13.22",
     "express": "^4.17.1",
     "klaw-sync": "6.0.0",
-    "lottie-web": "^5.5.7",
+    "lottie-web": "^5.5.9",
+    "open": "^6.4.0",
     "serve-static": "^1.13.2",
-    "tslint": "^5.19.0",
-    "typescript": "^3.5.3",
-    "open": "^6.4.0"
+    "tslint": "^5.20.0",
+    "typescript": "^3.6.3"
   },
   "scripts": {
     "build": "tsc",
