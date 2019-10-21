@@ -1,71 +1,73 @@
-const hasOwnProperty = Object.prototype.hasOwnProperty;
-const propIsEnumerable = Object.prototype.propertyIsEnumerable;
-
-function isObj(obj: any) {
-    return typeof obj === "object";
-}
-
-function assignKey(to: any, from: any, key: any) {
-    const val = from[key];
-
-    if (val === undefined || val === null) {
-        return;
+export function deepClone(o: any, m?: any) {
+    if('object' !== typeof o || o === null) {
+        return o;
     }
 
-    if (hasOwnProperty.call(to, key)) {
-        if (to[key] === undefined || to[key] === null) {
-            throw new TypeError("Cannot convert undefined or null to object (" + key + ")");
-        }
+    if('object' !== typeof m || null === m) {
+        m = new WeakMap();
     }
 
-    if (!hasOwnProperty.call(to, key) || !isObj(val)) {
-        to[key] = val;
-    } else {
-        to[key] = assign(Object.assign({}, to[key]), from[key]);
-    }
-}
+    let n = m.get(o);
 
-function assign(to: any, from: any) {
-    if (to === from) {
-        return to;
+    if ('undefined' !== typeof n) {
+        return n;
     }
 
-    from = Object(from);
+    let c = Object.getPrototypeOf(o).constructor;
 
-    for (const key in from) {
-        if (hasOwnProperty.call(from, key)) {
-            assignKey(to, from, key);
-        }
-    }
-
-    if (Object.getOwnPropertySymbols) {
-        const symbols = Object.getOwnPropertySymbols(from);
-
-        // tslint:disable-next-line:prefer-for-of
-        for (let i = 0; i < symbols.length; i++) {
-            if (propIsEnumerable.call(from, symbols[i])) {
-                assignKey(to, from, symbols[i]);
+    switch(c) {
+    case Boolean:
+    case Error:
+    case Function:
+    case Number:
+    case Promise:
+    case String:
+    case Symbol:
+    case WeakMap:
+    case WeakSet:
+        n = o;
+        break;
+    case Array:
+        m.set(o, n = o.slice(0));
+        n.forEach((v: any, i: any) => {
+            if('object' ===typeof v) {
+                n[i] = deepClone(v, m);
+            }
+        });
+        break;
+    case ArrayBuffer:
+        m.set(o, n = o.slice(0));
+        break;
+    case DataView:
+        m.set(o, n = new (c)(deepClone(o.buffer, m), o.byteOffset, o.byteLength));
+        break;
+    case Map:
+    case Set:
+        m.set(o, n = new (c)(deepClone(Array.from(o.entries()), m)));
+        break;
+    case Int8Array:
+    case Uint8Array:
+    case Uint8ClampedArray:
+    case Int16Array:
+    case Uint16Array:
+    case Int32Array:
+    case Uint32Array:
+    case Float32Array:
+    case Float64Array:
+        m.set(o, n = new (c)(deepClone(o.buffer, m), o.byteOffset, o.length));
+        break;
+    case Date:
+    case RegExp:
+        m.set(o, n = new (c)(o));
+        break;
+    default:
+        m.set(o, n = Object.assign(new (c)(), o));
+        for(c in n) {
+            if('object' === typeof n[c]) {
+                n[c] = deepClone(n[c], m);
             }
         }
     }
 
-    return to;
-}
-
-function toObject(value: any): object {
-    if (value === null || value === undefined) {
-        return {};
-    }
-
-    return Object(value);
-}
-
-export function deepClone(target: any, ...params: any[]): any {
-    target = toObject(target);
-
-    for (const param of params) {
-        assign(target, param);
-    }
-
-    return target;
+    return n;
 }
