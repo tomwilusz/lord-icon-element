@@ -8,19 +8,26 @@
         <script type="module" src="./example5.js"></script>
         <style>
             a {
-                display: flex;
+                display: inline-flex;
                 flex-direction: row;
                 align-items: center;
                 text-decoration: none;
                 color: black;
+                background: #e1e1e1;
+                padding: 20px;
             }
+
             a:hover {
                 color: rgb(8, 168, 138);
             }
 
-            lord-icon {
+            a lord-icon {
                 width: 64px;
                 height: 64px;
+            }
+
+            a span {
+                padding-left: 20px;
             }
         </style>
     </head>
@@ -29,8 +36,8 @@
         <p>An element can listen of defined closest parent with <b>target</b> attribute.</p>
 
         <a href="#">
-            sample text
-            <lord-icon animation="hover" src="./icons/36-bulb-idea-outline.json" target="a"></lord-icon>
+            <lord-icon animation="hover" src="./icons/36-bulb-outline.json" target="a"></lord-icon>
+            <span>sample text</span>
         </a>
     </body>
 </html>

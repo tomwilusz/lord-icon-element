@@ -1,6 +1,7 @@
 import { LottiePlayer, AnimationConfig } from 'lottie-web';
 import { IAnimation } from '../interfaces.js';
-import { replacePalette } from '../helpers/lottie.js';
+import { replacePalette, replaceParams } from '../helpers/lottie.js';
+import { deepClone } from '../helpers/utils.js';
 import { loadIcon, loadLottieAnimation, registerIcon, registerLoader, registerAnimation, connectInstance, disconnectInstance,
     getIcon, getAnimation } from './manager.js';
 
@@ -43,9 +44,10 @@ const OBSERVED_ATTRIBUTES = [
     'animation',
     'speed',
     'target',
+    'params',
 ];
 
-type SUPPORTED_ATTRIBUTES = 'palette'|'src'|'icon'|'animation'|'speed'|'target';
+type SUPPORTED_ATTRIBUTES = 'palette'|'params'|'src'|'icon'|'animation'|'speed'|'target';
 
 export class Element extends HTMLElement {
     protected isReady: boolean = false;
@@ -57,6 +59,7 @@ export class Element extends HTMLElement {
     protected palette?: string;
     protected animation?: string;
     protected speed?: string;
+    protected params?: string;
     protected target?: string;
 
     /**
@@ -146,8 +149,15 @@ export class Element extends HTMLElement {
             return;
         }
 
+        if (this.palette || this.params) {
+            iconData = deepClone(iconData);
+        }
+
         if (this.palette) {
             iconData = replacePalette(iconData, this.palette);
+        }
+        if (this.params) {
+            iconData = replaceParams(iconData, this.params);
         }
 
         this.lottie = loadLottieAnimation({
@@ -217,6 +227,15 @@ export class Element extends HTMLElement {
     }
 
     protected paletteChanged() {
+        if (!this.isReady) {
+            return;
+        }
+
+        this.unregisterLottie();
+        this.registerLottie();
+    }
+
+    protected paramsChanged() {
         if (!this.isReady) {
             return;
         }

@@ -1,73 +1,84 @@
-export function deepClone(o: any, m?: any) {
-    if('object' !== typeof o || o === null) {
-        return o;
+/**
+ * Deep clone of value.
+ * @param value
+ */
+export function deepClone(value: any) {
+    return JSON.parse(JSON.stringify(value));
+}
+
+/**
+ * Checks if value is object-like. A value is object-like if it"s not null and has a typeof result of "object".
+ * @param value
+ */
+export function isObjectLike(value: any): value is object {
+    return value !== null && typeof value === "object";
+}
+
+/**
+ * Checks if path is a direct property of object.
+ * @param object
+ * @param path
+ */
+export function has<T>(object: T, path: string|string[]): boolean {
+    const newPath = Array.isArray(path) ? path : path.split(".");
+    let current: any = object;
+
+    for (const key of newPath) {
+        if (!isObjectLike(current)) {
+            return false;
+        }
+
+        if (!(key in current)) {
+            return false;
+        }
+
+        current = (current as any)[key];
     }
 
-    if('object' !== typeof m || null === m) {
-        m = new WeakMap();
+    return true;
+}
+
+/**
+ * Get object value from path. Otherwise return defaultValue.
+ * @param object
+ * @param path
+ * @param defaultValue
+ */
+export function get<T>(object: T, path: string|string[], defaultValue?: any): any {
+    const newPath = Array.isArray(path) ? path : path.split(".");
+    let current: any = object;
+
+    for (const key of newPath) {
+        if (!isObjectLike(current)) {
+            return defaultValue;
+        }
+
+        if (!(key in current)) {
+            return defaultValue;
+        }
+
+        current = (current as any)[key];
     }
 
-    let n = m.get(o);
+    return current === undefined ? defaultValue : current;
+}
 
-    if ('undefined' !== typeof n) {
-        return n;
-    }
+/**
+ * Update object value on path.
+ * @param object
+ * @param path
+ * @param value
+ */
+export function set(object: any, path: string|string[], value: any) {
+    let current = object;
+    
+    const newPath = Array.isArray(path) ? path : path.split(".");
 
-    let c = Object.getPrototypeOf(o).constructor;
-
-    switch(c) {
-    case Boolean:
-    case Error:
-    case Function:
-    case Number:
-    case Promise:
-    case String:
-    case Symbol:
-    case WeakMap:
-    case WeakSet:
-        n = o;
-        break;
-    case Array:
-        m.set(o, n = o.slice(0));
-        n.forEach((v: any, i: any) => {
-            if('object' ===typeof v) {
-                n[i] = deepClone(v, m);
-            }
-        });
-        break;
-    case ArrayBuffer:
-        m.set(o, n = o.slice(0));
-        break;
-    case DataView:
-        m.set(o, n = new (c)(deepClone(o.buffer, m), o.byteOffset, o.byteLength));
-        break;
-    case Map:
-    case Set:
-        m.set(o, n = new (c)(deepClone(Array.from(o.entries()), m)));
-        break;
-    case Int8Array:
-    case Uint8Array:
-    case Uint8ClampedArray:
-    case Int16Array:
-    case Uint16Array:
-    case Int32Array:
-    case Uint32Array:
-    case Float32Array:
-    case Float64Array:
-        m.set(o, n = new (c)(deepClone(o.buffer, m), o.byteOffset, o.length));
-        break;
-    case Date:
-    case RegExp:
-        m.set(o, n = new (c)(o));
-        break;
-    default:
-        m.set(o, n = Object.assign(new (c)(), o));
-        for(c in n) {
-            if('object' === typeof n[c]) {
-                n[c] = deepClone(n[c], m);
-            }
+    for (let i = 0; i < newPath.length; ++i) {
+        if (i === newPath.length - 1) {
+            current[newPath[i]] = value;
+        } else {
+            current = current[newPath[i]];
         }
     }
-
-    return n;
 }

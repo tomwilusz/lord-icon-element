@@ -111,7 +111,7 @@ export class Basic implements IAnimation {
      * Go to last animation frame.
      */
     goToLastFrame() {
-        this.goToFrame(this.lottie.getDuration(true));
+        this.goToFrame(Math.max(0, this.lottie.getDuration(true) - 1));
     }
 
     /**

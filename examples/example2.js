@@ -8,7 +8,7 @@ async function loadIcon(name) {
 
 // load sample icons
 (async () => {
-    LordIconElement.registerIcon('first', await loadIcon('36-bulb-idea-outline'));
+    LordIconElement.registerIcon('first', await loadIcon('36-bulb-outline'));
     LordIconElement.registerIcon('second', await loadIcon('9-cloud-settings-outline'));
 })();
 
