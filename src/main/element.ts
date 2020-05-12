@@ -109,6 +109,8 @@ export class Element extends HTMLElement {
      * Element disconnected.
      */
     protected disconnectedCallback() {
+        this.unregisterLottie();
+
         disconnectInstance(this);
     }
 
