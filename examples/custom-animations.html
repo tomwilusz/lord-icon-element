@@ -2,10 +2,10 @@
 <html lang="en">
     <head>
         <meta charset="utf-8">
-        <title>Example 2</title>
+        <title>Custom animations</title>
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <script type="module" src="./node_modules/lottie-web/build/player/lottie_svg.min.js"></script>
-        <script type="module" src="./example2.js"></script>
+        <script type="module" src="./custom-animations.js"></script>
         <style>
             table {
                 border-collapse: collapse;
@@ -21,31 +21,36 @@
                 width: 96px;
                 height: 96px;
             }
+
+            lord-icon[animation=custom] {
+                cursor: pointer;
+            }
         </style>
     </head>
     <body>
-        <h1>Example 2</h1>
-        <p>Example of assign already registered icons with <b>icon</b> attribute.</p>
+        <h1>Custom animations</h1>
+        <p>Example of providing custom animations for icons.</p>
+        <p>This animation provide support for custom attributes and behaviour (reverse animation playing after turn).</p>
 
         <table>
             <tr>
-                <td>name</td>
+                <td>description</td>
                 <td>preview</td>
             </tr>
             <tr>
                 <td>
-                    first
+                    click this icon twice
                 </td>
                 <td>
-                    <lord-icon animation="hover" icon="first"></lord-icon>
+                    <lord-icon animation="custom" src="./icons/350-animated-background-1.json"></lord-icon>
                 </td>
             </tr>
             <tr>
                 <td>
-                    second
+                    click this icon twice
                 </td>
                 <td>
-                    <lord-icon animation="hover" icon="second"></lord-icon>
+                    <lord-icon reverse animation="custom" src="./icons/350-animated-background-1.json"></lord-icon>
                 </td>
             </tr>
         </table>

@@ -4,12 +4,17 @@ import { Basic } from './basic.js';
  * Loop animation when mouse is on icon.
  */
 export class Loop extends Basic {
+    playDelay: any = null;
+    active = false;
+
     connectedCallback() {
         this.target.addEventListener('mouseenter', this.enterBound);
         this.target.addEventListener('mouseleave', this.leaveBound);
     }
 
     disconnectedCallback() {
+        this.resetPlayDelayTimer();
+
         this.target.removeEventListener('mouseenter', this.enterBound);
         this.target.removeEventListener('mouseleave', this.leaveBound);
 
@@ -17,11 +22,43 @@ export class Loop extends Basic {
     }
 
     enter() {
-        this.setLoop(true);
-        this.play();
+        this.active = true;
+
+        if (!this.inAnimation) {
+            this.playFromBegining();
+        }
     }
 
     leave() {
-        this.setLoop(false);
+        this.active = false;
+    }
+
+    complete() {
+        this.resetPlayDelayTimer();
+
+        if (!this.active) {
+            return;
+        }
+
+        if (this.delay > 0) {
+            this.playDelay = setTimeout(() => {
+                this.playFromBegining();
+            }, this.delay)
+        } else {
+            this.playFromBegining();
+        }
+    }
+
+    resetPlayDelayTimer() {
+        if (!this.playDelay) {
+            return;
+        }
+
+        clearTimeout(this.playDelay);
+        this.playDelay = null;
+    }
+
+    get delay() {
+        return this.element.hasAttribute('delay') ? +(this.element.getAttribute('delay') || 0) : 0;
     }
 }

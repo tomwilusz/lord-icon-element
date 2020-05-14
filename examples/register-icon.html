@@ -2,10 +2,10 @@
 <html lang="en">
     <head>
         <meta charset="utf-8">
-        <title>Example 3</title>
+        <title>Register icon</title>
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <script type="module" src="./node_modules/lottie-web/build/player/lottie_svg.min.js"></script>
-        <script type="module" src="./example3.js"></script>
+        <script type="module" src="./register-icon.js"></script>
         <style>
             table {
                 border-collapse: collapse;
@@ -21,36 +21,31 @@
                 width: 96px;
                 height: 96px;
             }
-
-            lord-icon[animation=custom] {
-                cursor: pointer;
-            }
         </style>
     </head>
     <body>
-        <h1>Example 3</h1>
-        <p>Example of providing custom animations for icons.</p>
-        <p>This animation provide support for custom attributes and behaviour (reverse animation playing after turn).</p>
+        <h1>Register icon</h1>
+        <p>Example of assign already registered icons with <b>icon</b> attribute.</p>
 
         <table>
             <tr>
-                <td>description</td>
+                <td>name</td>
                 <td>preview</td>
             </tr>
             <tr>
                 <td>
-                    click this icon twice
+                    first
                 </td>
                 <td>
-                    <lord-icon animation="custom" src="./icons/105-loader-1.json"></lord-icon>
+                    <lord-icon animation="hover" icon="first"></lord-icon>
                 </td>
             </tr>
             <tr>
                 <td>
-                    click this icon twice
+                    second
                 </td>
                 <td>
-                    <lord-icon reverse animation="custom" src="./icons/105-loader-1.json"></lord-icon>
+                    <lord-icon animation="hover" icon="second"></lord-icon>
                 </td>
             </tr>
         </table>
