@@ -5,6 +5,8 @@ import { Basic } from './basic.js';
  */
 export class Morph extends Basic {
     connectedCallback() {
+        super.connectedCallback();
+
         this.target.addEventListener('mouseenter', this.enterBound);
         this.target.addEventListener('mouseleave', this.leaveBound);
     }
@@ -14,6 +16,8 @@ export class Morph extends Basic {
         this.target.removeEventListener('mouseleave', this.leaveBound);
 
         this.setDirection(1);
+
+        super.disconnectedCallback();
     }
 
     enter() {

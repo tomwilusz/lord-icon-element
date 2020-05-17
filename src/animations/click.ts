@@ -7,6 +7,8 @@ const CLICK_EVENTS = [ 'mousedown', 'touchstart' ];
  */
 export class Click extends Basic {
     connectedCallback() {
+        super.connectedCallback();
+
         for (const event of CLICK_EVENTS) {
             const options = event === 'touchstart' ? { passive: true } : undefined;
             this.target.addEventListener(event, this.enterBound, options);
@@ -17,6 +19,8 @@ export class Click extends Basic {
         for (const event of CLICK_EVENTS) {
             this.target.removeEventListener(event, this.enterBound);
         }
+
+        super.disconnectedCallback();
     }
 
     enter() {

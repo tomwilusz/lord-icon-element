@@ -11,6 +11,8 @@ class Custom extends BasicAnimation {
     }
 
     connectedCallback() {
+        super.connectedCallback();
+
         for (const event of CLICK_EVENTS) {
             const options = event === 'touchstart' ? { passive: true } : undefined;
             this.target.addEventListener(event, this.enterBound, options);
@@ -23,6 +25,8 @@ class Custom extends BasicAnimation {
         }
 
         this.setDirection(1);
+
+        super.disconnectedCallback();
     }
 
     enter() {

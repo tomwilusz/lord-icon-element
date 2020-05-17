@@ -5,6 +5,8 @@ import { Basic } from './basic.js';
  */
 export class MorphTwoWay extends Basic {
     connectedCallback() {
+        super.connectedCallback();
+
         this.target.addEventListener('mouseenter', this.enterBound);
     }
 
@@ -12,6 +14,8 @@ export class MorphTwoWay extends Basic {
         this.target.removeEventListener('mouseenter', this.enterBound);
 
         this.setDirection(1);
+
+        super.disconnectedCallback();
     }
 
     enter() {

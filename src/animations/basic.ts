@@ -9,6 +9,7 @@ export class Basic implements IAnimation {
     private myIsReady: boolean = false;
     private myLeaveBound: any;
     private myEnterBound: any;
+    private myConnected: boolean = false;
 
     constructor(
         protected readonly element: HTMLElement,
@@ -42,12 +43,16 @@ export class Basic implements IAnimation {
     /**
      * The animation has been connected.
      */
-    connectedCallback() {}
+    connectedCallback() {
+        this.myConnected = true;
+    }
 
     /**
      * The animation has been disconnected.
      */
-    disconnectedCallback() {}
+    disconnectedCallback() {
+        this.myConnected = false;
+    }
 
     /**
      * Callback for animation ready.
@@ -164,5 +169,12 @@ export class Basic implements IAnimation {
      */
     get leaveBound() {
         return this.myLeaveBound;
+    }
+
+    /**
+     * Animation is connected.
+     */
+    get connected() {
+        return this.myConnected;
     }
 }

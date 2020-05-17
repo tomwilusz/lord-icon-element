@@ -8,6 +8,8 @@ export class Loop extends Basic {
     active = false;
 
     connectedCallback() {
+        super.connectedCallback();
+    
         this.target.addEventListener('mouseenter', this.enterBound);
         this.target.addEventListener('mouseleave', this.leaveBound);
     }
@@ -19,6 +21,8 @@ export class Loop extends Basic {
         this.target.removeEventListener('mouseleave', this.leaveBound);
 
         this.setDirection(1);
+
+        super.disconnectedCallback();
     }
 
     enter() {
@@ -36,7 +40,7 @@ export class Loop extends Basic {
     complete() {
         this.resetPlayDelayTimer();
 
-        if (!this.active) {
+        if (!this.active || !this.connected) {
             return;
         }
 
