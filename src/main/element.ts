@@ -16,16 +16,21 @@ import {
 
 const ELEMENT_STYLE = `
     :host {
-        display: inline-flex;
-        width: 32px;
-        height: 32px;
-        align-items: center;
-        justify-content: center;
-        position: relative;
-        vertical-align: middle;
-        fill: currentcolor;
-        stroke: none;
-        overflow: hidden;
+      display: inline-flex;
+      width: 32px;
+      height: 32px;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      vertical-align: middle;
+      fill: currentcolor;
+      stroke: none;
+      overflow: hidden;
+    }
+
+    :host(.inherit-color) svg path {
+      fill: currentColor;
+      stroke: currentColor;
     }
 
     svg {
