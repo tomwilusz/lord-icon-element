@@ -231,7 +231,10 @@ export class Element extends HTMLElement {
       return;
     }
 
-    if (from === "icon" && !this.lottie) {
+    if (from === "icon") {
+      if (this.lottie) {
+        this.unregisterLottie();
+      }
       this.registerLottie();
     } else if (from === "animation" && !this.myConnectedAnimation) {
       this.animationChanged();
