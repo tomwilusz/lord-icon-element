@@ -28,8 +28,11 @@ const ELEMENT_STYLE = `
       overflow: hidden;
     }
 
-    :host(.inherit-color) svg path {
+    :host(.inherit-color) svg path[fill] {
       fill: currentColor;
+    }
+
+    :host(.inherit-color) svg path[stroke] {
       stroke: currentColor;
     }
 

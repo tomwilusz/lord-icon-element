@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Inherit color</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script
+      type="module"
+      src="./node_modules/lottie-web/build/player/lottie_svg.min.js"
+    ></script>
+    <script type="module" src="./supported-animations.js"></script>
+    <style>
+      .btn {
+        color: #fdd394;
+        cursor: pointer;
+      }
+
+      .btn:hover {
+        color: #03a9f4;
+      }
+
+      lord-icon {
+        width: 96px;
+        height: 96px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Inherit color</h1>
+    <p>
+      Inherit color from parent element. Usable if you need single color for
+      icon.
+    </p>
+
+    <div class="btn">
+      <lord-icon
+        animation="hover"
+        class="inherit-color"
+        src="./icons/36-bulb-outline.json"
+      ></lord-icon>
+    </div>
+  </body>
+</html>
