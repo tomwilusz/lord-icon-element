@@ -6,18 +6,18 @@
   "module": "./build/lord-icon-element.js",
   "typings": "./build/lord-icon-element.d.ts",
   "devDependencies": {
-    "@types/node": "^11.15.7",
+    "@types/node": "^11.15.44",
     "express": "^4.17.1",
     "klaw-sync": "6.0.0",
-    "lottie-web": "^5.6.6",
+    "lottie-web": "^5.7.6",
     "open": "^6.4.0",
     "serve-static": "^1.13.2",
-    "terser-webpack-plugin": "^2.3.5",
+    "terser-webpack-plugin": "^2.3.8",
     "tslint": "^5.20.1",
-    "typescript": "^3.8.3",
+    "typescript": "^3.9.7",
     "uglifyjs-webpack-plugin": "^2.2.0",
-    "webpack": "^4.42.0",
-    "webpack-cli": "^3.3.11"
+    "webpack": "^4.46.0",
+    "webpack-cli": "^3.3.12"
   },
   "scripts": {
     "build": "tsc",
