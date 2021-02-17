@@ -1,6 +1,6 @@
 {
   "name": "lord-icon-element",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "private": false,
   "main": "./build/lord-icon-element.js",
   "module": "./build/lord-icon-element.js",
