@@ -15,10 +15,10 @@ const INSTANCES: Set<Element> = new Set();
 /**
  * Store supported animations.
  */
-const ANIMATIONS: Map<string, any> = new Map<string, any>();
+const TRIGGERS: Map<string, any> = new Map<string, any>();
 
 /**
- * Store icons in memory.
+ * Store icons data in memory.
  */
 const ICONS: Map<string, any> = new Map<string, any>();
 
@@ -28,7 +28,7 @@ const ICONS: Map<string, any> = new Map<string, any>();
 const LOADING: Map<string, Promise<any>> = new Map<string, Promise<any>>();
 
 /**
- * Register new icon. Notify all Element instances about it.
+ * Register new icon. Notify all instances about it.
  * @param name
  * @param animationClass
  */
@@ -40,14 +40,14 @@ export function registerIcon(name: string, data: any) {
 }
 
 /**
- * Register new animation. Notify all Element instances about it.
+ * Register new trigger. Notify all instances about it.
  * @param name
  * @param animationClass
  */
-export function registerAnimation(name: string, animationClass: any) {
-    ANIMATIONS.set(name, animationClass);
+export function registerTrigger(name: string, animationClass: any) {
+    TRIGGERS.set(name, animationClass);
     for (const instance of INSTANCES) {
-        (instance as any).notify(name, 'animation');
+        (instance as any).notify(name, 'trigger');
     }
 }
 
@@ -84,11 +84,11 @@ export function getIcon(name: string) {
 }
 
 /**
- * Get stored animation.
+ * Get stored trigger.
  * @param name
  */
-export function getAnimation(name: string) {
-    return ANIMATIONS.get(name);
+export function getTrigger(name: string) {
+    return TRIGGERS.get(name);
 }
 
 /**

@@ -8,8 +8,13 @@ async function loadIcon(name) {
 
 // load sample icons
 (async () => {
-    LordIconElement.registerIcon('first', await loadIcon('36-bulb-outline'));
-    LordIconElement.registerIcon('second', await loadIcon('9-cloud-settings-outline'));
+    const [ firstIconData, secondIconData ] = await Promise.all([
+        loadIcon('522-fish-outline'),
+        loadIcon('421-wallet-purse-morph-outline'),
+    ]);
+
+    LordIconElement.registerIcon('first', firstIconData);
+    LordIconElement.registerIcon('second', secondIconData);
 })();
 
 // register element

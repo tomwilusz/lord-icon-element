@@ -1,26 +1,29 @@
 import { AnimationConfig, LottiePlayer } from "lottie-web";
 
+export type LottieColor = [number, number, number];
+export type LottieFieldType = 'color' | 'slider' | 'point' | 'checkbox';
+
 /**
- * Interface for animation.
+ * Interface for trigger.
  */
-export interface IAnimation {
+export interface ITrigger {
     /**
-     * The animation has been connected.
+     * The trigger has been connected.
      */
     connectedCallback(): void;
 
     /**
-     * The animation has been disconnected.
+     * The trigger has been disconnected.
      */
     disconnectedCallback(): void;
 
     /**
-     * Callback for animation enter.
+     * Callback for trigger enter.
      */
     enter(): void;
 
     /**
-     * Callback for animation leave.
+     * Callback for trigger leave.
      */
     leave(): void;
 }
@@ -28,10 +31,20 @@ export interface IAnimation {
 /**
  * Interface for colors parameters.
  */
-export interface IColor {
+export interface IRGBColor {
     r: number;
     g: number;
     b: number;
+}
+
+/**
+ * Interface for found property.
+ */
+export interface ILottieField {
+    name: string;
+    path: string;
+    value: any;
+    type: LottieFieldType;
 }
 
 /**

@@ -1,10 +1,10 @@
 import { LottiePlayer } from 'lottie-web';
-import { IAnimation } from '../interfaces';
+import { ITrigger } from '../interfaces';
 
 /**
  * Basic implementation for supported animations.
  */
-export class Basic implements IAnimation {
+export class Basic implements ITrigger {
     private myInAnimation: boolean = false;
     private myIsReady: boolean = false;
     private myLeaveBound: any;

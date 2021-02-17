@@ -51,7 +51,7 @@ class Custom extends BasicAnimation {
     }
 }
 
-LordIconElement.registerAnimation('custom', Custom);
+LordIconElement.registerTrigger('custom', Custom);
 
 // register element
 defineLordIconElement(lottie.loadAnimation);

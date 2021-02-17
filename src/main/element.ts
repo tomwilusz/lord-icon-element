@@ -1,17 +1,17 @@
 import { LottiePlayer, AnimationConfig } from "lottie-web";
-import { IAnimation } from "../interfaces.js";
-import { replacePalette, replaceParams } from "../helpers/lottie.js";
+import { ITrigger } from "../interfaces.js";
+import { allFields, replaceColors, replaceParams } from "../helpers/lottie.js";
 import { deepClone } from "../helpers/utils.js";
 import {
   loadIcon,
   loadLottieAnimation,
   registerIcon,
   registerLoader,
-  registerAnimation,
+  registerTrigger,
   connectInstance,
   disconnectInstance,
   getIcon,
-  getAnimation,
+  getTrigger,
 } from "./manager.js";
 
 const ELEMENT_STYLE = `
@@ -55,21 +55,27 @@ const ELEMENT_STYLE = `
 `;
 
 const OBSERVED_ATTRIBUTES = [
-  "palette",
+  "colors",
   "src",
   "icon",
-  "animation",
+  "trigger",
   "speed",
   "target",
-  "params",
+  "stroke",
+  "scale",
+  "axis-x",
+  "axis-y",
 ];
 
 type SUPPORTED_ATTRIBUTES =
-  | "palette"
-  | "params"
+  | "colors"
+  | "stroke"
+  | "scale"
+  | "axis-x"
+  | "axis-y"
   | "src"
   | "icon"
-  | "animation"
+  | "trigger"
   | "speed"
   | "target";
 
@@ -77,13 +83,16 @@ export class Element extends HTMLElement {
   protected isReady: boolean = false;
   protected root: ShadowRoot;
   protected lottie?: LottiePlayer;
-  protected myConnectedAnimation?: IAnimation;
+  protected myConnectedTrigger?: ITrigger;
   protected icon?: string;
   protected src?: string;
-  protected palette?: string;
-  protected animation?: string;
+  protected colors?: string;
+  protected trigger?: string;
   protected speed?: string;
-  protected params?: string;
+  protected stroke?: string;
+  protected scale?: string;
+  protected ["axis-x"]?: string;
+  protected ["axis-y"]?: string;
   protected target?: string;
 
   /**
@@ -106,10 +115,10 @@ export class Element extends HTMLElement {
   /**
    * Register supported animation.
    * @param name
-   * @param animationClass
+   * @param triggerClass
    */
-  static registerAnimation(name: string, animationClass: any) {
-    registerAnimation(name, animationClass);
+  static registerTrigger(name: string, triggerClass: any) {
+    registerTrigger(name, triggerClass);
   }
 
   constructor() {
@@ -145,9 +154,15 @@ export class Element extends HTMLElement {
   ) {
     this[name] = newValue;
 
-    const method = (this as any)[`${name}Changed`];
-    if (method) {
-      method.call(this);
+    if (name === 'axis-x') {
+      this.axisXChanged();
+    } else if (name === 'axis-y') {
+      this.axisYChanged();
+    } else {
+      const method = (this as any)[`${name}Changed`];
+      if (method) {
+        method.call(this);
+      }
     }
   }
 
@@ -179,15 +194,26 @@ export class Element extends HTMLElement {
       return;
     }
 
-    if (this.palette || this.params) {
+    if (this.colors || this.stroke || this.scale || this['axis-x'] || this['axis-y']) {
+      const fields = allFields(iconData);
+      
       iconData = deepClone(iconData);
-    }
 
-    if (this.palette) {
-      iconData = replacePalette(iconData, this.palette);
-    }
-    if (this.params) {
-      iconData = replaceParams(iconData, this.params);
+      if (this.colors) {
+        replaceColors(iconData, fields, this.colors);
+      }
+      if (this.stroke) {
+        replaceParams(iconData, fields, 'stroke', this.stroke);
+      }
+      if (this.scale) {
+        replaceParams(iconData, fields, 'scale', this.scale);
+      }
+      if (this['axis-x']) {
+        replaceParams(iconData, fields, 'axis', this['axis-x'], '0');
+      }
+      if (this['axis-y']) {
+        replaceParams(iconData, fields, 'axis', this['axis-y'], '1');
+      }
     }
 
     this.lottie = loadLottieAnimation({
@@ -209,13 +235,13 @@ export class Element extends HTMLElement {
       this.dispatchEvent(new CustomEvent("animation-complete"));
     });
 
-    this.animationChanged();
+    this.triggerChanged();
   }
 
   protected unregisterLottie() {
-    if (this.myConnectedAnimation) {
-      this.myConnectedAnimation.disconnectedCallback();
-      this.myConnectedAnimation = undefined;
+    if (this.myConnectedTrigger) {
+      this.myConnectedTrigger.disconnectedCallback();
+      this.myConnectedTrigger = undefined;
     }
 
     if (this.lottie) {
@@ -226,7 +252,7 @@ export class Element extends HTMLElement {
     }
   }
 
-  protected notify(name: string, from: "icon" | "animation") {
+  protected notify(name: string, from: "icon" | "trigger") {
     if (this[from] !== name) {
       return;
     }
@@ -236,34 +262,34 @@ export class Element extends HTMLElement {
         this.unregisterLottie();
       }
       this.registerLottie();
-    } else if (from === "animation" && !this.myConnectedAnimation) {
-      this.animationChanged();
+    } else if (from === "trigger" && !this.myConnectedTrigger) {
+      this.triggerChanged();
     }
   }
 
-  protected animationChanged() {
-    if (this.myConnectedAnimation) {
-      this.myConnectedAnimation.disconnectedCallback();
-      this.myConnectedAnimation = undefined;
+  protected triggerChanged() {
+    if (this.myConnectedTrigger) {
+      this.myConnectedTrigger.disconnectedCallback();
+      this.myConnectedTrigger = undefined;
     }
 
-    if (this.animation && this.lottie) {
-      const AnimationClass = getAnimation(this.animation);
-      if (AnimationClass) {
+    if (this.trigger && this.lottie) {
+      const TriggerClass = getTrigger(this.trigger);
+      if (TriggerClass) {
         // find target event listener
         const target = this.target ? this.closest(this.target) : null;
 
-        this.myConnectedAnimation = new AnimationClass(
+        this.myConnectedTrigger = new TriggerClass(
           this,
           target || this,
           this.lottie
         );
-        this.myConnectedAnimation!.connectedCallback();
+        this.myConnectedTrigger!.connectedCallback();
       }
     }
   }
 
-  protected paletteChanged() {
+  protected colorsChanged() {
     if (!this.isReady) {
       return;
     }
@@ -272,7 +298,34 @@ export class Element extends HTMLElement {
     this.registerLottie();
   }
 
-  protected paramsChanged() {
+  protected strokeChanged() {
+    if (!this.isReady) {
+      return;
+    }
+
+    this.unregisterLottie();
+    this.registerLottie();
+  }
+
+  protected scaleChanged() {
+    if (!this.isReady) {
+      return;
+    }
+
+    this.unregisterLottie();
+    this.registerLottie();
+  }
+
+  protected axisXChanged() {
+    if (!this.isReady) {
+      return;
+    }
+
+    this.unregisterLottie();
+    this.registerLottie();
+  }
+
+  protected axisYChanged() {
     if (!this.isReady) {
       return;
     }
@@ -320,10 +373,10 @@ export class Element extends HTMLElement {
   }
 
   /**
-   * Access current animation instance.
+   * Access current trigger instance.
    */
-  get connectedAnimation() {
-    return this.myConnectedAnimation;
+  get connectedTrigger() {
+    return this.myConnectedTrigger;
   }
 
   protected get container(): HTMLElement | undefined {

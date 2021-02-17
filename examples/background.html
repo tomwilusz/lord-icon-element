@@ -1,57 +1,70 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="utf-8">
-        <title>Background</title>
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <script type="module" src="./node_modules/lottie-web/build/player/lottie_svg.min.js"></script>
-        <script type="module" src="./background.js"></script>
-        <style>
-            table {
-                border-collapse: collapse;
-                width: 100%;
-            }
+  <head>
+    <meta charset="utf-8" />
+    <title>Background</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script
+      type="module"
+      src="./node_modules/lottie-web/build/player/lottie_svg.min.js"
+    ></script>
+    <script type="module" src="./background.js"></script>
+    <style>
+      table {
+        border-collapse: collapse;
+        width: 100%;
+      }
 
-            table, td, th {
-                border: 1px solid #d2d2d8;
-                padding: 10px;
-            }
+      table,
+      td,
+      th {
+        border: 1px solid #d2d2d8;
+        padding: 10px;
+      }
 
-            lord-icon {
-                width: 256px;
-                height: 256px;
-            }
+      lord-icon {
+        width: 256px;
+        height: 256px;
+      }
 
-            div.text {
-                text-align: center;
-                display: flex;
-                flex-direction: row;
-                align-items: center;
-                height: 100%;
-                padding: 20px;
-                box-sizing: border-box;
-            }
-        </style>
-    </head>
-    <body>
-        <h1>Background</h1>
-        <p>An element can be used as a background for other content. Remember that the icon must be square!</p>
+      div.text {
+        text-align: center;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        height: 100%;
+        padding: 20px;
+        box-sizing: border-box;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Background</h1>
+    <p>
+      An element can be used as a background for other content. Remember that
+      the we support square ratio!
+    </p>
 
-        <table>
-            <tr>
-                <td>content</td>
-                <td>preview</td>
-            </tr>
-            <tr>
-                <td>
-                    text inside + changed speed of animation
-                </td>
-                <td>
-                    <lord-icon speed="0.3" animation="auto" src="./icons/350-animated-background-1.json">
-                        <div class="text">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</div>
-                    </lord-icon>
-                </td>
-            </tr>
-        </table>
-    </body>
+    <table>
+      <tr>
+        <td>content</td>
+        <td>preview</td>
+      </tr>
+      <tr>
+        <td>text inside + changed speed of animation</td>
+        <td>
+          <lord-icon
+            speed="0.3"
+            trigger="loop"
+            src="./icons/351-animated-background-2.json"
+          >
+            <div class="text">
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+              eiusmod tempor incididunt ut labore et dolore magna aliqua.
+            </div>
+          </lord-icon>
+        </td>
+      </tr>
+    </table>
+  </body>
 </html>

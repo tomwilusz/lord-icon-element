@@ -3,7 +3,7 @@ import { Basic } from './basic.js';
 /**
  * Loop animation when mouse is on icon.
  */
-export class Loop extends Basic {
+export class LoopOnHover extends Basic {
     playDelay: any = null;
     active = false;
 

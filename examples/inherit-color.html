@@ -8,11 +8,12 @@
       type="module"
       src="./node_modules/lottie-web/build/player/lottie_svg.min.js"
     ></script>
-    <script type="module" src="./supported-animations.js"></script>
+    <script type="module" src="./inherit-color.js"></script>
     <style>
       .btn {
         color: #fdd394;
         cursor: pointer;
+        display: inline-block;
       }
 
       .btn:hover {
@@ -28,15 +29,15 @@
   <body>
     <h1>Inherit color</h1>
     <p>
-      Inherit color from parent element. Usable if you need single color for
-      icon.
+      Inherit color from parent element. Usable if you accept just single color
+      for icon.
     </p>
 
     <div class="btn">
       <lord-icon
-        animation="hover"
+        trigger="hover"
         class="inherit-color"
-        src="./icons/36-bulb-outline.json"
+        src="./icons/522-fish-outline.json"
       ></lord-icon>
     </div>
   </body>

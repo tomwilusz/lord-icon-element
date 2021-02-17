@@ -3,7 +3,7 @@ import { Basic } from './basic.js';
 /**
  * Animation with auto start and loop.
  */
-export class Auto extends Basic {
+export class Loop extends Basic {
     playDelay: any = null;
 
     ready() {
