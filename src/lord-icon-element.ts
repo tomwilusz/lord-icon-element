@@ -12,13 +12,13 @@ export * from "./helpers/lottie.js";
 
 export const LordIconElement = Element;
 
-export const BasicAnimation = Basic;
-export const ClickAnimation = Click;
-export const HoverAnimation = Hover;
-export const LoopAnimation = Loop;
-export const LoopOnHoverAnimation = LoopOnHover;
-export const MorphAnimation = Morph;
-export const MorphTwoWayAnimation = MorphTwoWay;
+export const BasicTrigger = Basic;
+export const ClickTrigger = Click;
+export const HoverTrigger = Hover;
+export const LoopTrigger = Loop;
+export const LoopOnHoverTrigger = LoopOnHover;
+export const MorphTrigger = Morph;
+export const MorphTwoWayTrigger = MorphTwoWay;
 
 /**
  * Defines custom element "lord-icon". This methods also register all triggers supported by this element.
