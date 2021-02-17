@@ -53,4 +53,4 @@ It's recommended to use this library with _module bundler_ tools like **webpack*
 
 ### Static release
 
-You can use this library also without JS modules with released version. This is simplest way to use our element without any initialization and external tools. Just look for our [JSFiddle example](https://jsfiddle.net/baszczewski/unw8t93d/1/).
+You can use this library also without JS modules with released version. This is simplest way to use our element without any initialization and external tools. Just look for our [JSFiddle example](https://jsfiddle.net/f3cqgemu/).
