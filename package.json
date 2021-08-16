@@ -1,6 +1,6 @@
 {
   "name": "lord-icon-element",
-  "version": "2.0.2",
+  "version": "2.1.0",
   "private": false,
   "main": "./build/lord-icon-element.js",
   "module": "./build/lord-icon-element.js",
@@ -9,7 +9,7 @@
     "@types/node": "^11.15.44",
     "express": "^4.17.1",
     "klaw-sync": "6.0.0",
-    "lottie-web": "^5.7.6",
+    "lottie-web": "^5.7.13",
     "open": "^6.4.0",
     "serve-static": "^1.13.2",
     "terser-webpack-plugin": "^2.3.8",
@@ -23,7 +23,6 @@
     "build": "tsc",
     "start": "npm run build && npm run release && npm run serve-examples",
     "serve-examples": "node serve-examples.js",
-    "prepare": "npm run build",
     "release": "webpack --mode production"
   },
   "keywords": [

@@ -1,4 +1,4 @@
-import { AnimationConfig, LottiePlayer } from "lottie-web";
+import { AnimationItem, AnimationConfigWithPath, AnimationConfigWithData } from "lottie-web";
 
 export type LottieColor = [number, number, number];
 export type LottieFieldType = 'color' | 'slider' | 'point' | 'checkbox';
@@ -50,4 +50,4 @@ export interface ILottieField {
 /**
  * Type for loadAnimation method from Lottie.
  */
-export type LottieLoader = (params: AnimationConfig) => LottiePlayer;
+export type LottieLoader = (params: AnimationConfigWithPath | AnimationConfigWithData) => AnimationItem;

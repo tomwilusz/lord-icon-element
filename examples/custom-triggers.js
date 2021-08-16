@@ -1,8 +1,8 @@
-import { defineLordIconElement, LordIconElement, BasicAnimation } from '../build/lord-icon-element.js';
+import { defineLordIconElement, LordIconElement, BasicTrigger } from '../build/lord-icon-element.js';
 
 const CLICK_EVENTS = [ 'mousedown', 'touchstart' ];
 
-class Custom extends BasicAnimation {
+class Custom extends BasicTrigger {
     constructor(element, target, lottie) {
         super(element, target, lottie);
 

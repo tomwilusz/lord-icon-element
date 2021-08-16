@@ -1,4 +1,4 @@
-import { LottiePlayer } from 'lottie-web';
+import { AnimationItem, AnimationDirection } from 'lottie-web';
 import { ITrigger } from '../interfaces';
 
 /**
@@ -14,7 +14,7 @@ export class Basic implements ITrigger {
     constructor(
         protected readonly element: HTMLElement,
         protected readonly target: HTMLElement,
-        protected readonly lottie: LottiePlayer,
+        protected readonly lottie: AnimationItem,
     ) {
         this.myEnterBound = this.enter.bind(this);
         this.myLeaveBound = this.leave.bind(this);
@@ -102,7 +102,7 @@ export class Basic implements ITrigger {
      * @param value
      */
     goToFrame(value: number) {
-        this.lottie.setCurrentRawFrameValue(value);
+        this.lottie.goToAndStop(value, true);
     }
 
     /**
@@ -123,7 +123,7 @@ export class Basic implements ITrigger {
      * Set direction of animation.
      * Forward (1) and backward (-1).
      */
-    setDirection(direction: number) {
+    setDirection(direction: AnimationDirection) {
         this.lottie.setDirection(direction);
     }
 

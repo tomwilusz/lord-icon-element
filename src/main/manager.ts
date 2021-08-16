@@ -1,4 +1,4 @@
-import { LottiePlayer, AnimationConfig } from 'lottie-web';
+import { AnimationItem, AnimationConfigWithPath, AnimationConfigWithData } from 'lottie-web';
 import { Element } from './element.js';
 import { LottieLoader } from '../interfaces.js';
 
@@ -55,7 +55,7 @@ export function registerTrigger(name: string, animationClass: any) {
  * Register lottie "loadAnimation" method.
  * @param loader
  */
-export function registerLoader(loader: (params: AnimationConfig) => LottiePlayer) {
+export function registerLoader(loader: LottieLoader) {
     LOTTIE_LOADER = loader;
 }
 
@@ -130,7 +130,7 @@ export async function loadIcon(url: string) {
  * Execute animation loading with provided "loadAnimation".
  * @param params
  */
-export function loadLottieAnimation(params: AnimationConfig): LottiePlayer {
+export function loadLottieAnimation(params: AnimationConfigWithPath | AnimationConfigWithData): AnimationItem {
     if (!LOTTIE_LOADER) {
         throw new Error('Unregistered Lottie.');
     }

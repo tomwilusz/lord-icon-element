@@ -1,5 +1,5 @@
-import { LottiePlayer, AnimationConfig } from "lottie-web";
-import { ITrigger } from "../interfaces.js";
+import { AnimationItem } from "lottie-web";
+import { ITrigger, LottieLoader } from "../interfaces.js";
 import { allFields, replaceColors, replaceParams } from "../helpers/lottie.js";
 import { deepClone } from "../helpers/utils.js";
 import {
@@ -82,7 +82,7 @@ type SUPPORTED_ATTRIBUTES =
 export class Element extends HTMLElement {
   protected isReady: boolean = false;
   protected root: ShadowRoot;
-  protected lottie?: LottiePlayer;
+  protected lottie?: AnimationItem;
   protected myConnectedTrigger?: ITrigger;
   protected icon?: string;
   protected src?: string;
@@ -99,7 +99,7 @@ export class Element extends HTMLElement {
    * Register Lottie library.
    * @param loader Provide "loadAnimation" here from Lottie.
    */
-  static registerLoader(loader: (params: AnimationConfig) => LottiePlayer) {
+  static registerLoader(loader: LottieLoader) {
     registerLoader(loader);
   }
 
@@ -217,14 +217,16 @@ export class Element extends HTMLElement {
     }
 
     this.lottie = loadLottieAnimation({
-      container: this.container,
+      container: this.container as Element,
       renderer: "svg",
       loop: false,
       autoplay: false,
-      preserveAspectRatio: "xMidYMid meet",
-      progressiveLoad: true,
-      hideOnTransparent: false,
       animationData: iconData,
+      rendererSettings: {
+        preserveAspectRatio: "xMidYMid meet",
+        progressiveLoad: true,
+        hideOnTransparent: false,
+      },
     });
 
     // set speed
