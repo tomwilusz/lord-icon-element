@@ -22,7 +22,7 @@ export const MorphTwoWayTrigger = MorphTwoWay;
 
 /**
  * Defines custom element "lord-icon". This methods also register all triggers supported by this element.
- * @param loader Animation loader. Provide "lottie-web" loadAnimation here.
+ * @param loader Animation loader.
  */
 export function defineLordIconElement(loader: LottieLoader) {
   Element.registerLoader(loader);
