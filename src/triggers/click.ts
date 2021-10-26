@@ -1,11 +1,11 @@
-import { Basic } from './basic.js';
+import { Base } from './base.js';
 
 const CLICK_EVENTS = [ 'mousedown', 'touchstart' ];
 
 /**
  * Enter animation after icon click.
  */
-export class Click extends Basic {
+export class Click extends Base {
     connectedCallback() {
         super.connectedCallback();
 

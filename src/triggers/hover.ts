@@ -1,9 +1,9 @@
-import { Basic } from './basic.js';
+import { Base } from './base.js';
 
 /**
  * Enter animation on icon hover.
  */
-export class Hover extends Basic {
+export class Hover extends Base {
     connectedCallback() {
         super.connectedCallback();
 

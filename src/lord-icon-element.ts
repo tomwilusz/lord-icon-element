@@ -1,5 +1,5 @@
 import { Element } from "./main/element.js";
-import { Basic } from "./triggers/basic.js";
+import { Base } from "./triggers/base.js";
 import { Click } from "./triggers/click.js";
 import { Hover } from "./triggers/hover.js";
 import { Morph } from "./triggers/morph.js";
@@ -12,7 +12,7 @@ export * from "./helpers/lottie.js";
 
 export const LordIconElement = Element;
 
-export const BasicTrigger = Basic;
+export const BaseTrigger = Base;
 export const ClickTrigger = Click;
 export const HoverTrigger = Hover;
 export const LoopTrigger = Loop;
@@ -21,8 +21,8 @@ export const MorphTrigger = Morph;
 export const MorphTwoWayTrigger = MorphTwoWay;
 
 /**
- * Defines custom element "lord-icon". This methods also register all triggers supported by this element.
- * @param loader Animation loader.
+ * Defines custom element `lord-icon` with premade triggers.
+ * @param loader LottieLoader from `lottie-web` package
  */
 export function defineLordIconElement(loader: LottieLoader) {
   Element.registerLoader(loader);

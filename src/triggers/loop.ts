@@ -1,9 +1,9 @@
-import { Basic } from './basic.js';
+import { Base } from './base.js';
 
 /**
  * Animation with auto start and loop.
  */
-export class Loop extends Basic {
+export class Loop extends Base {
     playDelay: any = null;
 
     ready() {

@@ -2,9 +2,9 @@ import { AnimationItem, AnimationDirection } from 'lottie-web';
 import { ITrigger } from '../interfaces';
 
 /**
- * Basic implementation for supported animations.
+ * Base implementation for supported animations.
  */
-export class Basic implements ITrigger {
+export class Base implements ITrigger {
     private myInAnimation: boolean = false;
     private myIsReady: boolean = false;
     private myLeaveBound: any;

@@ -1,9 +1,9 @@
-import { Basic } from './basic.js';
+import { Base } from './base.js';
 
 /**
  * Morph animation from point A to B after mouse enter and from B to A after mouse leave.
  */
-export class Morph extends Basic {
+export class Morph extends Base {
     connectedCallback() {
         super.connectedCallback();
 

@@ -1,9 +1,9 @@
-import { Basic } from './basic.js';
+import { Base } from './base.js';
 
 /**
  * Loop animation when mouse is on icon.
  */
-export class LoopOnHover extends Basic {
+export class LoopOnHover extends Base {
     playDelay: any = null;
     active = false;
 

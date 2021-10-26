@@ -3,12 +3,12 @@ const TerserPlugin = require('terser-webpack-plugin');
 
 module.exports = {
     entry: {
-        'lord-icon': path.resolve(__dirname, 'release', 'lord-icon'),
+        'lord-icon': path.resolve(__dirname, 'src-ext', 'release'),
     },
 
     output: {
         filename: '[name].js',
-        path: path.resolve(__dirname, 'bin'),
+        path: path.resolve(__dirname, 'release'),
     },
 
     resolve: {
