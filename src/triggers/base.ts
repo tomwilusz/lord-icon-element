@@ -2,41 +2,35 @@ import { AnimationItem, AnimationDirection } from 'lottie-web';
 import { ITrigger } from '../interfaces';
 
 /**
- * Base implementation for supported animations.
+ * Base helper for triggers.
  */
 export class Base implements ITrigger {
-    private myInAnimation: boolean = false;
-    private myIsReady: boolean = false;
-    private myLeaveBound: any;
-    private myEnterBound: any;
-    private myConnected: boolean = false;
+    #inAnimation: boolean = false;
+    #isReady: boolean = false;
+    #connected: boolean = false;
 
     constructor(
         protected readonly element: HTMLElement,
-        protected readonly target: HTMLElement,
+        protected readonly targetElement: HTMLElement,
         protected readonly lottie: AnimationItem,
     ) {
-        this.myEnterBound = this.enter.bind(this);
-        this.myLeaveBound = this.leave.bind(this);
-
-        const ready = () => {
-            if (this.myIsReady) {
+        const lottieReady = () => {
+            if (this.#isReady) {
                 return;
             }
 
-            this.myIsReady = true;
+            this.#isReady = true;
             this.ready();
         }
 
         lottie.addEventListener('complete', () => {
-            this.myInAnimation = false;
+            this.#inAnimation = false;
             this.complete();
         });
 
-        lottie.addEventListener('config_ready', ready);    
-
+        lottie.addEventListener('config_ready', lottieReady);    
         if (this.lottie.isLoaded) {
-            ready();
+            lottieReady();
         }
     }
 
@@ -44,14 +38,14 @@ export class Base implements ITrigger {
      * The animation has been connected.
      */
     connectedCallback() {
-        this.myConnected = true;
+        this.#connected = true;
     }
 
     /**
      * The animation has been disconnected.
      */
     disconnectedCallback() {
-        this.myConnected = false;
+        this.#connected = false;
     }
 
     /**
@@ -65,20 +59,10 @@ export class Base implements ITrigger {
     complete() {}
 
     /**
-     * Callback for animation enter.
-     */
-    enter() {}
-
-    /**
-     * Callback for animation leave.
-     */
-    leave() {}
-
-    /**
      * Play animation.
      */
     play() {
-        this.myInAnimation = true;
+        this.#inAnimation = true;
         this.lottie.play();
     }
 
@@ -86,7 +70,7 @@ export class Base implements ITrigger {
      * Play animation from begining.
      */
     playFromBegining() {
-        this.myInAnimation = true;
+        this.#inAnimation = true;
         this.lottie.goToAndPlay(0);
     }
 
@@ -99,10 +83,10 @@ export class Base implements ITrigger {
 
     /**
      * Go to animation frame.
-     * @param value
+     * @param frame
      */
-    goToFrame(value: number) {
-        this.lottie.goToAndStop(value, true);
+    goToFrame(frame: number) {
+        this.lottie.goToAndStop(frame, true);
     }
 
     /**
@@ -121,7 +105,7 @@ export class Base implements ITrigger {
 
     /**
      * Set direction of animation.
-     * Forward (1) and backward (-1).
+     * @param direction Forward (1), backward (-1)
      */
     setDirection(direction: AnimationDirection) {
         this.lottie.setDirection(direction);
@@ -129,52 +113,38 @@ export class Base implements ITrigger {
 
     /**
      * Enable or disable loop for this animation.
-     * @param value
+     * @param enabled
      */
-    setLoop(value: boolean) {
-        this.lottie.loop = value;
+    setLoop(enabled: boolean) {
+        this.lottie.loop = enabled;
     }
 
     /**
-     * Controls speed of animation (1 is normal speed).
-     * @param value
+     * Controls speed of animation.
+     * @param speed Animation speed (1 is normal speed)
      */
-    setSpeed(value: number) {
-        this.lottie.setSpeed(value);
+    setSpeed(speed: number) {
+        this.lottie.setSpeed(speed);
     }
 
     /**
      * Checks whether the animation is in progress.
      */
     get inAnimation() {
-        return this.myInAnimation;
+        return this.#inAnimation;
     }
 
     /**
      * Check whether the animation is ready.
      */
     get isReady() {
-        return this.myIsReady;
+        return this.#isReady;
     }
 
     /**
-     * Bounded version of enter callback.
-     */
-    get enterBound() {
-        return this.myEnterBound;
-    }
-
-    /**
-     * Bounded version of leave callback.
-     */
-    get leaveBound() {
-        return this.myLeaveBound;
-    }
-
-    /**
-     * Animation is connected.
+     * Trigger is connected.
      */
     get connected() {
-        return this.myConnected;
+        return this.#connected;
     }
 }

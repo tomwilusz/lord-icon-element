@@ -1,7 +1,22 @@
-import { AnimationItem } from "lottie-web";
-import { ITrigger, LottieLoader } from "../interfaces.js";
-import { allFields, replaceColors, replaceParams } from "../helpers/lottie.js";
-import { deepClone } from "../helpers/utils.js";
+import {
+  AnimationItem
+} from "lottie-web";
+import {
+  ILottieField,
+  ITrigger,
+  ITriggerConstructor,
+  LottieLoader
+} from "../interfaces.js";
+import {
+  allFields,
+  replaceColors,
+  replaceParams,
+  resetColors,
+  resetParams
+} from "../helpers/lottie.js";
+import {
+  deepClone
+} from "../helpers/utils.js";
 import {
   loadIcon,
   loadLottieAnimation,
@@ -13,6 +28,8 @@ import {
   getIcon,
   getTrigger,
 } from "./manager.js";
+
+const PROGRESSIVE_LOAD = false;
 
 const ELEMENT_STYLE = `
     :host {
@@ -28,6 +45,22 @@ const ELEMENT_STYLE = `
       overflow: hidden;
     }
 
+    :not(.inherit-color) svg .primary path[fill] {
+      fill: var(--lord-icon-primary, black);
+    }
+
+    :not(.inherit-color) svg .primary path[stroke] {
+      stroke: var(--lord-icon-primary, black);
+    }
+
+    :not(.inherit-color) svg .secondary path[fill] {
+      fill: var(--lord-icon-secondary, black);
+    }
+
+    :not(.inherit-color) svg .secondary path[stroke] {
+      stroke: var(--lord-icon-secondary, black);
+    }
+
     :host(.inherit-color) svg path[fill] {
       fill: currentColor;
     }
@@ -37,20 +70,20 @@ const ELEMENT_STYLE = `
     }
 
     svg {
-        pointer-events: none;
-        display: block;
+      pointer-events: none;
+      display: block;
     }
 
     div {    
-        width: 100%;
-        height: 100%;
+      width: 100%;
+      height: 100%;
     }
 
     div.slot {
-        position: absolute;
-        left: 0;
-        top: 0;
-        z-index: 2;
+      position: absolute;
+      left: 0;
+      top: 0;
+      z-index: 2;
     }
 `;
 
@@ -67,33 +100,34 @@ const OBSERVED_ATTRIBUTES = [
   "axis-y",
 ];
 
-type SUPPORTED_ATTRIBUTES =
-  | "colors"
-  | "stroke"
-  | "scale"
-  | "axis-x"
-  | "axis-y"
-  | "src"
-  | "icon"
-  | "trigger"
-  | "speed"
-  | "target";
+type SUPPORTED_ATTRIBUTES = |
+  "colors" |
+  "stroke" |
+  "scale" |
+  "axis-x" |
+  "axis-y" |
+  "src" |
+  "icon" |
+  "trigger" |
+  "speed" |
+  "target";
 
 export class Element extends HTMLElement {
   protected isReady: boolean = false;
   protected root: ShadowRoot;
-  protected lottie?: AnimationItem;
-  protected myConnectedTrigger?: ITrigger;
-  protected icon?: string;
-  protected src?: string;
-  protected colors?: string;
-  protected trigger?: string;
-  protected speed?: string;
-  protected stroke?: string;
-  protected scale?: string;
-  protected ["axis-x"]?: string;
-  protected ["axis-y"]?: string;
-  protected target?: string;
+  protected lottie ? : AnimationItem;
+  protected myConnectedTrigger ? : ITrigger;
+  protected myProperties?: ILottieField[];
+  protected icon ? : string;
+  protected src ? : string;
+  protected colors ? : string;
+  protected trigger ? : string;
+  protected speed ? : string;
+  protected stroke ? : string;
+  protected scale ? : string;
+  protected["axis-x"] ? : string;
+  protected["axis-y"] ? : string;
+  protected target ? : string;
 
   /**
    * Register Lottie library.
@@ -117,14 +151,16 @@ export class Element extends HTMLElement {
    * @param name
    * @param triggerClass
    */
-  static registerTrigger(name: string, triggerClass: any) {
+  static registerTrigger(name: string, triggerClass: ITriggerConstructor) {
     registerTrigger(name, triggerClass);
   }
 
   constructor() {
     super();
 
-    this.root = this.attachShadow({ mode: "open" });
+    this.root = this.attachShadow({
+      mode: "open"
+    });
   }
 
   /**
@@ -194,28 +230,6 @@ export class Element extends HTMLElement {
       return;
     }
 
-    if (this.colors || this.stroke || this.scale || this['axis-x'] || this['axis-y']) {
-      const fields = allFields(iconData);
-      
-      iconData = deepClone(iconData);
-
-      if (this.colors) {
-        replaceColors(iconData, fields, this.colors);
-      }
-      if (this.stroke) {
-        replaceParams(iconData, fields, 'stroke', this.stroke);
-      }
-      if (this.scale) {
-        replaceParams(iconData, fields, 'scale', this.scale);
-      }
-      if (this['axis-x']) {
-        replaceParams(iconData, fields, 'axis', this['axis-x'], '0');
-      }
-      if (this['axis-y']) {
-        replaceParams(iconData, fields, 'axis', this['axis-y'], '1');
-      }
-    }
-
     this.lottie = loadLottieAnimation({
       container: this.container as Element,
       renderer: "svg",
@@ -224,10 +238,34 @@ export class Element extends HTMLElement {
       animationData: iconData,
       rendererSettings: {
         preserveAspectRatio: "xMidYMid meet",
-        progressiveLoad: true,
-        hideOnTransparent: false,
+        progressiveLoad: PROGRESSIVE_LOAD,
+        hideOnTransparent: true,
       },
     });
+
+    if (this.colors || this.stroke || this.scale || this['axis-x'] || this['axis-y']) {
+      const properties = this.properties;
+
+      if (properties) {
+        if (this.colors) {
+          replaceColors(this.lottie, properties, this.colors);
+        }
+        if (this.stroke) {
+          replaceParams(this.lottie, properties, 'stroke', this.stroke);
+        }
+        if (this.scale) {
+          replaceParams(this.lottie, properties, 'scale', this.scale);
+        }
+        if (this['axis-x']) {
+          replaceParams(this.lottie, properties, 'axis', this['axis-x'], '0');
+        }
+        if (this['axis-y']) {
+          replaceParams(this.lottie, properties, 'axis', this['axis-y'], '1');
+        }
+
+        this.lottie!.renderer.renderFrame(null);
+      }
+    }
 
     // set speed
     this.lottie.setSpeed(this.animationSpeed);
@@ -241,6 +279,8 @@ export class Element extends HTMLElement {
   }
 
   protected unregisterLottie() {
+    this.myProperties = undefined;
+
     if (this.myConnectedTrigger) {
       this.myConnectedTrigger.disconnectedCallback();
       this.myConnectedTrigger = undefined;
@@ -292,48 +332,73 @@ export class Element extends HTMLElement {
   }
 
   protected colorsChanged() {
-    if (!this.isReady) {
+    if (!this.isReady || !this.properties) {
       return;
     }
 
-    this.unregisterLottie();
-    this.registerLottie();
+    if (this.colors) {
+      replaceColors(this.lottie, this.properties, this.colors);
+    } else {
+      resetColors(this.lottie, this.properties);
+    }
+
+    this.lottie!.renderer.renderFrame(null);
   }
 
   protected strokeChanged() {
-    if (!this.isReady) {
+    if (!this.isReady || !this.properties) {
       return;
     }
 
-    this.unregisterLottie();
-    this.registerLottie();
+    if (this.stroke) {
+      replaceParams(this.lottie, this.properties, 'stroke', this.stroke);
+    } else {
+      resetParams(this.lottie, this.properties, 'stroke');
+    }
+
+    this.lottie!.renderer.renderFrame(null);
   }
 
   protected scaleChanged() {
-    if (!this.isReady) {
+    if (!this.isReady || !this.properties) {
       return;
     }
 
-    this.unregisterLottie();
-    this.registerLottie();
+    if (this.scale) {
+      replaceParams(this.lottie, this.properties, 'scale', this.scale);
+    } else {
+      resetParams(this.lottie, this.properties, 'scale');
+    }
+
+    this.lottie!.renderer.renderFrame(null);
   }
 
   protected axisXChanged() {
-    if (!this.isReady) {
+    if (!this.isReady || !this.properties) {
       return;
     }
 
-    this.unregisterLottie();
-    this.registerLottie();
+    if (this['axis-x']) {
+      replaceParams(this.lottie, this.properties, 'axis', this['axis-x'], '0');
+    } else {
+      resetParams(this.lottie, this.properties, 'axis', '0');
+    }
+
+    this.lottie!.renderer.renderFrame(null);
   }
 
   protected axisYChanged() {
-    if (!this.isReady) {
+    if (!this.isReady || !this.properties) {
       return;
     }
 
-    this.unregisterLottie();
-    this.registerLottie();
+    if (this['axis-y']) {
+      replaceParams(this.lottie, this.properties, 'axis', this['axis-y'], '0');
+    } else {
+      resetParams(this.lottie, this.properties, 'axis', '0');
+    }
+
+    this.lottie!.renderer.renderFrame(null);
   }
 
   protected speedChanged() {
@@ -379,6 +444,14 @@ export class Element extends HTMLElement {
    */
   get connectedTrigger() {
     return this.myConnectedTrigger;
+  }
+
+  get properties() {
+    if (!this.myProperties && this.iconData) {
+      this.myProperties = allFields(this.iconData, true);
+    }
+
+    return this.myProperties;
   }
 
   protected get container(): HTMLElement | undefined {

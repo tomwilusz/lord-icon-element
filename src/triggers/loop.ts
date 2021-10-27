@@ -1,9 +1,9 @@
-import { Base } from './base.js';
+import { Basic } from './basic.js';
 
 /**
  * Animation with auto start and loop.
  */
-export class Loop extends Base {
+export class Loop extends Basic {
     playDelay: any = null;
 
     ready() {
@@ -42,6 +42,7 @@ export class Loop extends Base {
     }
 
     get delay() {
-        return this.element.hasAttribute('delay') ? +(this.element.getAttribute('delay') || 0) : 0;
+        const value = this.element.hasAttribute('delay') ? +(this.element.getAttribute('delay') || 0) : 0;
+        return Math.max(value, 0);
     }
 }

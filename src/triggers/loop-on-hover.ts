@@ -1,40 +1,32 @@
-import { Base } from './base.js';
+import { Basic } from './basic.js';
 
 /**
  * Loop animation when mouse is on icon.
  */
-export class LoopOnHover extends Base {
+export class LoopOnHover extends Basic {
     playDelay: any = null;
     active = false;
 
     connectedCallback() {
         super.connectedCallback();
     
-        this.target.addEventListener('mouseenter', this.enterBound);
-        this.target.addEventListener('mouseleave', this.leaveBound);
+        this.addTargetEventListener('mouseenter', () => {
+            this.active = true;
+
+            if (!this.inAnimation) {
+                this.playFromBegining();
+            }
+        });
+
+        this.addTargetEventListener('mouseleave', () => {
+            this.active = false;
+        });
     }
 
     disconnectedCallback() {
         this.resetPlayDelayTimer();
 
-        this.target.removeEventListener('mouseenter', this.enterBound);
-        this.target.removeEventListener('mouseleave', this.leaveBound);
-
-        this.setDirection(1);
-
         super.disconnectedCallback();
-    }
-
-    enter() {
-        this.active = true;
-
-        if (!this.inAnimation) {
-            this.playFromBegining();
-        }
-    }
-
-    leave() {
-        this.active = false;
     }
 
     complete() {
@@ -63,6 +55,7 @@ export class LoopOnHover extends Base {
     }
 
     get delay() {
-        return this.element.hasAttribute('delay') ? +(this.element.getAttribute('delay') || 0) : 0;
+        const value = this.element.hasAttribute('delay') ? +(this.element.getAttribute('delay') || 0) : 0; 
+        return Math.max(value, 0);
     }
 }

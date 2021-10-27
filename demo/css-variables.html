@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <title>CSS Variables</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" type="text/css" href="/style.css" />
+
+  <style>
+    .first {
+      --lord-icon-primary: blue;
+    }
+
+    .second {
+      --lord-icon-primary: pink;
+    }
+  </style>
+</head>
+
+<body>
+  <lord-icon class="first" delay="1000" trigger="loop" src="/sample-1.json"></lord-icon>
+  <lord-icon class="second" delay="1000" trigger="loop" src="/sample-2.json"></lord-icon>
+
+  <script type="module" src="/node_modules/lottie-web/build/player/lottie_svg.min.js"></script>
+  <script type="module" src="/css-variables.js"></script>
+</body>
+
+</html>

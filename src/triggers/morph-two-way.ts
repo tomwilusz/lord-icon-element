@@ -1,26 +1,22 @@
-import { Base } from './base.js';
+import { Basic } from './basic.js';
 
 /**
  * Morph animation from point A to B and then from B to A after mouse enter.
  */
-export class MorphTwoWay extends Base {
+export class MorphTwoWay extends Basic {
     connectedCallback() {
         super.connectedCallback();
-
-        this.target.addEventListener('mouseenter', this.enterBound);
+        
+        this.addTargetEventListener('mouseenter', () => {
+            this.setDirection(1);
+            this.play();
+        });
     }
 
     disconnectedCallback() {
-        this.target.removeEventListener('mouseenter', this.enterBound);
-
         this.setDirection(1);
 
         super.disconnectedCallback();
-    }
-
-    enter() {
-        this.setDirection(1);
-        this.play();
     }
 
     complete() {

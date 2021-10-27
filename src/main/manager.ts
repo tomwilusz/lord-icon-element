@@ -1,36 +1,47 @@
-import { AnimationItem, AnimationConfigWithPath, AnimationConfigWithData } from 'lottie-web';
-import { Element } from './element.js';
-import { LottieLoader } from '../interfaces.js';
+import {
+    AnimationItem,
+    AnimationConfigWithPath,
+    AnimationConfigWithData
+} from 'lottie-web';
+import {
+    Element
+} from './element.js';
+import {
+    LottieLoader
+} from '../interfaces.js';
 
 /**
  * Store loadAnimation from Lottie.
  */
-let LOTTIE_LOADER: LottieLoader|undefined;
+let LOTTIE_LOADER: LottieLoader | undefined;
 
 /**
  * Store all intances of Element.
  */
-const INSTANCES: Set<Element> = new Set();
+const INSTANCES: Set < Element > = new Set();
 
 /**
- * Store supported animations.
+ * Store supported triggers.
  */
-const TRIGGERS: Map<string, any> = new Map<string, any>();
+const TRIGGERS: Map < string, any > = new Map < string,
+    any > ();
 
 /**
  * Store icons data in memory.
  */
-const ICONS: Map<string, any> = new Map<string, any>();
+const ICONS: Map < string, any > = new Map < string,
+    any > ();
 
 /**
  * List of promises for pending icons.
  */
-const LOADING: Map<string, Promise<any>> = new Map<string, Promise<any>>();
+const LOADING: Map < string, Promise < any >> = new Map < string,
+    Promise < any >> ();
 
 /**
  * Register new icon. Notify all instances about it.
  * @param name
- * @param animationClass
+ * @param data
  */
 export function registerIcon(name: string, data: any) {
     ICONS.set(name, data);
@@ -42,10 +53,10 @@ export function registerIcon(name: string, data: any) {
 /**
  * Register new trigger. Notify all instances about it.
  * @param name
- * @param animationClass
+ * @param triggerClass
  */
-export function registerTrigger(name: string, animationClass: any) {
-    TRIGGERS.set(name, animationClass);
+export function registerTrigger(name: string, triggerClass: any) {
+    TRIGGERS.set(name, triggerClass);
     for (const instance of INSTANCES) {
         (instance as any).notify(name, 'trigger');
     }

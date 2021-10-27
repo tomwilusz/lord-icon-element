@@ -54,6 +54,7 @@ export function hexToLottieColor(hex: string): LottieColor {
 
 export function allFields(
     data: any,
+    dynamic: boolean = false,
 ): ILottieField[] {
     const result: any[] = [];
 
@@ -76,12 +77,20 @@ export function allFields(
 
         for (const [fieldIndex, field] of Object.entries(layer.ef) as any) {
             const subpath = 'ef.0.v.k';
-            const path = `layers.${layerIndex}.ef.${fieldIndex}.${subpath}`;
+            
+            let path;
+            if (dynamic) {
+                path = `renderer.elements.${layerIndex}.effectsManager.effectElements.${fieldIndex}.effectElements.0.p.v`;
+            } else {
+                path = `layers.${layerIndex}.ef.${fieldIndex}.${subpath}`;
+            }
 
             const hasValue = has(field, subpath);
             if (!hasValue) {
                 continue;
             }
+
+            const value = get(field, subpath);
 
             let type = 'unkown';
 
@@ -101,8 +110,6 @@ export function allFields(
 
             const name = field.nm;
 
-            const value = get(field, subpath);
-
             result.push({
                 name,
                 path,
@@ -115,11 +122,20 @@ export function allFields(
     return result;
 }
 
+export function resetColors(data: any, fields: ILottieField[]) {
+    for (const field of fields) {
+        if (field.type !== 'color') {
+            continue;
+        }
+
+        set(data, field.path, field.value);
+    }
+}
+
 export function replaceColors(data: any, fields: ILottieField[], colors: string): any {
     const parsedColors = colors.split(',');
 
     if (parsedColors.length) {
-
         for (const color of parsedColors) {
             const parts = color.split(':');
             if (parts.length !== 2) {
@@ -135,6 +151,20 @@ export function replaceColors(data: any, fields: ILottieField[], colors: string)
                     set(data, field.path, hexToLottieColor(parts[1]));
                 }
             }
+        }
+    }
+}
+
+export function resetParams(data: any, fields: ILottieField[], name: string, extraPath ? : string): any {
+    for (const field of fields) {
+        if (field.name.toLowerCase() !== name.toLowerCase()) {
+            continue;
+        }
+
+        if (extraPath) {
+            set(data, field.path + `.${extraPath}`, get(field.value, extraPath));
+        } else {
+            set(data, field.path, field.value);
         }
     }
 }
