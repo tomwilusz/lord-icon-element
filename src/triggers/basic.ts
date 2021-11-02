@@ -1,4 +1,3 @@
-import { AnimationItem } from 'lottie-web';
 import { Base } from './base.js';
 
 export interface ITargetEvent {
@@ -7,18 +6,10 @@ export interface ITargetEvent {
 }
 
 /**
- * Basic helper for triggers.
+ * Basic trigger for manual usage.
  */
 export class Basic extends Base {
     #events: any[] = [];
-
-    constructor(
-        protected readonly element: HTMLElement,
-        protected readonly targetElement: HTMLElement,
-        protected readonly lottie: AnimationItem,
-    ) {
-        super(element, targetElement, lottie);
-    }
 
     addTargetEventListener(event: string|ITargetEvent, callback: () => any) {
         const newEvent: ITargetEvent = typeof event == 'string' ? { name: event } : event;
@@ -40,5 +31,16 @@ export class Basic extends Base {
     disconnectedCallback() {
         this.clearAllTargetEventsListeners();
         super.disconnectedCallback();
+    }
+    
+    /**
+     * Get target element.
+     */
+    get targetElement() {
+        const element = this.element;
+        const targetProperty = element.getAttribute('target');
+        const target = targetProperty ? element.closest(targetProperty) : null;
+
+        return target || element;
     }
 }

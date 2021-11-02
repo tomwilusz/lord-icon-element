@@ -1,5 +1,5 @@
 import { AnimationItem, AnimationDirection } from 'lottie-web';
-import { ITrigger } from '../interfaces';
+import { IElement, ITrigger } from '../interfaces';
 
 /**
  * Base helper for triggers.
@@ -10,8 +10,7 @@ export class Base implements ITrigger {
     #connected: boolean = false;
 
     constructor(
-        protected readonly element: HTMLElement,
-        protected readonly targetElement: HTMLElement,
+        protected readonly element: HTMLElement & IElement,
         protected readonly lottie: AnimationItem,
     ) {
         const lottieReady = () => {

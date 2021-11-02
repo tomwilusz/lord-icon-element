@@ -6,8 +6,8 @@ const CLICK_EVENTS = [
 ];
 
 class Custom extends BasicTrigger {
-    constructor(element, targetElement, lottie) {
-        super(element, targetElement, lottie);
+    constructor(element, lottie) {
+        super(element, lottie);
 
         this.direction = this.reverse ? -1 : 1;
         this.setDirection(this.direction);
@@ -21,7 +21,6 @@ class Custom extends BasicTrigger {
                 if (!this.inAnimation) {
                     this.play();
                 }
-                console.log('goo!');
             });
         }
     }
@@ -30,12 +29,6 @@ class Custom extends BasicTrigger {
         this.setDirection(1);
 
         super.disconnectedCallback();
-    }
-
-    enter() {
-        if (!this.inAnimation) {
-            this.play();
-        }
     }
 
     ready() {

@@ -28,6 +28,10 @@ th {
     padding: 10px;
 }
 
+td {
+    width: 50%;
+}
+
 lord-icon {
     width: 128px;
     height: 128px;

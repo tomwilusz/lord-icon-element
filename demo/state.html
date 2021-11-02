@@ -9,7 +9,36 @@
 </head>
 
 <body>
-  <lord-icon trigger="state" src="/sample-1.json"></lord-icon>
+  <table>
+    <tr>
+      <td>description</td>
+      <td>preview</td>
+    </tr>
+    <tr>
+      <td>state: intro</td>
+      <td>
+        <lord-icon trigger="loop" state="intro" src="/sample.json"></lord-icon>
+      </td>
+    </tr>
+    <tr>
+      <td>state: hover</td>
+      <td>
+        <lord-icon trigger="loop" state="hover" src="/sample.json"></lord-icon>
+      </td>
+    </tr>
+    <tr>
+      <td>state: loop</td>
+      <td>
+        <lord-icon trigger="loop" state="loop" src="/sample.json"></lord-icon>
+      </td>
+    </tr>
+    <tr>
+      <td>state: handle with custom code (from intro to hover / loop)</td>
+      <td>
+        <lord-icon id="main-icon" trigger="basic" src="/sample.json"></lord-icon>
+      </td>
+    </tr>
+  </table>
 
   <script type="module" src="/node_modules/lottie-web/build/player/lottie_svg.min.js"></script>
   <script type="module" src="/state.js"></script>

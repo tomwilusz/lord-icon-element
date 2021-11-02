@@ -9,18 +9,20 @@
 
   <style>
     .first {
-      --lord-icon-primary: blue;
+      --lord-icon-primary: #009688;
+      --lord-icon-secondary: #448e47;
     }
 
     .second {
-      --lord-icon-primary: pink;
+      --lord-icon-primary: #673ab7;
+      --lord-icon-secondary: #ff9e3b;
     }
   </style>
 </head>
 
 <body>
-  <lord-icon class="first" delay="1000" trigger="loop" src="/sample-1.json"></lord-icon>
-  <lord-icon class="second" delay="1000" trigger="loop" src="/sample-2.json"></lord-icon>
+  <lord-icon class="first" trigger="loop" src="/sample.json"></lord-icon>
+  <lord-icon class="second" trigger="loop" src="/sample.json"></lord-icon>
 
   <script type="module" src="/node_modules/lottie-web/build/player/lottie_svg.min.js"></script>
   <script type="module" src="/css-variables.js"></script>

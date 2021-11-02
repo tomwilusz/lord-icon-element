@@ -1,27 +1,33 @@
 import {
   AnimationItem
 } from "lottie-web";
+
 import {
-  ILottieField,
+  LottieAnimationLoader,
+  IElement,
+  ILottieProperty,
   ITrigger,
   ITriggerConstructor,
-  LottieLoader
 } from "../interfaces.js";
+
 import {
-  allFields,
-  replaceColors,
-  replaceParams,
+  allProperties,
+  resetProperty,
+  updateProperty,
+  replaceProperty,
   resetColors,
-  resetParams
+  updateColors,
 } from "../helpers/lottie.js";
+
 import {
-  deepClone
+  isObjectLike,
 } from "../helpers/utils.js";
+
 import {
   loadIcon,
   loadLottieAnimation,
   registerIcon,
-  registerLoader,
+  registerAnimationLoader,
   registerTrigger,
   connectInstance,
   disconnectInstance,
@@ -29,8 +35,24 @@ import {
   getTrigger,
 } from "./manager.js";
 
+/**
+ * Loads lottie dom elements when needed.
+ */
 const PROGRESSIVE_LOAD = false;
 
+/**
+ * Prefix for icon states.
+ */
+const STATE_PREFIX = 'State-';
+
+/**
+ * Use constructable stylesheets if supported (https://developers.google.com/web/updates/2019/02/constructable-stylesheets)
+ */
+const SUPPORTS_ADOPTING_STYLE_SHEETS = "adoptedStyleSheets" in Document.prototype && "replace" in CSSStyleSheet.prototype;
+
+/**
+ * Style for this element.
+ */
 const ELEMENT_STYLE = `
     :host {
       display: inline-flex;
@@ -40,8 +62,6 @@ const ELEMENT_STYLE = `
       justify-content: center;
       position: relative;
       vertical-align: middle;
-      fill: currentcolor;
-      stroke: none;
       overflow: hidden;
     }
 
@@ -87,13 +107,21 @@ const ELEMENT_STYLE = `
     }
 `;
 
+/**
+ * Current style sheet.
+ */
+let styleSheet: CSSStyleSheet;
+
+/**
+ * Observed attributes for this custom element.
+ */
 const OBSERVED_ATTRIBUTES = [
   "colors",
   "src",
   "icon",
+  "state",
   "trigger",
   "speed",
-  "target",
   "stroke",
   "scale",
   "axis-x",
@@ -102,48 +130,39 @@ const OBSERVED_ATTRIBUTES = [
 
 type SUPPORTED_ATTRIBUTES = |
   "colors" |
+  "src" |
+  "icon" |
+  "state" |
+  "trigger" |
+  "speed" |
   "stroke" |
   "scale" |
   "axis-x" |
-  "axis-y" |
-  "src" |
-  "icon" |
-  "trigger" |
-  "speed" |
-  "target";
+  "axis-y";
 
-export class Element extends HTMLElement {
-  protected isReady: boolean = false;
-  protected root: ShadowRoot;
-  protected lottie ? : AnimationItem;
-  protected myConnectedTrigger ? : ITrigger;
-  protected myProperties?: ILottieField[];
-  protected icon ? : string;
-  protected src ? : string;
-  protected colors ? : string;
-  protected trigger ? : string;
-  protected speed ? : string;
-  protected stroke ? : string;
-  protected scale ? : string;
-  protected["axis-x"] ? : string;
-  protected["axis-y"] ? : string;
-  protected target ? : string;
+export class Element extends HTMLElement implements IElement {
+  #root: ShadowRoot;
+  #isReady: boolean = false;
+  #lottie?: AnimationItem;
+  #properties?: ILottieProperty[];
+  #connectedTrigger?: ITrigger;
+  #storedIconData?: any;
 
   /**
    * Register Lottie library.
-   * @param loader Provide "loadAnimation" here from Lottie.
+   * @param animationLoader Provide "loadAnimation" here from Lottie.
    */
-  static registerLoader(loader: LottieLoader) {
-    registerLoader(loader);
+  static registerAnimationLoader(animationLoader: LottieAnimationLoader) {
+    registerAnimationLoader(animationLoader);
   }
 
   /**
-   * Register supported icon.
-   * @param name
-   * @param data
+   * Register supported icon. This is helpful with any kind of preload icons.
+   * @param name Icon name.
+   * @param iconData Icon data.
    */
-  static registerIcon(name: string, data: any) {
-    registerIcon(name, data);
+  static registerIcon(name: string, iconData: any) {
+    registerIcon(name, iconData);
   }
 
   /**
@@ -155,10 +174,18 @@ export class Element extends HTMLElement {
     registerTrigger(name, triggerClass);
   }
 
+  /**
+   * Custom element observed attributes.
+   */
+  static get observedAttributes() {
+    return OBSERVED_ATTRIBUTES;
+  }
+
   constructor() {
     super();
 
-    this.root = this.attachShadow({
+    // create shadow root for this element
+    this.#root = this.attachShadow({
       mode: "open"
     });
   }
@@ -169,7 +196,8 @@ export class Element extends HTMLElement {
   protected connectedCallback() {
     connectInstance(this);
 
-    if (!this.isReady) {
+    // execute init only once after connected
+    if (!this.#isReady) {
       this.init();
     }
   }
@@ -183,13 +211,17 @@ export class Element extends HTMLElement {
     disconnectInstance(this);
   }
 
+  /**
+   * Handle attribute update.
+   * @param name
+   * @param oldValue
+   * @param newValue
+   */
   protected attributeChangedCallback(
     name: SUPPORTED_ATTRIBUTES,
     oldValue: any,
     newValue: any
   ) {
-    this[name] = newValue;
-
     if (name === 'axis-x') {
       this.axisXChanged();
     } else if (name === 'axis-y') {
@@ -202,36 +234,49 @@ export class Element extends HTMLElement {
     }
   }
 
+  /**
+   * Init element.
+   * @returns
+   */
   protected init() {
-    if (this.isReady) {
+    if (this.#isReady) {
       return;
     }
 
-    this.isReady = true;
+    this.#isReady = true;
 
-    const style = document.createElement("style");
-    style.innerHTML = ELEMENT_STYLE;
-    this.root.appendChild(style);
+    if (SUPPORTS_ADOPTING_STYLE_SHEETS) {
+      if (!styleSheet) {
+        styleSheet = new CSSStyleSheet();
+        (styleSheet as any).replaceSync(ELEMENT_STYLE);
+      }
+
+      (this.#root as any).adoptedStyleSheets = [ styleSheet ];
+    } else {
+      const style = document.createElement("style");
+      style.innerHTML = ELEMENT_STYLE;
+      this.#root.appendChild(style);
+    }
 
     const slotContainer = document.createElement("div");
     slotContainer.innerHTML = "<slot></slot>";
     slotContainer.classList.add("slot");
-    this.root.appendChild(slotContainer);
+    this.#root.appendChild(slotContainer);
 
     const container = document.createElement("div");
-    this.root.appendChild(container);
+    this.#root.appendChild(container);
 
     this.registerLottie();
   }
 
   protected registerLottie() {
-    let iconData = this.iconData;
+    let iconData = this.#iconData;
     if (!iconData) {
       return;
     }
 
-    this.lottie = loadLottieAnimation({
-      container: this.container as Element,
+    this.#lottie = loadLottieAnimation({
+      container: this.#container as Element,
       renderer: "svg",
       loop: false,
       autoplay: false,
@@ -243,54 +288,62 @@ export class Element extends HTMLElement {
       },
     });
 
-    if (this.colors || this.stroke || this.scale || this['axis-x'] || this['axis-y']) {
+    if (this.state || this.colors || this.stroke || this.scale || this.axisX || this.axisY) {
       const properties = this.properties;
 
       if (properties) {
         if (this.colors) {
-          replaceColors(this.lottie, properties, this.colors);
+          updateColors(this.#lottie, properties, this.colors);
+        }
+        if (this.state) {
+          for (const state of this.states) {
+            replaceProperty(this.#lottie, properties, STATE_PREFIX + state, 0);
+          }
+          replaceProperty(this.#lottie, properties, STATE_PREFIX + this.state, 1);
         }
         if (this.stroke) {
-          replaceParams(this.lottie, properties, 'stroke', this.stroke);
+          updateProperty(this.#lottie, properties, 'stroke', this.stroke);
         }
         if (this.scale) {
-          replaceParams(this.lottie, properties, 'scale', this.scale);
+          updateProperty(this.#lottie, properties, 'scale', this.scale);
         }
-        if (this['axis-x']) {
-          replaceParams(this.lottie, properties, 'axis', this['axis-x'], '0');
+        if (this.axisX) {
+          updateProperty(this.#lottie, properties, 'axis', this.axisX, '0');
         }
-        if (this['axis-y']) {
-          replaceParams(this.lottie, properties, 'axis', this['axis-y'], '1');
+        if (this.axisY) {
+          updateProperty(this.#lottie, properties, 'axis', this.axisY, '1');
         }
 
-        this.lottie!.renderer.renderFrame(null);
+        this.#lottie!.renderer.renderFrame(null);
       }
     }
 
     // set speed
-    this.lottie.setSpeed(this.animationSpeed);
+    this.#lottie.setSpeed(this.#animationSpeed);
 
     // dispatch animation-complete
-    this.lottie.addEventListener("complete", () => {
+    this.#lottie.addEventListener("complete", () => {
       this.dispatchEvent(new CustomEvent("animation-complete"));
     });
 
     this.triggerChanged();
+
+    this.dispatchEvent(new CustomEvent("icon-ready"));
   }
 
   protected unregisterLottie() {
-    this.myProperties = undefined;
+    this.#properties = undefined;
 
-    if (this.myConnectedTrigger) {
-      this.myConnectedTrigger.disconnectedCallback();
-      this.myConnectedTrigger = undefined;
+    if (this.#connectedTrigger) {
+      this.#connectedTrigger.disconnectedCallback();
+      this.#connectedTrigger = undefined;
     }
 
-    if (this.lottie) {
-      this.lottie.destroy();
-      this.lottie = undefined;
+    if (this.#lottie) {
+      this.#lottie.destroy();
+      this.#lottie = undefined;
 
-      this.container!.innerHTML = "";
+      this.#container!.innerHTML = "";
     }
   }
 
@@ -300,115 +353,127 @@ export class Element extends HTMLElement {
     }
 
     if (from === "icon") {
-      if (this.lottie) {
+      if (this.#lottie) {
         this.unregisterLottie();
       }
       this.registerLottie();
-    } else if (from === "trigger" && !this.myConnectedTrigger) {
+    } else if (from === "trigger" && !this.#connectedTrigger) {
       this.triggerChanged();
     }
   }
 
   protected triggerChanged() {
-    if (this.myConnectedTrigger) {
-      this.myConnectedTrigger.disconnectedCallback();
-      this.myConnectedTrigger = undefined;
+    if (this.#connectedTrigger) {
+      this.#connectedTrigger.disconnectedCallback();
+      this.#connectedTrigger = undefined;
     }
 
-    if (this.trigger && this.lottie) {
+    if (this.trigger && this.#lottie) {
       const TriggerClass = getTrigger(this.trigger);
       if (TriggerClass) {
-        // find target event listener
-        const target = this.target ? this.closest(this.target) : null;
-
-        this.myConnectedTrigger = new TriggerClass(
-          this,
-          target || this,
-          this.lottie
-        );
-        this.myConnectedTrigger!.connectedCallback();
+        this.#connectedTrigger = new TriggerClass(this, this.#lottie);
+        this.#connectedTrigger!.connectedCallback();
       }
     }
   }
 
   protected colorsChanged() {
-    if (!this.isReady || !this.properties) {
+    if (!this.#isReady || !this.properties) {
       return;
     }
 
     if (this.colors) {
-      replaceColors(this.lottie, this.properties, this.colors);
+      updateColors(this.#lottie, this.properties, this.colors);
     } else {
-      resetColors(this.lottie, this.properties);
+      resetColors(this.#lottie, this.properties);
     }
 
-    this.lottie!.renderer.renderFrame(null);
+    this.#lottie!.renderer.renderFrame(null);
   }
 
   protected strokeChanged() {
-    if (!this.isReady || !this.properties) {
+    if (!this.#isReady || !this.properties) {
       return;
     }
 
     if (this.stroke) {
-      replaceParams(this.lottie, this.properties, 'stroke', this.stroke);
+      updateProperty(this.#lottie, this.properties, 'stroke', this.stroke);
     } else {
-      resetParams(this.lottie, this.properties, 'stroke');
+      resetProperty(this.#lottie, this.properties, 'stroke');
     }
 
-    this.lottie!.renderer.renderFrame(null);
+    this.#lottie!.renderer.renderFrame(null);
+  }
+
+  protected stateChanged() {
+    if (!this.#isReady || !this.properties) {
+      return;
+    }
+
+    if (this.state) {
+      for (const state of this.states) {
+        replaceProperty(this.#lottie, this.properties, STATE_PREFIX + state, 0);
+      }
+      replaceProperty(this.#lottie, this.properties, STATE_PREFIX + this.state, 1);
+    } else {
+      for (const state of this.states) {
+        resetProperty(this.#lottie, this.properties, STATE_PREFIX + state);
+      }
+    }
+
+    this.#lottie!.renderer.renderFrame(null);
   }
 
   protected scaleChanged() {
-    if (!this.isReady || !this.properties) {
+    if (!this.#isReady || !this.properties) {
       return;
     }
 
     if (this.scale) {
-      replaceParams(this.lottie, this.properties, 'scale', this.scale);
+      updateProperty(this.#lottie, this.properties, 'scale', this.scale);
     } else {
-      resetParams(this.lottie, this.properties, 'scale');
+      resetProperty(this.#lottie, this.properties, 'scale');
     }
 
-    this.lottie!.renderer.renderFrame(null);
+    this.#lottie!.renderer.renderFrame(null);
   }
 
   protected axisXChanged() {
-    if (!this.isReady || !this.properties) {
+    if (!this.#isReady || !this.properties) {
       return;
     }
 
-    if (this['axis-x']) {
-      replaceParams(this.lottie, this.properties, 'axis', this['axis-x'], '0');
+    if (this.axisX) {
+      updateProperty(this.#lottie, this.properties, 'axis', this.axisX, '0');
     } else {
-      resetParams(this.lottie, this.properties, 'axis', '0');
+      resetProperty(this.#lottie, this.properties, 'axis', '0');
     }
 
-    this.lottie!.renderer.renderFrame(null);
+    this.#lottie!.renderer.renderFrame(null);
   }
 
   protected axisYChanged() {
-    if (!this.isReady || !this.properties) {
+    if (!this.#isReady || !this.properties) {
       return;
     }
 
-    if (this['axis-y']) {
-      replaceParams(this.lottie, this.properties, 'axis', this['axis-y'], '0');
+    if (this.axisY) {
+      updateProperty(this.#lottie, this.properties, 'axis', this.axisY, '0');
     } else {
-      resetParams(this.lottie, this.properties, 'axis', '0');
+      resetProperty(this.#lottie, this.properties, 'axis', '0');
     }
 
-    this.lottie!.renderer.renderFrame(null);
+    this.#lottie!.renderer.renderFrame(null);
   }
 
   protected speedChanged() {
-    if (this.lottie) {
-      this.lottie.setSpeed(this.animationSpeed);
+    if (this.#lottie) {
+      this.#lottie.setSpeed(this.#animationSpeed);
     }
   }
 
   protected iconChanged() {
-    if (!this.isReady) {
+    if (!this.#isReady) {
       return;
     }
 
@@ -421,7 +486,7 @@ export class Element extends HTMLElement {
       await loadIcon(this.src);
     }
 
-    if (!this.isReady) {
+    if (!this.#isReady) {
       return;
     }
 
@@ -430,39 +495,215 @@ export class Element extends HTMLElement {
   }
 
   /**
-   * Acces icon data for this element.
+   * Access current trigger instance.
    */
-  get iconData(): any {
+  get connectedTrigger() {
+    return this.#connectedTrigger;
+  }
+
+  /**
+   * Available properties for current icon.
+   */
+  get properties() {
+    if (!this.#properties && this.#iconData) {
+      this.#properties = allProperties(this.#iconData, true);
+    }
+
+    return this.#properties || [];
+  }
+
+  /**
+   * Available states for current icon.
+   */
+  get states(): string[] {
+    return this.properties.filter(c => c.name.startsWith(STATE_PREFIX)).map(c => {
+      return c.name.substr(STATE_PREFIX.length).toLowerCase();
+    });
+  }
+
+  /**
+   * Check whether the element is ready.
+   */
+  get isReady() {
+    return this.#isReady;
+  }
+
+  /**
+   * Access lottie animation instance.
+   */
+  get lottie() {
+    return this.#lottie;
+  }
+
+  set icon(value: any) {
+    if (isObjectLike(value)) {
+      this.#storedIconData = value;
+      this.removeAttribute('icon');
+    } else {
+      this.#storedIconData = undefined;
+
+      if (value) {
+        this.setAttribute('icon', value);
+      } else {
+        this.removeAttribute('icon');
+      }
+    }
+  }
+
+  get icon(): any {
+    return this.#storedIconData || this.getAttribute('icon');
+  }
+
+  set src(value: string|null) {
+    if (value) {
+      this.setAttribute('src', value);
+    } else {
+      this.removeAttribute('src');
+    }
+  }
+
+  get src(): string|null {
+    return this.getAttribute('src');
+  }
+
+  set state(value: string|null) {
+    if (value) {
+      this.setAttribute('state', value);
+    } else {
+      this.removeAttribute('state');
+    }
+  }
+
+  get state(): string|null {
+    return this.getAttribute('state');
+  }
+
+  set colors(value: string|null) {
+    if (value) {
+      this.setAttribute('colors', value);
+    } else {
+      this.removeAttribute('colors');
+    }
+  }
+
+  get colors(): string|null {
+    return this.getAttribute('colors');
+  }
+
+  set trigger(value: string|null) {
+    if (value) {
+      this.setAttribute('trigger', value);
+    } else {
+      this.removeAttribute('trigger');
+    }
+  }
+
+  get trigger(): string|null {
+    return this.getAttribute('trigger');
+  }
+
+  set speed(value: any) {
+    if (value) {
+      this.setAttribute('speed', value);
+    } else {
+      this.removeAttribute('speed');
+    }
+  }
+
+  get speed(): number|null {
+    if (this.hasAttribute('speed')) {
+      return parseFloat(this.getAttribute('speed')!);
+    }
+    return null;
+  }
+
+  set stroke(value: any) {
+    if (value) {
+      this.setAttribute('stroke', value);
+    } else {
+      this.removeAttribute('stroke');
+    }
+  }
+
+  get stroke(): number|null {
+    if (this.hasAttribute('stroke')) {
+      return parseFloat(this.getAttribute('stroke')!);
+    }
+    return null;
+  }
+
+  set scale(value: any) {
+    if (value) {
+      this.setAttribute('scale', value);
+    } else {
+      this.removeAttribute('scale');
+    }
+  }
+
+  get scale(): number|null {
+    if (this.hasAttribute('scale')) {
+      return parseFloat(this.getAttribute('scale')!);
+    }
+    return null;
+  }
+
+  set axisX(value: any) {
+    if (value) {
+      this.setAttribute('axis-x', value);
+    } else {
+      this.removeAttribute('axis-x');
+    }
+  }
+
+  get axisX(): number|null {
+    if (this.hasAttribute('axis-x')) {
+      return parseFloat(this.getAttribute('axis-x')!);
+    }
+    return null;
+  }
+
+  set axisY(value: any) {
+    if (value) {
+      this.setAttribute('axis-y', value);
+    } else {
+      this.removeAttribute('axis-y');
+    }
+  }
+
+  get axisY() {
+    if (this.hasAttribute('axis-y')) {
+      return parseFloat(this.getAttribute('axis-y')!);
+    }
+    return null;
+  }
+
+  /**
+   * Access animation container element.
+   */
+  get #container(): HTMLElement | undefined {
+    return this.#root.lastElementChild as any;
+  }
+
+  /**
+   * Access icon data for this element.
+   */
+  get #iconData(): any {
     if (this.icon && typeof this.icon === "object") {
       return this.icon;
     }
+
     return getIcon(this.icon! || this.src!);
   }
 
   /**
-   * Access current trigger instance.
+   * Current animation speed.
    */
-  get connectedTrigger() {
-    return this.myConnectedTrigger;
-  }
-
-  get properties() {
-    if (!this.myProperties && this.iconData) {
-      this.myProperties = allFields(this.iconData, true);
+  get #animationSpeed(): number {
+    if (this.hasAttribute('speed')) {
+      const v = this.getAttribute('speed');
+      return v === null ? 1 : parseFloat(v);
     }
 
-    return this.myProperties;
-  }
-
-  protected get container(): HTMLElement | undefined {
-    return this.root.lastElementChild as any;
-  }
-
-  protected get animationSpeed(): number {
-    return this.speed ? parseFloat(this.speed) || 1 : 1;
-  }
-
-  protected static get observedAttributes() {
-    return OBSERVED_ATTRIBUTES;
+    return 1;
   }
 }

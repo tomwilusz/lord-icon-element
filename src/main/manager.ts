@@ -3,17 +3,19 @@ import {
     AnimationConfigWithPath,
     AnimationConfigWithData
 } from 'lottie-web';
+
 import {
     Element
 } from './element.js';
+
 import {
-    LottieLoader
+    LottieAnimationLoader,
 } from '../interfaces.js';
 
 /**
  * Store loadAnimation from Lottie.
  */
-let LOTTIE_LOADER: LottieLoader | undefined;
+let LOTTIE_ANIMATION_LOADER: LottieAnimationLoader | undefined;
 
 /**
  * Store all intances of Element.
@@ -41,10 +43,10 @@ const LOADING: Map < string, Promise < any >> = new Map < string,
 /**
  * Register new icon. Notify all instances about it.
  * @param name
- * @param data
+ * @param iconData
  */
-export function registerIcon(name: string, data: any) {
-    ICONS.set(name, data);
+export function registerIcon(name: string, iconData: any) {
+    ICONS.set(name, iconData);
     for (const instance of INSTANCES) {
         (instance as any).notify(name, 'icon');
     }
@@ -64,10 +66,10 @@ export function registerTrigger(name: string, triggerClass: any) {
 
 /**
  * Register lottie "loadAnimation" method.
- * @param loader
+ * @param animationLoader
  */
-export function registerLoader(loader: LottieLoader) {
-    LOTTIE_LOADER = loader;
+export function registerAnimationLoader(animationLoader: LottieAnimationLoader) {
+    LOTTIE_ANIMATION_LOADER = animationLoader;
 }
 
 /**
@@ -142,9 +144,9 @@ export async function loadIcon(url: string) {
  * @param params
  */
 export function loadLottieAnimation(params: AnimationConfigWithPath | AnimationConfigWithData): AnimationItem {
-    if (!LOTTIE_LOADER) {
+    if (!LOTTIE_ANIMATION_LOADER) {
         throw new Error('Unregistered Lottie.');
     }
 
-    return LOTTIE_LOADER(params);
+    return LOTTIE_ANIMATION_LOADER(params);
 }

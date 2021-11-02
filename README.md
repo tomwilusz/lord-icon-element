@@ -39,18 +39,4 @@ npm i
 npm start
 ```
 
-After that your browser will start automatically with our [many examples](https://github.com/tomwilusz/lord-icon-element/tree/master/examples).
-
-## Notice
-
-### Compatibility
-
-This library support at the moment only modern browsers which allows to use **Web Components** and **JavaScript Modules**. If you need to support legacy browsers include in your project [polyfills](https://www.webcomponents.org/polyfills).
-
-### Modules
-
-It's recommended to use this library with _module bundler_ tools like **webpack**. If you want use this library without bundler, remember to import modules by path, not by package name.
-
-### Static release
-
-You can use this library also without JS modules with released version. This is simplest way to use our element without any initialization and external tools. Just look for our [JSFiddle example](https://jsfiddle.net/enpwfy6s/).
+After that your browser will start automatically with our demo.

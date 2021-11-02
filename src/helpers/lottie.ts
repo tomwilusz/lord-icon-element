@@ -1,5 +1,5 @@
 import {
-    ILottieField,
+    ILottieProperty,
     IRGBColor,
     LottieColor
 } from '../interfaces.js';
@@ -10,6 +10,9 @@ import {
     set
 } from './utils.js';
 
+/**
+ * Scale factor for supported slider properties.
+ */
 const LORDICON_SCALE = 50;
 
 function componentToHex(c: number) {
@@ -17,6 +20,11 @@ function componentToHex(c: number) {
     return hex.length == 1 ? '0' + hex : hex;
 }
 
+/**
+ * Convert from color object to hex value.
+ * @param value 
+ * @returns 
+ */
 export function rgbToHex(value: IRGBColor): string {
     return (
         '#' +
@@ -26,6 +34,11 @@ export function rgbToHex(value: IRGBColor): string {
     );
 }
 
+/**
+ * Conver from hex to color object.
+ * @param hex 
+ * @returns 
+ */
 export function hexToRgb(hex: string): IRGBColor {
     let data = parseInt(hex[0] != '#' ? hex : hex.substring(1), 16);
     return {
@@ -35,14 +48,29 @@ export function hexToRgb(hex: string): IRGBColor {
     };
 }
 
+/**
+ * Helper method for scale value.
+ * @param n
+ * @returns 
+ */
 export function toUnitVector(n: number) {
     return Math.round((n / 255) * 1000) / 1000;
 }
 
+/**
+ * Helper method for scale value.
+ * @param n
+ * @returns 
+ */
 export function fromUnitVector(n: number) {
     return Math.round(n * 255);
 }
 
+/**
+ * Helper method for lottie color.
+ * @param hex
+ * @returns 
+ */
 export function hexToLottieColor(hex: string): LottieColor {
     const {
         r,
@@ -52,10 +80,16 @@ export function hexToLottieColor(hex: string): LottieColor {
     return [toUnitVector(r), toUnitVector(g), toUnitVector(b)];
 }
 
-export function allFields(
+/**
+ * Return all supported properties for provided icon.
+ * @param data Icon data.
+ * @param lottieInstance Provide property path for running lottie instance.
+ * @returns 
+ */
+export function allProperties(
     data: any,
-    dynamic: boolean = false,
-): ILottieField[] {
+    lottieInstance: boolean = false,
+): ILottieProperty[] {
     const result: any[] = [];
 
     if (!data || !data.layers) {
@@ -79,7 +113,7 @@ export function allFields(
             const subpath = 'ef.0.v.k';
             
             let path;
-            if (dynamic) {
+            if (lottieInstance) {
                 path = `renderer.elements.${layerIndex}.effectsManager.effectElements.${fieldIndex}.effectElements.0.p.v`;
             } else {
                 path = `layers.${layerIndex}.ef.${fieldIndex}.${subpath}`;
@@ -122,8 +156,13 @@ export function allFields(
     return result;
 }
 
-export function resetColors(data: any, fields: ILottieField[]) {
-    for (const field of fields) {
+/**
+ * Reset colors to original.
+ * @param data
+ * @param properties
+ */
+export function resetColors(data: any, properties: ILottieProperty[]) {
+    for (const field of properties) {
         if (field.type !== 'color') {
             continue;
         }
@@ -132,7 +171,13 @@ export function resetColors(data: any, fields: ILottieField[]) {
     }
 }
 
-export function replaceColors(data: any, fields: ILottieField[], colors: string): any {
+/**
+ * Update colors.
+ * @param data
+ * @param properties
+ * @param colors
+ */
+export function updateColors(data: any, properties: ILottieProperty[], colors: string): any {
     const parsedColors = colors.split(',');
 
     if (parsedColors.length) {
@@ -142,7 +187,7 @@ export function replaceColors(data: any, fields: ILottieField[], colors: string)
                 continue;
             }
 
-            for (const field of fields) {
+            for (const field of properties) {
                 if (field.type !== 'color') {
                     continue;
                 }
@@ -155,8 +200,15 @@ export function replaceColors(data: any, fields: ILottieField[], colors: string)
     }
 }
 
-export function resetParams(data: any, fields: ILottieField[], name: string, extraPath ? : string): any {
-    for (const field of fields) {
+/**
+ * Reset property to orignal value.
+ * @param data
+ * @param properties
+ * @param name
+ * @param extraPath
+ */
+export function resetProperty(data: any, properties: ILottieProperty[], name: string, extraPath ? : string): any {
+    for (const field of properties) {
         if (field.name.toLowerCase() !== name.toLowerCase()) {
             continue;
         }
@@ -169,8 +221,16 @@ export function resetParams(data: any, fields: ILottieField[], name: string, ext
     }
 }
 
-export function replaceParams(data: any, fields: ILottieField[], name: string, value: any, extraPath ? : string): any {
-    for (const field of fields) {
+/**
+ * Update property.
+ * @param data
+ * @param properties
+ * @param name
+ * @param value
+ * @param extraPath
+ */
+export function updateProperty(data: any, properties: ILottieProperty[], name: string, value: any, extraPath ? : string): any {
+    for (const field of properties) {
         if (field.name.toLowerCase() !== name.toLowerCase()) {
             continue;
         }
@@ -185,5 +245,26 @@ export function replaceParams(data: any, fields: ILottieField[], name: string, v
         }
 
         set(data, newPath, value * ratio);
+    }
+}
+
+/**
+ * Replace property value.
+ * @param data
+ * @param properties
+ * @param name
+ * @param value
+ * @param extraPath
+ */
+export function replaceProperty(data: any, properties: ILottieProperty[], name: string, value: any, extraPath ? : string): any {
+    for (const field of properties) {
+        if (field.name.toLowerCase() !== name.toLowerCase()) {
+            continue;
+        }
+
+        const newPath = field.path + (extraPath ? `.${extraPath}` : '');
+      
+
+        set(data, newPath, value);
     }
 }
