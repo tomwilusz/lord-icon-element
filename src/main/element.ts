@@ -536,16 +536,26 @@ export class Element extends HTMLElement implements IElement {
   }
 
   set icon(value: any) {
-    if (isObjectLike(value)) {
+    if (value && isObjectLike(value)) {
       this.#storedIconData = value;
-      this.removeAttribute('icon');
+
+      if (this.hasAttribute('icon')) {
+        this.removeAttribute('icon');
+      } else {
+        this.iconChanged();
+      }
     } else {
+      const oldIconData = this.#storedIconData;
       this.#storedIconData = undefined;
 
       if (value) {
         this.setAttribute('icon', value);
       } else {
         this.removeAttribute('icon');
+
+        if (oldIconData) {
+          this.iconChanged();
+        }
       }
     }
   }

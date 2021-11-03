@@ -264,7 +264,6 @@ export function replaceProperty(data: any, properties: ILottieProperty[], name: 
 
         const newPath = field.path + (extraPath ? `.${extraPath}` : '');
       
-
         set(data, newPath, value);
     }
 }
