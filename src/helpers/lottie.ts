@@ -4,6 +4,8 @@ import {
     LottieColor
 } from '../interfaces.js';
 
+import { handleColor } from './colors.js';
+
 import {
     has,
     get,
@@ -78,6 +80,20 @@ export function hexToLottieColor(hex: string): LottieColor {
         b
     } = hexToRgb(hex);
     return [toUnitVector(r), toUnitVector(g), toUnitVector(b)];
+}
+
+/**
+ * Conver from lottie color to hex.
+ * @param value 
+ * @returns 
+ */
+export function lottieColorToHex(value: number[]): string {
+    const color: IRGBColor = {
+        r: fromUnitVector(value[0]),
+        g: fromUnitVector(value[1]),
+        b: fromUnitVector(value[2]),
+    };
+    return rgbToHex(color);
 }
 
 /**
@@ -157,6 +173,47 @@ export function allProperties(
 }
 
 /**
+ * Reset single color.
+ * @param data
+ * @param properties
+ * @param name
+ */
+export function resetColor(data: any, properties: ILottieProperty[], name: string) {
+    for (const field of properties) {
+        if (field.type !== 'color' || field.name.toLowerCase() !== name.toLowerCase()) {
+            continue;
+        }
+       
+        set(data, field.path, field.value);
+    }
+}
+
+/**
+ * Update single color.
+ * @param data
+ * @param properties 
+ * @param name 
+ * @param value 
+ */
+export function updateColor(data: any, properties: ILottieProperty[], name: string, value: any): any {
+    for (const field of properties) {
+        if (field.type !== 'color' || field.name.toLowerCase() !== name.toLowerCase()) {
+            continue;
+        }
+       
+        if (typeof value === 'object') {
+            if ('r' in value && 'g' in value && 'b' in value) {
+                set(data, field.path, [toUnitVector(value.r), toUnitVector(value.g), toUnitVector(value.b)]);
+            } else if (Array.isArray(value)) {
+                set(data, field.path, value);
+            }
+        } else if (typeof value === 'string') {
+            set(data, field.path, hexToLottieColor(handleColor(value)));
+        }
+    }
+}
+
+/**
  * Reset colors to original.
  * @param data
  * @param properties
@@ -193,7 +250,7 @@ export function updateColors(data: any, properties: ILottieProperty[], colors: s
                 }
 
                 if (field.name.toLowerCase() === parts[0].toLowerCase()) {
-                    set(data, field.path, hexToLottieColor(parts[1]));
+                    set(data, field.path, hexToLottieColor(handleColor(parts[1])));
                 }
             }
         }

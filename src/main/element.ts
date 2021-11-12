@@ -17,10 +17,16 @@ import {
   replaceProperty,
   resetColors,
   updateColors,
+  lottieColorToHex,
+  hexToLottieColor,
+  updateColor,
+  resetColor,
 } from "../helpers/lottie.js";
 
 import {
+  get,
   isObjectLike,
+  set,
 } from "../helpers/utils.js";
 
 import {
@@ -147,6 +153,7 @@ export class Element extends HTMLElement implements IElement {
   #properties?: ILottieProperty[];
   #connectedTrigger?: ITrigger;
   #storedIconData?: any;
+  #palette?: any;
 
   /**
    * Register Lottie library.
@@ -347,6 +354,10 @@ export class Element extends HTMLElement implements IElement {
     }
   }
 
+  protected refresh() {
+    this.#lottie!.renderer.renderFrame(null);
+  }
+
   protected notify(name: string, from: "icon" | "trigger") {
     if (this[from] !== name) {
       return;
@@ -388,7 +399,7 @@ export class Element extends HTMLElement implements IElement {
       resetColors(this.#lottie, this.properties);
     }
 
-    this.#lottie!.renderer.renderFrame(null);
+    this.refresh();
   }
 
   protected strokeChanged() {
@@ -402,7 +413,7 @@ export class Element extends HTMLElement implements IElement {
       resetProperty(this.#lottie, this.properties, 'stroke');
     }
 
-    this.#lottie!.renderer.renderFrame(null);
+    this.refresh();
   }
 
   protected stateChanged() {
@@ -421,7 +432,7 @@ export class Element extends HTMLElement implements IElement {
       }
     }
 
-    this.#lottie!.renderer.renderFrame(null);
+    this.refresh();
   }
 
   protected scaleChanged() {
@@ -435,7 +446,7 @@ export class Element extends HTMLElement implements IElement {
       resetProperty(this.#lottie, this.properties, 'scale');
     }
 
-    this.#lottie!.renderer.renderFrame(null);
+    this.refresh();
   }
 
   protected axisXChanged() {
@@ -449,7 +460,7 @@ export class Element extends HTMLElement implements IElement {
       resetProperty(this.#lottie, this.properties, 'axis', '0');
     }
 
-    this.#lottie!.renderer.renderFrame(null);
+    this.refresh();
   }
 
   protected axisYChanged() {
@@ -463,7 +474,7 @@ export class Element extends HTMLElement implements IElement {
       resetProperty(this.#lottie, this.properties, 'axis', '0');
     }
 
-    this.#lottie!.renderer.renderFrame(null);
+    this.refresh();
   }
 
   protected speedChanged() {
@@ -533,6 +544,65 @@ export class Element extends HTMLElement implements IElement {
    */
   get lottie() {
     return this.#lottie;
+  }
+
+  /**
+   * Access to colors get / update with convenient way. 
+   */
+  get palette() {
+    if (!this.#palette) {
+      this.#palette = new Proxy(this, {
+        set: (target, property, value, receiver): boolean => {
+          for (const current of target.properties) {
+            if (current.type == 'color' && typeof property === 'string' && property.toLowerCase() == current.name.toLowerCase()) {
+              if (value) {
+                updateColor(target.lottie, target.properties, property, value);
+              } else if (value === undefined) {
+                resetColor(target.lottie, target.properties, property);
+              }
+              target.refresh();
+            }
+          }
+          return true;
+        },
+        get: (target, property, receiver) => {
+          for (const current of target.properties) {
+            if (current.type == 'color' && typeof property === 'string' && property.toLowerCase() == current.name.toLowerCase()) {
+              return lottieColorToHex(get(target.lottie, current.path));
+            }
+          }
+          return undefined;
+        },
+        deleteProperty: (target, property) => {
+          for (const current of target.properties) {
+            if (current.type == 'color' && typeof property === 'string' && property.toLowerCase() == current.name.toLowerCase()) {
+              resetColor(target.lottie, target.properties, property);
+              target.refresh();
+            }
+          }
+          return true;
+        },
+        ownKeys: (target) => {
+          return target.properties.filter(c => c.type == 'color').map(c => c.name.toLowerCase());
+        },
+        has: (target, property) => {
+          for (const current of target.properties) {
+            if (current.type == 'color' && typeof property === 'string' && property.toLowerCase() == current.name.toLowerCase()) {
+              return true;
+            }
+          }
+          return false;
+        },
+        getOwnPropertyDescriptor: (target) => {
+          return {
+            enumerable: true,
+            configurable: true,
+          };
+        },
+      });
+    }
+
+    return this.#palette;
   }
 
   set icon(value: any) {
