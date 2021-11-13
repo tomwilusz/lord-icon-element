@@ -41,6 +41,8 @@ import {
   getTrigger,
 } from "./manager.js";
 
+export const VERSION = '3.1.4';
+
 /**
  * Loads lottie dom elements when needed.
  */
@@ -186,6 +188,13 @@ export class Element extends HTMLElement implements IElement {
    */
   static get observedAttributes() {
     return OBSERVED_ATTRIBUTES;
+  }
+
+  /** 
+   * Check element version.
+   */
+  static get version() {
+    return VERSION;
   }
 
   constructor() {
