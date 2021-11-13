@@ -547,6 +547,26 @@ export class Element extends HTMLElement implements IElement {
   }
 
   /**
+   * Update palette.
+   */
+  set palette(colors: { [key: string]: string }) {
+    for (const current of this.properties) {
+      if (current.type !== 'color') {
+        continue;
+      }
+
+      const name = current.name.toLowerCase();
+
+      if (name in colors && colors[name]) {
+        updateColor(this.lottie, this.properties, name, colors[name]);
+      } else {
+        resetColor(this.lottie, this.properties, name);
+      }
+    }
+    this.refresh();
+  }
+
+  /**
    * Access to colors get / update with convenient way. 
    */
   get palette() {
