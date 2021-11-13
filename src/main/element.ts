@@ -469,9 +469,9 @@ export class Element extends HTMLElement implements IElement {
     }
 
     if (this.axisY) {
-      updateProperty(this.#lottie, this.properties, 'axis', this.axisY, '0');
+      updateProperty(this.#lottie, this.properties, 'axis', this.axisY, '1');
     } else {
-      resetProperty(this.#lottie, this.properties, 'axis', '0');
+      resetProperty(this.#lottie, this.properties, 'axis', '1');
     }
 
     this.refresh();
