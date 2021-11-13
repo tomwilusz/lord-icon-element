@@ -550,6 +550,10 @@ export class Element extends HTMLElement implements IElement {
    * Update palette.
    */
   set palette(colors: { [key: string]: string }) {
+    if (!colors || typeof colors !== 'object') {
+      return;
+    }
+
     for (const current of this.properties) {
       if (current.type !== 'color') {
         continue;
