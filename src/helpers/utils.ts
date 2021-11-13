@@ -74,3 +74,12 @@ export function set(object: any, path: string|string[], value: any) {
         }
     }
 }
+
+/**
+ * Check value is null or undefined.
+ * @param value 
+ * @returns
+ */
+export function isNil(value: any) {
+    return value === null || value === undefined;
+}

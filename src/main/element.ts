@@ -26,7 +26,7 @@ import {
 import {
   get,
   isObjectLike,
-  set,
+  isNil,
 } from "../helpers/utils.js";
 
 import {
@@ -416,10 +416,10 @@ export class Element extends HTMLElement implements IElement {
       return;
     }
 
-    if (this.stroke) {
-      updateProperty(this.#lottie, this.properties, 'stroke', this.stroke);
-    } else {
+    if (isNil(this.stroke)) {
       resetProperty(this.#lottie, this.properties, 'stroke');
+    } else {
+      updateProperty(this.#lottie, this.properties, 'stroke', this.stroke);
     }
 
     this.refresh();
@@ -449,10 +449,10 @@ export class Element extends HTMLElement implements IElement {
       return;
     }
 
-    if (this.scale) {
-      updateProperty(this.#lottie, this.properties, 'scale', this.scale);
-    } else {
+    if (isNil(this.scale)) {
       resetProperty(this.#lottie, this.properties, 'scale');
+    } else {
+      updateProperty(this.#lottie, this.properties, 'scale', this.scale);
     }
 
     this.refresh();
@@ -463,10 +463,10 @@ export class Element extends HTMLElement implements IElement {
       return;
     }
 
-    if (this.axisX) {
-      updateProperty(this.#lottie, this.properties, 'axis', this.axisX, '0');
-    } else {
+    if (isNil(this.axisX)) {
       resetProperty(this.#lottie, this.properties, 'axis', '0');
+    } else {
+      updateProperty(this.#lottie, this.properties, 'axis', this.axisX, '0');
     }
 
     this.refresh();
@@ -477,10 +477,10 @@ export class Element extends HTMLElement implements IElement {
       return;
     }
 
-    if (this.axisY) {
-      updateProperty(this.#lottie, this.properties, 'axis', this.axisY, '1');
-    } else {
+    if (isNil(this.axisY)) {
       resetProperty(this.#lottie, this.properties, 'axis', '1');
+    } else {
+      updateProperty(this.#lottie, this.properties, 'axis', this.axisY, '1');
     }
 
     this.refresh();
@@ -716,10 +716,10 @@ export class Element extends HTMLElement implements IElement {
   }
 
   set speed(value: any) {
-    if (value) {
-      this.setAttribute('speed', value);
-    } else {
+    if (isNil(value)) {
       this.removeAttribute('speed');
+    } else {
+      this.setAttribute('speed', value);
     }
   }
 
@@ -731,10 +731,10 @@ export class Element extends HTMLElement implements IElement {
   }
 
   set stroke(value: any) {
-    if (value) {
-      this.setAttribute('stroke', value);
-    } else {
+    if (isNil(value)) {
       this.removeAttribute('stroke');
+    } else {
+      this.setAttribute('stroke', value);
     }
   }
 
@@ -746,10 +746,10 @@ export class Element extends HTMLElement implements IElement {
   }
 
   set scale(value: any) {
-    if (value) {
-      this.setAttribute('scale', value);
-    } else {
+    if (isNil(value)) {
       this.removeAttribute('scale');
+    } else {
+      this.setAttribute('scale', value);
     }
   }
 
@@ -761,10 +761,10 @@ export class Element extends HTMLElement implements IElement {
   }
 
   set axisX(value: any) {
-    if (value) {
-      this.setAttribute('axis-x', value);
-    } else {
+    if (isNil(value)) {
       this.removeAttribute('axis-x');
+    } else {
+      this.setAttribute('axis-x', value);
     }
   }
 
@@ -776,10 +776,10 @@ export class Element extends HTMLElement implements IElement {
   }
 
   set axisY(value: any) {
-    if (value) {
-      this.setAttribute('axis-y', value);
-    } else {
+    if (isNil(value)) {
       this.removeAttribute('axis-y');
+    } else {
+      this.setAttribute('axis-y', value);
     }
   }
 
