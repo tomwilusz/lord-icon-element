@@ -73,28 +73,28 @@ const ELEMENT_STYLE = `
       overflow: hidden;
     }
 
-    :not(.inherit-color) svg .primary path[fill] {
-      fill: var(--lord-icon-primary, black);
-    }
-
-    :not(.inherit-color) svg .primary path[stroke] {
-      stroke: var(--lord-icon-primary, black);
-    }
-
-    :not(.inherit-color) svg .secondary path[fill] {
-      fill: var(--lord-icon-secondary, black);
-    }
-
-    :not(.inherit-color) svg .secondary path[stroke] {
-      stroke: var(--lord-icon-secondary, black);
-    }
-
-    :host(.inherit-color) svg path[fill] {
+    :host(.current-color) svg path[fill] {
       fill: currentColor;
     }
 
-    :host(.inherit-color) svg path[stroke] {
+    :host(.current-color) svg path[stroke] {
       stroke: currentColor;
+    }
+
+    :not(.current-color) svg .primary path[fill] {
+      fill: var(--lord-icon-primary, var(--lord-icon-primary-base));
+    }
+
+    :not(.current-color) svg .primary path[stroke] {
+      stroke: var(--lord-icon-primary, var(--lord-icon-primary-base));
+    }
+
+    :not(.current-color) svg .secondary path[fill] {
+      fill: var(--lord-icon-secondary, var(--lord-icon-secondary-base));
+    }
+
+    :not(.current-color) svg .secondary path[stroke] {
+      stroke: var(--lord-icon-secondary, var(--lord-icon-secondary-base));
     }
 
     svg {
@@ -345,6 +345,11 @@ export class Element extends HTMLElement implements IElement {
     this.triggerChanged();
 
     this.dispatchEvent(new CustomEvent("icon-ready"));
+    
+    if (iconData) {
+      // console.log('features', iconData.features);
+      this.movePaletteToVariables();
+    }
   }
 
   protected unregisterLottie() {
@@ -365,6 +370,8 @@ export class Element extends HTMLElement implements IElement {
 
   protected refresh() {
     this.#lottie!.renderer.renderFrame(null);
+    
+    this.movePaletteToVariables();
   }
 
   protected notify(name: string, from: "icon" | "trigger") {
@@ -514,6 +521,12 @@ export class Element extends HTMLElement implements IElement {
     this.registerLottie();
   }
 
+  protected movePaletteToVariables() {
+    for (const [key, value] of Object.entries(this.palette)) {
+      (this.#root.children[1] as HTMLElement).style.setProperty(`--lord-icon-${key}-base`, value);
+    }
+  }
+
   /**
    * Access current trigger instance.
    */
@@ -526,6 +539,7 @@ export class Element extends HTMLElement implements IElement {
    */
   get properties() {
     if (!this.#properties && this.#iconData) {
+      console.log('---get properties');
       this.#properties = allProperties(this.#iconData, true);
     }
 
