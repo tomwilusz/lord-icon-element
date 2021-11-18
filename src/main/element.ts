@@ -21,6 +21,7 @@ import {
   hexToLottieColor,
   updateColor,
   resetColor,
+  iconFeatures,
 } from "../helpers/lottie.js";
 
 import {
@@ -41,7 +42,7 @@ import {
   getTrigger,
 } from "./manager.js";
 
-export const VERSION = '3.2.0';
+export const VERSION = '3.3.0';
 
 /**
  * Loads lottie dom elements when needed.
@@ -102,7 +103,7 @@ const ELEMENT_STYLE = `
       display: block;
     }
 
-    div {    
+    div {
       width: 100%;
       height: 100%;
     }
@@ -346,9 +347,9 @@ export class Element extends HTMLElement implements IElement {
 
     this.dispatchEvent(new CustomEvent("icon-ready"));
     
-    if (iconData) {
-      // console.log('features', iconData.features);
-      this.movePaletteToVariables();
+    // move palette to css variables instantly on this icon
+    if (iconFeatures(iconData).includes('css-variables')) {
+      this.movePaletteToCssVariables();
     }
   }
 
@@ -371,7 +372,7 @@ export class Element extends HTMLElement implements IElement {
   protected refresh() {
     this.#lottie!.renderer.renderFrame(null);
     
-    this.movePaletteToVariables();
+    this.movePaletteToCssVariables();
   }
 
   protected notify(name: string, from: "icon" | "trigger") {
@@ -521,7 +522,7 @@ export class Element extends HTMLElement implements IElement {
     this.registerLottie();
   }
 
-  protected movePaletteToVariables() {
+  protected movePaletteToCssVariables() {
     for (const [key, value] of Object.entries(this.palette)) {
       (this.#root.children[1] as HTMLElement).style.setProperty(`--lord-icon-${key}-base`, value);
     }

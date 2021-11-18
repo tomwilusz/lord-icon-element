@@ -2,6 +2,7 @@ import { AnimationItem, AnimationConfigWithPath, AnimationConfigWithData } from 
 
 export type LottieColor = [number, number, number];
 export type LottieFieldType = 'color' | 'slider' | 'point' | 'checkbox';
+export type LordiconFeature = 'css-variables' | 'background';
 
 /**
  * Interface for colors parameters.

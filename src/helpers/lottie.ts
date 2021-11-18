@@ -1,6 +1,7 @@
 import {
     ILottieProperty,
     IRGBColor,
+    LordiconFeature,
     LottieColor
 } from '../interfaces.js';
 
@@ -323,4 +324,17 @@ export function replaceProperty(data: any, properties: ILottieProperty[], name: 
       
         set(data, newPath, value);
     }
+}
+
+/**
+ * Return list of features.
+ * @param data
+ * @returns
+ */
+export function iconFeatures(data: any): LordiconFeature[] {
+    if (data && data.features && Array.isArray(data.features)) {
+        return data.features;
+    }
+
+    return [];
 }
