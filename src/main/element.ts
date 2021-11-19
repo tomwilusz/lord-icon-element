@@ -42,7 +42,7 @@ import {
   getTrigger,
 } from "./manager.js";
 
-export const VERSION = '3.3.0';
+export const VERSION = '3.3.1';
 
 /**
  * Loads lottie dom elements when needed.
@@ -540,7 +540,6 @@ export class Element extends HTMLElement implements IElement {
    */
   get properties() {
     if (!this.#properties && this.#iconData) {
-      console.log('---get properties');
       this.#properties = allProperties(this.#iconData, true);
     }
 
