@@ -1,13 +1,13 @@
 {
   "name": "lord-icon-element",
-  "version": "3.3.1",
+  "version": "3.3.2",
   "private": false,
   "main": "./build/lord-icon-element.js",
   "module": "./build/lord-icon-element.js",
   "typings": "./build/lord-icon-element.d.ts",
   "devDependencies": {
     "@types/node": "^16.11.6",
-    "lottie-web": "^5.7.14",
+    "lottie-web": "^5.8.1",
     "terser-webpack-plugin": "^5.2.4",
     "serve-static": "^1.14.1",
     "express": "^4.17.1",

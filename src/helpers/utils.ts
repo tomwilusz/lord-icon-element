@@ -1,4 +1,12 @@
 /**
+ * Deep clone of value.
+ * @param value
+ */
+ export function deepClone(value: any) {
+    return JSON.parse(JSON.stringify(value));
+}
+
+/**
  * Checks if value is object-like. A value is object-like if it"s not null and has a typeof result of "object".
  * @param value
  */

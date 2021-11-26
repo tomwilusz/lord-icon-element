@@ -28,6 +28,7 @@ import {
   get,
   isObjectLike,
   isNil,
+  deepClone,
 } from "../helpers/utils.js";
 
 import {
@@ -297,7 +298,7 @@ export class Element extends HTMLElement implements IElement {
       renderer: "svg",
       loop: false,
       autoplay: false,
-      animationData: iconData,
+      animationData: deepClone(iconData),
       rendererSettings: {
         preserveAspectRatio: "xMidYMid meet",
         progressiveLoad: PROGRESSIVE_LOAD,
