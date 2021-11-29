@@ -18,7 +18,6 @@ import {
   resetColors,
   updateColors,
   lottieColorToHex,
-  hexToLottieColor,
   updateColor,
   resetColor,
   iconFeatures,
@@ -43,7 +42,7 @@ import {
   getTrigger,
 } from "./manager.js";
 
-export const VERSION = '3.3.1';
+export const VERSION = '3.3.3';
 
 /**
  * Loads lottie dom elements when needed.
@@ -282,6 +281,7 @@ export class Element extends HTMLElement implements IElement {
     this.#root.appendChild(slotContainer);
 
     const container = document.createElement("div");
+    container.classList.add('body');
     this.#root.appendChild(container);
 
     this.registerLottie();
@@ -525,7 +525,7 @@ export class Element extends HTMLElement implements IElement {
 
   protected movePaletteToCssVariables() {
     for (const [key, value] of Object.entries(this.palette)) {
-      (this.#root.children[1] as HTMLElement).style.setProperty(`--lord-icon-${key}-base`, value);
+      (this.#root.querySelector('.body') as HTMLElement).style.setProperty(`--lord-icon-${key}-base`, value);
     }
   }
 
