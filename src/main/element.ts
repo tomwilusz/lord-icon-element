@@ -42,7 +42,7 @@ import {
   getTrigger,
 } from "./manager.js";
 
-export const VERSION = '3.3.3';
+export const VERSION = '3.3.4';
 
 /**
  * Loads lottie dom elements when needed.
