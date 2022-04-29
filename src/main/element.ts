@@ -82,19 +82,19 @@ const ELEMENT_STYLE = `
       stroke: currentColor;
     }
 
-    :not(.current-color) svg .primary path[fill] {
+    :host(:not(.current-color)) svg .primary path[fill] {
       fill: var(--lord-icon-primary, var(--lord-icon-primary-base));
     }
 
-    :not(.current-color) svg .primary path[stroke] {
+    :host(:not(.current-color)) svg .primary path[stroke] {
       stroke: var(--lord-icon-primary, var(--lord-icon-primary-base));
     }
 
-    :not(.current-color) svg .secondary path[fill] {
+    :host(:not(.current-color)) svg .secondary path[fill] {
       fill: var(--lord-icon-secondary, var(--lord-icon-secondary-base));
     }
 
-    :not(.current-color) svg .secondary path[stroke] {
+    :host(:not(.current-color)) svg .secondary path[stroke] {
       stroke: var(--lord-icon-secondary, var(--lord-icon-secondary-base));
     }
 
@@ -268,7 +268,7 @@ export class Element extends HTMLElement implements IElement {
         (styleSheet as any).replaceSync(ELEMENT_STYLE);
       }
 
-      (this.#root as any).adoptedStyleSheets = [ styleSheet ];
+      (this.#root as any).adoptedStyleSheets = [styleSheet];
     } else {
       const style = document.createElement("style");
       style.innerHTML = ELEMENT_STYLE;
@@ -347,7 +347,7 @@ export class Element extends HTMLElement implements IElement {
     this.triggerChanged();
 
     this.dispatchEvent(new CustomEvent("icon-ready"));
-    
+
     // move palette to css variables instantly on this icon
     if (iconFeatures(iconData).includes('css-variables')) {
       this.movePaletteToCssVariables();
@@ -372,7 +372,7 @@ export class Element extends HTMLElement implements IElement {
 
   protected refresh() {
     this.#lottie!.renderer.renderFrame(null);
-    
+
     this.movePaletteToCssVariables();
   }
 
@@ -682,7 +682,7 @@ export class Element extends HTMLElement implements IElement {
     return this.#storedIconData || this.getAttribute('icon');
   }
 
-  set src(value: string|null) {
+  set src(value: string | null) {
     if (value) {
       this.setAttribute('src', value);
     } else {
@@ -690,11 +690,11 @@ export class Element extends HTMLElement implements IElement {
     }
   }
 
-  get src(): string|null {
+  get src(): string | null {
     return this.getAttribute('src');
   }
 
-  set state(value: string|null) {
+  set state(value: string | null) {
     if (value) {
       this.setAttribute('state', value);
     } else {
@@ -702,11 +702,11 @@ export class Element extends HTMLElement implements IElement {
     }
   }
 
-  get state(): string|null {
+  get state(): string | null {
     return this.getAttribute('state');
   }
 
-  set colors(value: string|null) {
+  set colors(value: string | null) {
     if (value) {
       this.setAttribute('colors', value);
     } else {
@@ -714,11 +714,11 @@ export class Element extends HTMLElement implements IElement {
     }
   }
 
-  get colors(): string|null {
+  get colors(): string | null {
     return this.getAttribute('colors');
   }
 
-  set trigger(value: string|null) {
+  set trigger(value: string | null) {
     if (value) {
       this.setAttribute('trigger', value);
     } else {
@@ -726,7 +726,7 @@ export class Element extends HTMLElement implements IElement {
     }
   }
 
-  get trigger(): string|null {
+  get trigger(): string | null {
     return this.getAttribute('trigger');
   }
 
@@ -738,7 +738,7 @@ export class Element extends HTMLElement implements IElement {
     }
   }
 
-  get speed(): number|null {
+  get speed(): number | null {
     if (this.hasAttribute('speed')) {
       return parseFloat(this.getAttribute('speed')!);
     }
@@ -753,7 +753,7 @@ export class Element extends HTMLElement implements IElement {
     }
   }
 
-  get stroke(): number|null {
+  get stroke(): number | null {
     if (this.hasAttribute('stroke')) {
       return parseFloat(this.getAttribute('stroke')!);
     }
@@ -768,7 +768,7 @@ export class Element extends HTMLElement implements IElement {
     }
   }
 
-  get scale(): number|null {
+  get scale(): number | null {
     if (this.hasAttribute('scale')) {
       return parseFloat(this.getAttribute('scale')!);
     }
@@ -783,7 +783,7 @@ export class Element extends HTMLElement implements IElement {
     }
   }
 
-  get axisX(): number|null {
+  get axisX(): number | null {
     if (this.hasAttribute('axis-x')) {
       return parseFloat(this.getAttribute('axis-x')!);
     }
