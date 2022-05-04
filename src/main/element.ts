@@ -42,7 +42,7 @@ import {
   getTrigger,
 } from "./manager.js";
 
-export const VERSION = '3.3.4';
+import { VERSION } from "../global.js";
 
 /**
  * Loads lottie dom elements when needed.
@@ -833,5 +833,12 @@ export class Element extends HTMLElement implements IElement {
     }
 
     return 1;
+  }
+
+  /** 
+   * Check element version.
+   */
+  get version() {
+    return VERSION;
   }
 }
