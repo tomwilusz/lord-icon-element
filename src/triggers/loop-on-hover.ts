@@ -9,7 +9,7 @@ export class LoopOnHover extends Basic {
 
     connectedCallback() {
         super.connectedCallback();
-    
+
         this.addTargetEventListener('mouseenter', () => {
             this.active = true;
 
@@ -55,7 +55,7 @@ export class LoopOnHover extends Basic {
     }
 
     get delay() {
-        const value = this.element.hasAttribute('delay') ? +(this.element.getAttribute('delay') || 0) : 0; 
+        const value = this.element.hasAttribute('delay') ? +(this.element.getAttribute('delay') || 0) : 0;
         return Math.max(value, 0);
     }
 }

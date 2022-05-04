@@ -5,29 +5,29 @@ import { IElement, ITrigger } from '../interfaces';
  * Base helper for triggers.
  */
 export class Base implements ITrigger {
-    #inAnimation: boolean = false;
-    #isReady: boolean = false;
-    #connected: boolean = false;
+    private _inAnimation: boolean = false;
+    private _isReady: boolean = false;
+    private _connected: boolean = false;
 
     constructor(
         protected readonly element: HTMLElement & IElement,
         protected readonly lottie: AnimationItem,
     ) {
         const lottieReady = () => {
-            if (this.#isReady) {
+            if (this._isReady) {
                 return;
             }
 
-            this.#isReady = true;
+            this._isReady = true;
             this.ready();
         }
 
         lottie.addEventListener('complete', () => {
-            this.#inAnimation = false;
+            this._inAnimation = false;
             this.complete();
         });
 
-        lottie.addEventListener('config_ready', lottieReady);    
+        lottie.addEventListener('config_ready', lottieReady);
         if (this.lottie.isLoaded) {
             lottieReady();
         }
@@ -37,31 +37,31 @@ export class Base implements ITrigger {
      * The animation has been connected.
      */
     connectedCallback() {
-        this.#connected = true;
+        this._connected = true;
     }
 
     /**
      * The animation has been disconnected.
      */
     disconnectedCallback() {
-        this.#connected = false;
+        this._connected = false;
     }
 
     /**
      * Callback for animation ready.
      */
-    ready() {}
+    ready() { }
 
     /**
      * Callback for animation complete.
      */
-    complete() {}
+    complete() { }
 
     /**
      * Play animation.
      */
     play() {
-        this.#inAnimation = true;
+        this._inAnimation = true;
         this.lottie.play();
     }
 
@@ -69,7 +69,7 @@ export class Base implements ITrigger {
      * Play animation from begining.
      */
     playFromBegining() {
-        this.#inAnimation = true;
+        this._inAnimation = true;
         this.lottie.goToAndPlay(0);
     }
 
@@ -130,20 +130,20 @@ export class Base implements ITrigger {
      * Checks whether the animation is in progress.
      */
     get inAnimation() {
-        return this.#inAnimation;
+        return this._inAnimation;
     }
 
     /**
      * Check whether the animation is ready.
      */
     get isReady() {
-        return this.#isReady;
+        return this._isReady;
     }
 
     /**
      * Trigger is connected.
      */
     get connected() {
-        return this.#connected;
+        return this._connected;
     }
 }

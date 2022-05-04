@@ -150,13 +150,13 @@ type SUPPORTED_ATTRIBUTES = |
   "axis-y";
 
 export class Element extends HTMLElement implements IElement {
-  #root: ShadowRoot;
-  #isReady: boolean = false;
-  #lottie?: AnimationItem;
-  #properties?: ILottieProperty[];
-  #connectedTrigger?: ITrigger;
-  #storedIconData?: any;
-  #palette?: any;
+  private _root: ShadowRoot;
+  private _isReady: boolean = false;
+  private _lottie?: AnimationItem;
+  private _properties?: ILottieProperty[];
+  private _connectedTrigger?: ITrigger;
+  private _storedIconData?: any;
+  private _palette?: any;
 
   /**
    * Register Lottie library.
@@ -202,7 +202,7 @@ export class Element extends HTMLElement implements IElement {
     super();
 
     // create shadow root for this element
-    this.#root = this.attachShadow({
+    this._root = this.attachShadow({
       mode: "open"
     });
   }
@@ -214,7 +214,7 @@ export class Element extends HTMLElement implements IElement {
     connectInstance(this);
 
     // execute init only once after connected
-    if (!this.#isReady) {
+    if (!this._isReady) {
       this.init();
     }
   }
@@ -256,11 +256,11 @@ export class Element extends HTMLElement implements IElement {
    * @returns
    */
   protected init() {
-    if (this.#isReady) {
+    if (this._isReady) {
       return;
     }
 
-    this.#isReady = true;
+    this._isReady = true;
 
     if (SUPPORTS_ADOPTING_STYLE_SHEETS) {
       if (!styleSheet) {
@@ -268,33 +268,33 @@ export class Element extends HTMLElement implements IElement {
         (styleSheet as any).replaceSync(ELEMENT_STYLE);
       }
 
-      (this.#root as any).adoptedStyleSheets = [styleSheet];
+      (this._root as any).adoptedStyleSheets = [styleSheet];
     } else {
       const style = document.createElement("style");
       style.innerHTML = ELEMENT_STYLE;
-      this.#root.appendChild(style);
+      this._root.appendChild(style);
     }
 
     const slotContainer = document.createElement("div");
     slotContainer.innerHTML = "<slot></slot>";
     slotContainer.classList.add("slot");
-    this.#root.appendChild(slotContainer);
+    this._root.appendChild(slotContainer);
 
     const container = document.createElement("div");
     container.classList.add('body');
-    this.#root.appendChild(container);
+    this._root.appendChild(container);
 
     this.registerLottie();
   }
 
   protected registerLottie() {
-    let iconData = this.#iconData;
+    let iconData = this.iconData;
     if (!iconData) {
       return;
     }
 
-    this.#lottie = loadLottieAnimation({
-      container: this.#container as Element,
+    this._lottie = loadLottieAnimation({
+      container: this.container as Element,
       renderer: "svg",
       loop: false,
       autoplay: false,
@@ -311,36 +311,36 @@ export class Element extends HTMLElement implements IElement {
 
       if (properties) {
         if (this.colors) {
-          updateColors(this.#lottie, properties, this.colors);
+          updateColors(this._lottie, properties, this.colors);
         }
         if (this.state) {
           for (const state of this.states) {
-            replaceProperty(this.#lottie, properties, STATE_PREFIX + state, 0);
+            replaceProperty(this._lottie, properties, STATE_PREFIX + state, 0);
           }
-          replaceProperty(this.#lottie, properties, STATE_PREFIX + this.state, 1);
+          replaceProperty(this._lottie, properties, STATE_PREFIX + this.state, 1);
         }
         if (this.stroke) {
-          updateProperty(this.#lottie, properties, 'stroke', this.stroke);
+          updateProperty(this._lottie, properties, 'stroke', this.stroke);
         }
         if (this.scale) {
-          updateProperty(this.#lottie, properties, 'scale', this.scale);
+          updateProperty(this._lottie, properties, 'scale', this.scale);
         }
         if (this.axisX) {
-          updateProperty(this.#lottie, properties, 'axis', this.axisX, '0');
+          updateProperty(this._lottie, properties, 'axis', this.axisX, '0');
         }
         if (this.axisY) {
-          updateProperty(this.#lottie, properties, 'axis', this.axisY, '1');
+          updateProperty(this._lottie, properties, 'axis', this.axisY, '1');
         }
 
-        this.#lottie!.renderer.renderFrame(null);
+        this._lottie!.renderer.renderFrame(null);
       }
     }
 
     // set speed
-    this.#lottie.setSpeed(this.#animationSpeed);
+    this._lottie.setSpeed(this.animationSpeed);
 
     // dispatch animation-complete
-    this.#lottie.addEventListener("complete", () => {
+    this._lottie.addEventListener("complete", () => {
       this.dispatchEvent(new CustomEvent("animation-complete"));
     });
 
@@ -355,23 +355,23 @@ export class Element extends HTMLElement implements IElement {
   }
 
   protected unregisterLottie() {
-    this.#properties = undefined;
+    this._properties = undefined;
 
-    if (this.#connectedTrigger) {
-      this.#connectedTrigger.disconnectedCallback();
-      this.#connectedTrigger = undefined;
+    if (this._connectedTrigger) {
+      this._connectedTrigger.disconnectedCallback();
+      this._connectedTrigger = undefined;
     }
 
-    if (this.#lottie) {
-      this.#lottie.destroy();
-      this.#lottie = undefined;
+    if (this._lottie) {
+      this._lottie.destroy();
+      this._lottie = undefined;
 
-      this.#container!.innerHTML = "";
+      this.container!.innerHTML = "";
     }
   }
 
   protected refresh() {
-    this.#lottie!.renderer.renderFrame(null);
+    this._lottie!.renderer.renderFrame(null);
 
     this.movePaletteToCssVariables();
   }
@@ -382,71 +382,71 @@ export class Element extends HTMLElement implements IElement {
     }
 
     if (from === "icon") {
-      if (this.#lottie) {
+      if (this._lottie) {
         this.unregisterLottie();
       }
       this.registerLottie();
-    } else if (from === "trigger" && !this.#connectedTrigger) {
+    } else if (from === "trigger" && !this._connectedTrigger) {
       this.triggerChanged();
     }
   }
 
   protected triggerChanged() {
-    if (this.#connectedTrigger) {
-      this.#connectedTrigger.disconnectedCallback();
-      this.#connectedTrigger = undefined;
+    if (this._connectedTrigger) {
+      this._connectedTrigger.disconnectedCallback();
+      this._connectedTrigger = undefined;
     }
 
-    if (this.trigger && this.#lottie) {
+    if (this.trigger && this._lottie) {
       const TriggerClass = getTrigger(this.trigger);
       if (TriggerClass) {
-        this.#connectedTrigger = new TriggerClass(this, this.#lottie);
-        this.#connectedTrigger!.connectedCallback();
+        this._connectedTrigger = new TriggerClass(this, this._lottie);
+        this._connectedTrigger!.connectedCallback();
       }
     }
   }
 
   protected colorsChanged() {
-    if (!this.#isReady || !this.properties) {
+    if (!this._isReady || !this.properties) {
       return;
     }
 
     if (this.colors) {
-      updateColors(this.#lottie, this.properties, this.colors);
+      updateColors(this._lottie, this.properties, this.colors);
     } else {
-      resetColors(this.#lottie, this.properties);
+      resetColors(this._lottie, this.properties);
     }
 
     this.refresh();
   }
 
   protected strokeChanged() {
-    if (!this.#isReady || !this.properties) {
+    if (!this._isReady || !this.properties) {
       return;
     }
 
     if (isNil(this.stroke)) {
-      resetProperty(this.#lottie, this.properties, 'stroke');
+      resetProperty(this._lottie, this.properties, 'stroke');
     } else {
-      updateProperty(this.#lottie, this.properties, 'stroke', this.stroke);
+      updateProperty(this._lottie, this.properties, 'stroke', this.stroke);
     }
 
     this.refresh();
   }
 
   protected stateChanged() {
-    if (!this.#isReady || !this.properties) {
+    if (!this._isReady || !this.properties) {
       return;
     }
 
     if (this.state) {
       for (const state of this.states) {
-        replaceProperty(this.#lottie, this.properties, STATE_PREFIX + state, 0);
+        replaceProperty(this._lottie, this.properties, STATE_PREFIX + state, 0);
       }
-      replaceProperty(this.#lottie, this.properties, STATE_PREFIX + this.state, 1);
+      replaceProperty(this._lottie, this.properties, STATE_PREFIX + this.state, 1);
     } else {
       for (const state of this.states) {
-        resetProperty(this.#lottie, this.properties, STATE_PREFIX + state);
+        resetProperty(this._lottie, this.properties, STATE_PREFIX + state);
       }
     }
 
@@ -454,55 +454,55 @@ export class Element extends HTMLElement implements IElement {
   }
 
   protected scaleChanged() {
-    if (!this.#isReady || !this.properties) {
+    if (!this._isReady || !this.properties) {
       return;
     }
 
     if (isNil(this.scale)) {
-      resetProperty(this.#lottie, this.properties, 'scale');
+      resetProperty(this._lottie, this.properties, 'scale');
     } else {
-      updateProperty(this.#lottie, this.properties, 'scale', this.scale);
+      updateProperty(this._lottie, this.properties, 'scale', this.scale);
     }
 
     this.refresh();
   }
 
   protected axisXChanged() {
-    if (!this.#isReady || !this.properties) {
+    if (!this._isReady || !this.properties) {
       return;
     }
 
     if (isNil(this.axisX)) {
-      resetProperty(this.#lottie, this.properties, 'axis', '0');
+      resetProperty(this._lottie, this.properties, 'axis', '0');
     } else {
-      updateProperty(this.#lottie, this.properties, 'axis', this.axisX, '0');
+      updateProperty(this._lottie, this.properties, 'axis', this.axisX, '0');
     }
 
     this.refresh();
   }
 
   protected axisYChanged() {
-    if (!this.#isReady || !this.properties) {
+    if (!this._isReady || !this.properties) {
       return;
     }
 
     if (isNil(this.axisY)) {
-      resetProperty(this.#lottie, this.properties, 'axis', '1');
+      resetProperty(this._lottie, this.properties, 'axis', '1');
     } else {
-      updateProperty(this.#lottie, this.properties, 'axis', this.axisY, '1');
+      updateProperty(this._lottie, this.properties, 'axis', this.axisY, '1');
     }
 
     this.refresh();
   }
 
   protected speedChanged() {
-    if (this.#lottie) {
-      this.#lottie.setSpeed(this.#animationSpeed);
+    if (this._lottie) {
+      this._lottie.setSpeed(this.animationSpeed);
     }
   }
 
   protected iconChanged() {
-    if (!this.#isReady) {
+    if (!this._isReady) {
       return;
     }
 
@@ -515,7 +515,7 @@ export class Element extends HTMLElement implements IElement {
       await loadIcon(this.src);
     }
 
-    if (!this.#isReady) {
+    if (!this._isReady) {
       return;
     }
 
@@ -525,7 +525,7 @@ export class Element extends HTMLElement implements IElement {
 
   protected movePaletteToCssVariables() {
     for (const [key, value] of Object.entries(this.palette)) {
-      (this.#root.querySelector('.body') as HTMLElement).style.setProperty(`--lord-icon-${key}-base`, value);
+      (this._root.querySelector('.body') as HTMLElement).style.setProperty(`--lord-icon-${key}-base`, value);
     }
   }
 
@@ -533,18 +533,18 @@ export class Element extends HTMLElement implements IElement {
    * Access current trigger instance.
    */
   get connectedTrigger() {
-    return this.#connectedTrigger;
+    return this._connectedTrigger;
   }
 
   /**
    * Available properties for current icon.
    */
   get properties() {
-    if (!this.#properties && this.#iconData) {
-      this.#properties = allProperties(this.#iconData, true);
+    if (!this._properties && this.iconData) {
+      this._properties = allProperties(this.iconData, true);
     }
 
-    return this.#properties || [];
+    return this._properties || [];
   }
 
   /**
@@ -560,14 +560,14 @@ export class Element extends HTMLElement implements IElement {
    * Check whether the element is ready.
    */
   get isReady() {
-    return this.#isReady;
+    return this._isReady;
   }
 
   /**
    * Access lottie animation instance.
    */
   get lottie() {
-    return this.#lottie;
+    return this._lottie;
   }
 
   /**
@@ -586,11 +586,12 @@ export class Element extends HTMLElement implements IElement {
       const name = current.name.toLowerCase();
 
       if (name in colors && colors[name]) {
-        updateColor(this.lottie, this.properties, name, colors[name]);
+        updateColor(this._lottie, this.properties, name, colors[name]);
       } else {
-        resetColor(this.lottie, this.properties, name);
+        resetColor(this._lottie, this.properties, name);
       }
     }
+
     this.refresh();
   }
 
@@ -598,15 +599,15 @@ export class Element extends HTMLElement implements IElement {
    * Access to colors get / update with convenient way. 
    */
   get palette() {
-    if (!this.#palette) {
-      this.#palette = new Proxy(this, {
+    if (!this._palette) {
+      this._palette = new Proxy(this, {
         set: (target, property, value, receiver): boolean => {
           for (const current of target.properties) {
             if (current.type == 'color' && typeof property === 'string' && property.toLowerCase() == current.name.toLowerCase()) {
               if (value) {
-                updateColor(target.lottie, target.properties, property, value);
+                updateColor(target._lottie, target.properties, property, value);
               } else if (value === undefined) {
-                resetColor(target.lottie, target.properties, property);
+                resetColor(target._lottie, target.properties, property);
               }
               target.refresh();
             }
@@ -616,7 +617,7 @@ export class Element extends HTMLElement implements IElement {
         get: (target, property, receiver) => {
           for (const current of target.properties) {
             if (current.type == 'color' && typeof property === 'string' && property.toLowerCase() == current.name.toLowerCase()) {
-              return lottieColorToHex(get(target.lottie, current.path));
+              return lottieColorToHex(get(target._lottie, current.path));
             }
           }
           return undefined;
@@ -624,7 +625,7 @@ export class Element extends HTMLElement implements IElement {
         deleteProperty: (target, property) => {
           for (const current of target.properties) {
             if (current.type == 'color' && typeof property === 'string' && property.toLowerCase() == current.name.toLowerCase()) {
-              resetColor(target.lottie, target.properties, property);
+              resetColor(target._lottie, target.properties, property);
               target.refresh();
             }
           }
@@ -650,12 +651,12 @@ export class Element extends HTMLElement implements IElement {
       });
     }
 
-    return this.#palette;
+    return this._palette;
   }
 
   set icon(value: any) {
     if (value && isObjectLike(value)) {
-      this.#storedIconData = value;
+      this._storedIconData = value;
 
       if (this.hasAttribute('icon')) {
         this.removeAttribute('icon');
@@ -663,8 +664,8 @@ export class Element extends HTMLElement implements IElement {
         this.iconChanged();
       }
     } else {
-      const oldIconData = this.#storedIconData;
-      this.#storedIconData = undefined;
+      const oldIconData = this._storedIconData;
+      this._storedIconData = undefined;
 
       if (value) {
         this.setAttribute('icon', value);
@@ -679,7 +680,7 @@ export class Element extends HTMLElement implements IElement {
   }
 
   get icon(): any {
-    return this.#storedIconData || this.getAttribute('icon');
+    return this._storedIconData || this.getAttribute('icon');
   }
 
   set src(value: string | null) {
@@ -808,14 +809,14 @@ export class Element extends HTMLElement implements IElement {
   /**
    * Access animation container element.
    */
-  get #container(): HTMLElement | undefined {
-    return this.#root.lastElementChild as any;
+  private get container(): HTMLElement | undefined {
+    return this._root.lastElementChild as any;
   }
 
   /**
    * Access icon data for this element.
    */
-  get #iconData(): any {
+  private get iconData(): any {
     if (this.icon && typeof this.icon === "object") {
       return this.icon;
     }
@@ -826,7 +827,7 @@ export class Element extends HTMLElement implements IElement {
   /**
    * Current animation speed.
    */
-  get #animationSpeed(): number {
+  private get animationSpeed(): number {
     if (this.hasAttribute('speed')) {
       const v = this.getAttribute('speed');
       return v === null ? 1 : parseFloat(v);

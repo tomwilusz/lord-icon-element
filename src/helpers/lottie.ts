@@ -128,7 +128,7 @@ export function allProperties(
 
         for (const [fieldIndex, field] of Object.entries(layer.ef) as any) {
             const subpath = 'ef.0.v.k';
-            
+
             let path;
             if (lottieInstance) {
                 path = `renderer.elements.${layerIndex}.effectsManager.effectElements.${fieldIndex}.effectElements.0.p.v`;
@@ -184,7 +184,7 @@ export function resetColor(data: any, properties: ILottieProperty[], name: strin
         if (field.type !== 'color' || field.name.toLowerCase() !== name.toLowerCase()) {
             continue;
         }
-       
+
         set(data, field.path, field.value);
     }
 }
@@ -201,7 +201,7 @@ export function updateColor(data: any, properties: ILottieProperty[], name: stri
         if (field.type !== 'color' || field.name.toLowerCase() !== name.toLowerCase()) {
             continue;
         }
-       
+
         if (typeof value === 'object') {
             if ('r' in value && 'g' in value && 'b' in value) {
                 set(data, field.path, [toUnitVector(value.r), toUnitVector(value.g), toUnitVector(value.b)]);
@@ -265,7 +265,7 @@ export function updateColors(data: any, properties: ILottieProperty[], colors: s
  * @param name
  * @param extraPath
  */
-export function resetProperty(data: any, properties: ILottieProperty[], name: string, extraPath ? : string): any {
+export function resetProperty(data: any, properties: ILottieProperty[], name: string, extraPath?: string): any {
     for (const field of properties) {
         if (field.name.toLowerCase() !== name.toLowerCase()) {
             continue;
@@ -287,7 +287,7 @@ export function resetProperty(data: any, properties: ILottieProperty[], name: st
  * @param value
  * @param extraPath
  */
-export function updateProperty(data: any, properties: ILottieProperty[], name: string, value: any, extraPath ? : string): any {
+export function updateProperty(data: any, properties: ILottieProperty[], name: string, value: any, extraPath?: string): any {
     for (const field of properties) {
         if (field.name.toLowerCase() !== name.toLowerCase()) {
             continue;
@@ -314,14 +314,14 @@ export function updateProperty(data: any, properties: ILottieProperty[], name: s
  * @param value
  * @param extraPath
  */
-export function replaceProperty(data: any, properties: ILottieProperty[], name: string, value: any, extraPath ? : string): any {
+export function replaceProperty(data: any, properties: ILottieProperty[], name: string, value: any, extraPath?: string): any {
     for (const field of properties) {
         if (field.name.toLowerCase() !== name.toLowerCase()) {
             continue;
         }
 
         const newPath = field.path + (extraPath ? `.${extraPath}` : '');
-      
+
         set(data, newPath, value);
     }
 }

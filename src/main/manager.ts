@@ -20,25 +20,25 @@ let LOTTIE_ANIMATION_LOADER: LottieAnimationLoader | undefined;
 /**
  * Store all intances of Element.
  */
-const INSTANCES: Set < Element > = new Set();
+const INSTANCES: Set<Element> = new Set();
 
 /**
  * Store supported triggers.
  */
-const TRIGGERS: Map < string, any > = new Map < string,
-    any > ();
+const TRIGGERS: Map<string, any> = new Map<string,
+    any>();
 
 /**
  * Store icons data in memory.
  */
-const ICONS: Map < string, any > = new Map < string,
-    any > ();
+const ICONS: Map<string, any> = new Map<string,
+    any>();
 
 /**
  * List of promises for pending icons.
  */
-const LOADING: Map < string, Promise < any >> = new Map < string,
-    Promise < any >> ();
+const LOADING: Map<string, Promise<any>> = new Map<string,
+    Promise<any>>();
 
 /**
  * Register new icon. Notify all instances about it.

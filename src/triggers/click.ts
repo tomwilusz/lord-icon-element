@@ -1,6 +1,6 @@
 import { Basic, ITargetEvent } from './basic.js';
 
-const CLICK_EVENTS: Array<string|ITargetEvent> = [
+const CLICK_EVENTS: Array<string | ITargetEvent> = [
     'mousedown',
     { name: 'touchstart', options: { passive: true } },
 ];

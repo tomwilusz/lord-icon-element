@@ -9,30 +9,30 @@ export interface ITargetEvent {
  * Basic trigger for manual usage.
  */
 export class Basic extends Base {
-    #events: any[] = [];
+    private _events: any[] = [];
 
-    addTargetEventListener(event: string|ITargetEvent, callback: () => any) {
+    addTargetEventListener(event: string | ITargetEvent, callback: () => any) {
         const newEvent: ITargetEvent = typeof event == 'string' ? { name: event } : event;
         const name = newEvent.name;
 
-        this.#events.push({ name, callback });
+        this._events.push({ name, callback });
 
         this.targetElement.addEventListener(name, callback, newEvent.options);
     }
 
     clearAllTargetEventsListeners() {
-        for (const event of this.#events) {
+        for (const event of this._events) {
             this.targetElement.removeEventListener(event.name, event.callback);
         }
 
-        this.#events = [];
+        this._events = [];
     }
 
     disconnectedCallback() {
         this.clearAllTargetEventsListeners();
         super.disconnectedCallback();
     }
-    
+
     /**
      * Get target element.
      */

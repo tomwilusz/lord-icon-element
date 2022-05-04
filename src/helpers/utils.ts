@@ -2,7 +2,7 @@
  * Deep clone of value.
  * @param value
  */
- export function deepClone(value: any) {
+export function deepClone(value: any) {
     return JSON.parse(JSON.stringify(value));
 }
 
@@ -19,7 +19,7 @@ export function isObjectLike(value: any): value is object {
  * @param object
  * @param path
  */
-export function has<T>(object: T, path: string|string[]): boolean {
+export function has<T>(object: T, path: string | string[]): boolean {
     const newPath = Array.isArray(path) ? path : path.split(".");
     let current: any = object;
 
@@ -44,7 +44,7 @@ export function has<T>(object: T, path: string|string[]): boolean {
  * @param path
  * @param defaultValue
  */
-export function get<T>(object: T, path: string|string[], defaultValue?: any): any {
+export function get<T>(object: T, path: string | string[], defaultValue?: any): any {
     const newPath = Array.isArray(path) ? path : path.split(".");
     let current: any = object;
 
@@ -69,9 +69,9 @@ export function get<T>(object: T, path: string|string[], defaultValue?: any): an
  * @param path
  * @param value
  */
-export function set(object: any, path: string|string[], value: any) {
+export function set(object: any, path: string | string[], value: any) {
     let current = object;
-    
+
     const newPath = Array.isArray(path) ? path : path.split(".");
 
     for (let i = 0; i < newPath.length; ++i) {
