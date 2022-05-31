@@ -8,10 +8,10 @@ import { Loop } from "./triggers/loop.js";
 import { Boomerang } from "./triggers/boomerang.js";
 import { LottieAnimationLoader } from "./interfaces.js";
 
+export { Element as LordIconElement } from "./main/element.js";
+
 export * from "./helpers/lottie.js";
 export * from "./triggers/index.js";
-
-export const LordIconElement = Element;
 
 /**
  * Defines custom element `lord-icon` with premade triggers.
