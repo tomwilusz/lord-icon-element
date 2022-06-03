@@ -557,6 +557,17 @@ export class Element extends HTMLElement implements IElement {
   }
 
   /**
+   * Find default state.
+   */
+  get defaultState(): string | undefined {
+    const states = this.properties.filter(c => c.name.startsWith(STATE_PREFIX) && c.value);
+    if (states.length) {
+      return states[0].name.substr(STATE_PREFIX.length).toLowerCase();
+    }
+    return undefined;
+  }
+
+  /**
    * Check whether the element is ready.
    */
   get isReady() {
