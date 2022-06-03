@@ -371,7 +371,7 @@ export class Element extends HTMLElement implements IElement {
   }
 
   protected refresh() {
-    this._lottie!.renderer.renderFrame(null);
+    this._lottie?.renderer.renderFrame(null);
 
     this.movePaletteToCssVariables();
   }
