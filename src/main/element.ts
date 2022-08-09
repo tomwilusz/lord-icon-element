@@ -8,6 +8,7 @@ import {
   ILottieProperty,
   ITrigger,
   ITriggerConstructor,
+  LordiconFeature,
 } from "../interfaces.js";
 
 import {
@@ -117,6 +118,11 @@ const ELEMENT_STYLE = `
 `;
 
 /**
+ * Default features.
+ */
+let defaultFeatures: LordiconFeature[] | undefined;
+
+/**
  * Current style sheet.
  */
 let styleSheet: CSSStyleSheet;
@@ -196,6 +202,20 @@ export class Element extends HTMLElement implements IElement {
    */
   static get version() {
     return VERSION;
+  }
+
+  /** 
+   * Check element version.
+   */
+  static get defaultFeatures() {
+    return defaultFeatures;
+  }
+
+  /** 
+   * Check element version.
+   */
+  static set defaultFeatures(features: LordiconFeature[] | undefined) {
+    defaultFeatures = features;
   }
 
   constructor() {
@@ -349,7 +369,7 @@ export class Element extends HTMLElement implements IElement {
     this.dispatchEvent(new CustomEvent("icon-ready"));
 
     // move palette to css variables instantly on this icon
-    if (iconFeatures(iconData).includes('css-variables')) {
+    if ((defaultFeatures || iconFeatures(iconData)).includes('css-variables')) {
       this.movePaletteToCssVariables();
     }
   }
@@ -373,7 +393,9 @@ export class Element extends HTMLElement implements IElement {
   protected refresh() {
     this._lottie?.renderer.renderFrame(null);
 
-    this.movePaletteToCssVariables();
+    if ((defaultFeatures || iconFeatures(this.iconData)).includes('css-variables')) {
+      this.movePaletteToCssVariables();
+    }
   }
 
   protected notify(name: string, from: "icon" | "trigger") {
@@ -407,7 +429,7 @@ export class Element extends HTMLElement implements IElement {
   }
 
   protected colorsChanged() {
-    if (!this._isReady || !this.properties) {
+    if (!this.customizable) {
       return;
     }
 
@@ -421,7 +443,7 @@ export class Element extends HTMLElement implements IElement {
   }
 
   protected strokeChanged() {
-    if (!this._isReady || !this.properties) {
+    if (!this.customizable) {
       return;
     }
 
@@ -435,7 +457,7 @@ export class Element extends HTMLElement implements IElement {
   }
 
   protected stateChanged() {
-    if (!this._isReady || !this.properties) {
+    if (!this.customizable) {
       return;
     }
 
@@ -454,7 +476,7 @@ export class Element extends HTMLElement implements IElement {
   }
 
   protected scaleChanged() {
-    if (!this._isReady || !this.properties) {
+    if (!this.customizable) {
       return;
     }
 
@@ -468,7 +490,7 @@ export class Element extends HTMLElement implements IElement {
   }
 
   protected axisXChanged() {
-    if (!this._isReady || !this.properties) {
+    if (!this.customizable) {
       return;
     }
 
@@ -482,7 +504,7 @@ export class Element extends HTMLElement implements IElement {
   }
 
   protected axisYChanged() {
-    if (!this._isReady || !this.properties) {
+    if (!this.customizable) {
       return;
     }
 
@@ -845,6 +867,13 @@ export class Element extends HTMLElement implements IElement {
     }
 
     return 1;
+  }
+
+  /**
+   * Current icon is customizable.
+   */
+  private get customizable(): boolean {
+    return (this._isReady && this._lottie && this.properties) ? true : false;
   }
 
   /** 
