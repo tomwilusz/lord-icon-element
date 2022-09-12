@@ -17,11 +17,11 @@ $ npm install lord-icon-element lottie-web
 From script module:
 
 ```js
-import { loadAnimation } from "lottie-web";
-import { defineLordIconElement } from "lord-icon-element";
+import lottie from 'lottie-web';
+import { defineLordIconElement } from 'lord-icon-element';
 
 // register lottie and define custom element
-defineLordIconElement(loadAnimation);
+defineLordIconElement(lottie.loadAnimation);
 ```
 
 From markup:
