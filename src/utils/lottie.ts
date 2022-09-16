@@ -1,22 +1,7 @@
-import {
-    ILottieProperty,
-    IRGBColor,
-    LordiconFeature,
-    LottieColor
-} from '../interfaces.js';
-
+import { PROPERTY_SCALE } from '../global.js';
+import { ILottieProperty, IRGBColor, LordiconFeature, LottieColor } from '../interfaces.js';
 import { handleColor } from './colors.js';
-
-import {
-    has,
-    get,
-    set
-} from './utils.js';
-
-/**
- * Scale factor for supported slider properties.
- */
-const LORDICON_SCALE = 50;
+import { get, has, set } from './helpers.js';
 
 function componentToHex(c: number) {
     var hex = c.toString(16);
@@ -88,7 +73,7 @@ export function hexToLottieColor(hex: string): LottieColor {
  * @param value 
  * @returns 
  */
-export function lottieColorToHex(value: number[]): string {
+export function lottieColorToHex(value: LottieColor): string {
     const color: IRGBColor = {
         r: fromUnitVector(value[0]),
         g: fromUnitVector(value[1]),
@@ -297,9 +282,9 @@ export function updateProperty(data: any, properties: ILottieProperty[], name: s
         let ratio = 1;
 
         if (field.type === 'slider') {
-            ratio = field.value / LORDICON_SCALE;
+            ratio = field.value / PROPERTY_SCALE;
         } else if (field.type === 'point') {
-            ratio = ((field.value[0] + field.value[1]) / 2) / LORDICON_SCALE;
+            ratio = ((field.value[0] + field.value[1]) / 2) / PROPERTY_SCALE;
         }
 
         set(data, newPath, value * ratio);
@@ -314,6 +299,7 @@ export function updateProperty(data: any, properties: ILottieProperty[], name: s
  * @param value
  * @param extraPath
  */
+// TODO mix with updateProperty
 export function replaceProperty(data: any, properties: ILottieProperty[], name: string, value: any, extraPath?: string): any {
     for (const field of properties) {
         if (field.name.toLowerCase() !== name.toLowerCase()) {

@@ -7,6 +7,15 @@ export function deepClone(value: any) {
 }
 
 /**
+ * Check value is null or undefined.
+ * @param value 
+ * @returns
+ */
+export function isNil(value: any) {
+    return value === null || value === undefined;
+}
+
+/**
  * Checks if value is object-like. A value is object-like if it"s not null and has a typeof result of "object".
  * @param value
  */
@@ -81,13 +90,4 @@ export function set(object: any, path: string | string[], value: any) {
             current = current[newPath[i]];
         }
     }
-}
-
-/**
- * Check value is null or undefined.
- * @param value 
- * @returns
- */
-export function isNil(value: any) {
-    return value === null || value === undefined;
 }

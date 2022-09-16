@@ -3,18 +3,18 @@
         "target": "esnext",
         "module": "esnext",
         "moduleResolution": "node",
-        "sourceMap": true,        
+        "sourceMap": true,
         "removeComments": false,
-        "strict": true,        
+        "strict": true,
         "experimentalDecorators": true,
         "emitDecoratorMetadata": true,
         "declaration": true,
-        "outDir": "build",
+        "outDir": "dist",
         "baseUrl": "."
     },
     "exclude": [
         "node_modules",
-        "build"
+        "dist"
     ],
     "include": [
         "src/**/*.ts"

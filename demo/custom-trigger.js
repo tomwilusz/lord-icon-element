@@ -1,4 +1,5 @@
-import { defineLordIconElement, LordIconElement, BasicTrigger } from '/build/lord-icon-element.js';
+import { defineLordIconElement, Element } from '/dist/index.js';
+import { Basic as BasicTrigger } from '/dist/triggers/basic.js';
 
 const CLICK_EVENTS = [
     'mousedown',
@@ -47,6 +48,6 @@ class Custom extends BasicTrigger {
     }
 }
 
-LordIconElement.registerTrigger('custom', Custom);
+Element.registerTrigger('custom', Custom);
 
 defineLordIconElement(lottie.loadAnimation);

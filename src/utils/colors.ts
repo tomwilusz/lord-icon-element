@@ -144,18 +144,18 @@ const COLOURS: any = {
 
 /**
  * Return hex color from name.
- * @param color
- * @returns
+ * @param colorName 
+ * @returns 
  */
-export function handleColor(color: string) {
-    if (color.startsWith('#')) {
-        if (color.length === 4) {
-            // support shorthand for assign
-            return `#${color[1]}${color[1]}${color[2]}${color[2]}${color[3]}${color[3]}`;
+export function handleColor(colorName: string): string {
+    if (colorName.startsWith('#')) {
+        if (colorName.length === 4) {
+            // support shorthand
+            return `#${colorName[1]}${colorName[1]}${colorName[2]}${colorName[2]}${colorName[3]}${colorName[3]}`;
         } else {
-            return color;
+            return colorName;
         }
     } else {
-        return COLOURS[color.toLowerCase()] || '#000000';
+        return COLOURS[colorName.toLowerCase()] || '#000000';
     }
 }

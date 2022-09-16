@@ -1,3 +1,3 @@
-import { defineLordIconElement } from '/build/lord-icon-element.js';
+import { defineLordIconElement } from '/dist/index.js';
 
 defineLordIconElement(lottie.loadAnimation);

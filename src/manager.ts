@@ -1,16 +1,6 @@
-import {
-    AnimationItem,
-    AnimationConfigWithPath,
-    AnimationConfigWithData
-} from 'lottie-web';
-
-import {
-    Element
-} from './element.js';
-
-import {
-    LottieAnimationLoader,
-} from '../interfaces.js';
+import { AnimationConfigWithData, AnimationConfigWithPath, AnimationItem } from 'lottie-web';
+import { Element } from './element.js';
+import { LottieAnimationLoader } from './interfaces.js';
 
 /**
  * Store loadAnimation from Lottie.

@@ -1,4 +1,4 @@
-import { defineLordIconElement } from '/build/lord-icon-element.js';
+import { defineLordIconElement } from '/dist/index.js';
 
 defineLordIconElement(lottie.loadAnimation);
 
@@ -13,7 +13,7 @@ function handleIconStates(iconElement) {
     iconElement.addEventListener('animation-complete', e => {
         iconElement.state = nextState ?? 'loop';
         iconElement.connectedTrigger.playFromBegining();
-        
+
         nextState = null;
     });
 

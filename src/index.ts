@@ -1,4 +1,5 @@
-import { Element } from "./main/element.js";
+import { Element } from "./element.js";
+
 import { Basic } from "./triggers/basic.js";
 import { Click } from "./triggers/click.js";
 import { Hover } from "./triggers/hover.js";
@@ -8,10 +9,7 @@ import { Loop } from "./triggers/loop.js";
 import { Boomerang } from "./triggers/boomerang.js";
 import { LottieAnimationLoader } from "./interfaces.js";
 
-export { Element as LordIconElement } from "./main/element.js";
-
-export * from "./helpers/lottie.js";
-export * from "./triggers/index.js";
+export { Element } from "./element.js";
 
 /**
  * Defines custom element `lord-icon` with premade triggers.

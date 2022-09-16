@@ -1,4 +1,4 @@
-import { LordIconElement, defineLordIconElement } from '/build/lord-icon-element.js';
+import { Element, defineLordIconElement } from '/dist/index.js';
 
 // load icon data from json file
 async function loadIcon(url) {
@@ -8,13 +8,13 @@ async function loadIcon(url) {
 
 // load sample icons
 (async () => {
-    const [ firstIconData, secondIconData ] = await Promise.all([
+    const [firstIconData, secondIconData] = await Promise.all([
         loadIcon('https://cdn.lordicon.com/lupuorrc.json'),
         loadIcon('https://cdn.lordicon.com/wxnxiano.json'),
     ]);
 
-    LordIconElement.registerIcon('first', firstIconData);
-    LordIconElement.registerIcon('second', secondIconData);
+    Element.registerIcon('first', firstIconData);
+    Element.registerIcon('second', secondIconData);
 })();
 
 // register element

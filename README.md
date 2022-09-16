@@ -4,7 +4,7 @@ A convenient _custom element_ for embedding animated icons.
 
 ## Overview
 
-`lord-icon-element` lets you write websites with fancy, interactive, animated icons. With this element you can embed and control Lottie Files. Under the hood, the library uses awesome _lottie-web_ animation player. [Explore supported free interactive icons.](https://lordicon.com/icons#free)
+`lord-icon-element` lets you write websites with fancy, interactive, animated icons. With this element you can embed and control Lottie Files. Under the hood, the library uses awesome _lottie-web_ animation player. [Explore supported free interactive icons.](https://lordicon.com/icons)
 
 ## Installation
 

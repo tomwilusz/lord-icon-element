@@ -1,49 +1,9 @@
-import {
-  AnimationItem
-} from "lottie-web";
-
-import {
-  LottieAnimationLoader,
-  IElement,
-  ILottieProperty,
-  ITrigger,
-  ITriggerConstructor,
-  LordiconFeature,
-} from "../interfaces.js";
-
-import {
-  allProperties,
-  resetProperty,
-  updateProperty,
-  replaceProperty,
-  resetColors,
-  updateColors,
-  lottieColorToHex,
-  updateColor,
-  resetColor,
-  iconFeatures,
-} from "../helpers/lottie.js";
-
-import {
-  get,
-  isObjectLike,
-  isNil,
-  deepClone,
-} from "../helpers/utils.js";
-
-import {
-  loadIcon,
-  loadLottieAnimation,
-  registerIcon,
-  registerAnimationLoader,
-  registerTrigger,
-  connectInstance,
-  disconnectInstance,
-  getIcon,
-  getTrigger,
-} from "./manager.js";
-
-import { VERSION } from "../global.js";
+import { AnimationItem } from 'lottie-web';
+import { VERSION } from "./global.js";
+import { IElement, ILottieProperty, ITrigger, ITriggerConstructor, LordiconFeature, LottieAnimationLoader } from './interfaces.js';
+import { connectInstance, disconnectInstance, getIcon, getTrigger, loadIcon, loadLottieAnimation, registerAnimationLoader, registerIcon, registerTrigger } from './manager.js';
+import { deepClone, get, isNil, isObjectLike } from './utils/helpers.js';
+import { allProperties, iconFeatures, lottieColorToHex, replaceProperty, resetColor, resetColors, resetProperty, updateColor, updateColors, updateProperty } from './utils/lottie.js';
 
 /**
  * Loads lottie dom elements when needed.
@@ -58,7 +18,7 @@ const STATE_PREFIX = 'State-';
 /**
  * Use constructable stylesheets if supported (https://developers.google.com/web/updates/2019/02/constructable-stylesheets)
  */
-const SUPPORTS_ADOPTING_STYLE_SHEETS = "adoptedStyleSheets" in Document.prototype && "replace" in CSSStyleSheet.prototype;
+const SUPPORTS_ADOPTING_STYLE_SHEETS = 'adoptedStyleSheets' in Document.prototype && 'replace' in CSSStyleSheet.prototype;
 
 /**
  * Style for this element.
