@@ -1,15 +1,13 @@
-import { Basic } from './basic.js';
+import { Trigger } from '../trigger.js';
 
 /**
  * Loop animation when mouse is on icon.
  */
-export class LoopOnHover extends Basic {
+export class LoopOnHover extends Trigger {
     playDelay: any = null;
     active = false;
 
-    connectedCallback() {
-        super.connectedCallback();
-
+    onConnected() {
         this.addTargetEventListener('mouseenter', () => {
             this.active = true;
 
@@ -23,16 +21,14 @@ export class LoopOnHover extends Basic {
         });
     }
 
-    disconnectedCallback() {
+    onDisconnected() {
         this.resetPlayDelayTimer();
-
-        super.disconnectedCallback();
     }
 
-    complete() {
+    onComplete() {
         this.resetPlayDelayTimer();
 
-        if (!this.active || !this.connected) {
+        if (!this.active || !this.isConnected) {
             return;
         }
 

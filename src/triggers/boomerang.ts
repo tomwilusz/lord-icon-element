@@ -1,25 +1,21 @@
-import { Basic } from './basic.js';
+import { Trigger } from '../trigger.js';
 
 /**
  * Morph animation from point A to B and then from B to A after mouse enter.
  */
-export class Boomerang extends Basic {
-    connectedCallback() {
-        super.connectedCallback();
-
+export class Boomerang extends Trigger {
+    onConnected() {
         this.addTargetEventListener('mouseenter', () => {
             this.setDirection(1);
             this.play();
         });
     }
 
-    disconnectedCallback() {
+    onDisconnected() {
         this.setDirection(1);
-
-        super.disconnectedCallback();
     }
 
-    complete() {
+    onComplete() {
         this.setDirection(-1);
         this.play();
     }

@@ -1,12 +1,10 @@
-import { Basic } from './basic.js';
+import { Trigger } from '../trigger.js';
 
 /**
  * Enter animation on icon hover.
  */
-export class Hover extends Basic {
-    connectedCallback() {
-        super.connectedCallback();
-
+export class Hover extends Trigger {
+    onConnected() {
         this.addTargetEventListener('mouseenter', () => {
             if (!this.inAnimation) {
                 this.playFromBegining();

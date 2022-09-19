@@ -1,4 +1,3 @@
-import { PROPERTY_SCALE } from '../global.js';
 import { ILottieProperty, IRGBColor, LordiconFeature, LottieColor } from '../interfaces.js';
 import { handleColor } from './colors.js';
 import { get, has, set } from './helpers.js';
@@ -271,36 +270,9 @@ export function resetProperty(data: any, properties: ILottieProperty[], name: st
  * @param name
  * @param value
  * @param extraPath
+ * @param scale
  */
-export function updateProperty(data: any, properties: ILottieProperty[], name: string, value: any, extraPath?: string): any {
-    for (const field of properties) {
-        if (field.name.toLowerCase() !== name.toLowerCase()) {
-            continue;
-        }
-
-        const newPath = field.path + (extraPath ? `.${extraPath}` : '');
-        let ratio = 1;
-
-        if (field.type === 'slider') {
-            ratio = field.value / PROPERTY_SCALE;
-        } else if (field.type === 'point') {
-            ratio = ((field.value[0] + field.value[1]) / 2) / PROPERTY_SCALE;
-        }
-
-        set(data, newPath, value * ratio);
-    }
-}
-
-/**
- * Replace property value.
- * @param data
- * @param properties
- * @param name
- * @param value
- * @param extraPath
- */
-// TODO mix with updateProperty
-export function replaceProperty(data: any, properties: ILottieProperty[], name: string, value: any, extraPath?: string): any {
+export function updateProperty(data: any, properties: ILottieProperty[], name: string, value: any, extraPath?: string, scale?: number): any {
     for (const field of properties) {
         if (field.name.toLowerCase() !== name.toLowerCase()) {
             continue;
@@ -308,7 +280,19 @@ export function replaceProperty(data: any, properties: ILottieProperty[], name: 
 
         const newPath = field.path + (extraPath ? `.${extraPath}` : '');
 
-        set(data, newPath, value);
+        if (scale) {
+            let ratio = 1;
+
+            if (field.type === 'slider') {
+                ratio = field.value / scale;
+            } else if (field.type === 'point') {
+                ratio = ((field.value[0] + field.value[1]) / 2) / scale;
+            }
+
+            set(data, newPath, value * ratio);
+        } else {
+            set(data, newPath, value);
+        }
     }
 }
 

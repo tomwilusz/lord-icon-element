@@ -1,25 +1,23 @@
-import { Basic } from './basic.js';
+import { Trigger } from '../trigger.js';
 
 /**
  * Animation with auto start and loop.
  */
-export class Loop extends Basic {
+export class Loop extends Trigger {
     playDelay: any = null;
 
-    ready() {
+    onReady() {
         this.play();
     }
 
-    disconnectedCallback() {
+    onDisconnected() {
         this.resetPlayDelayTimer();
-
-        super.disconnectedCallback();
     }
 
-    complete() {
+    onComplete() {
         this.resetPlayDelayTimer();
 
-        if (!this.connected) {
+        if (!this.isConnected) {
             return;
         }
 

@@ -1,12 +1,10 @@
-import { Basic } from './basic.js';
+import { Trigger } from '../trigger.js';
 
 /**
  * Morph animation from point A to B after mouse enter and from B to A after mouse leave.
  */
-export class Morph extends Basic {
-    connectedCallback() {
-        super.connectedCallback();
-
+export class Morph extends Trigger {
+    onConnected() {
         this.addTargetEventListener('mouseenter', () => {
             this.setDirection(1);
             this.play();
@@ -18,8 +16,7 @@ export class Morph extends Basic {
         });
     }
 
-    disconnectedCallback() {
+    onDisconnected() {
         this.setDirection(1);
-        super.disconnectedCallback();
     }
 }

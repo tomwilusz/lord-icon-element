@@ -1,24 +1,21 @@
 import { Element } from "./element.js";
+export { Element } from "./element.js";
 
-import { Basic } from "./triggers/basic.js";
+import { AnimationLoader } from "./interfaces.js";
+import { Boomerang } from "./triggers/boomerang.js";
 import { Click } from "./triggers/click.js";
 import { Hover } from "./triggers/hover.js";
-import { Morph } from "./triggers/morph.js";
 import { LoopOnHover } from "./triggers/loop-on-hover.js";
 import { Loop } from "./triggers/loop.js";
-import { Boomerang } from "./triggers/boomerang.js";
-import { LottieAnimationLoader } from "./interfaces.js";
-
-export { Element } from "./element.js";
+import { Morph } from "./triggers/morph.js";
 
 /**
  * Defines custom element `lord-icon` with premade triggers.
- * @param loader LottieAnimationLoader from `lottie-web` package
+ * @param loader AnimationLoader from `lottie-web` package
  */
-export function defineLordIconElement(loader: LottieAnimationLoader) {
-  Element.registerAnimationLoader(loader);
+export function defineLordIconElement(loader: AnimationLoader) {
+  Element.setAnimationLoader(loader);
 
-  Element.registerTrigger("basic", Basic);
   Element.registerTrigger("click", Click);
   Element.registerTrigger("hover", Hover);
   Element.registerTrigger("loop", Loop);

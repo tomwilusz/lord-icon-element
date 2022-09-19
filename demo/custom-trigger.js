@@ -1,12 +1,12 @@
-import { defineLordIconElement, Element } from '/dist/index.js';
-import { Basic as BasicTrigger } from '/dist/triggers/basic.js';
+import { Element } from '/dist/element.js';
+import { Trigger } from '/dist/trigger.js';
 
 const CLICK_EVENTS = [
     'mousedown',
     { name: 'touchstart', options: { passive: true } },
 ];
 
-class Custom extends BasicTrigger {
+class Custom extends Trigger {
     constructor(element, lottie) {
         super(element, lottie);
 
@@ -14,9 +14,7 @@ class Custom extends BasicTrigger {
         this.setDirection(this.direction);
     }
 
-    connectedCallback() {
-        super.connectedCallback();
-
+    onConnected() {
         for (const event of CLICK_EVENTS) {
             this.addTargetEventListener(event, () => {
                 if (!this.inAnimation) {
@@ -26,19 +24,17 @@ class Custom extends BasicTrigger {
         }
     }
 
-    disconnectedCallback() {
+    onDisconnected() {
         this.setDirection(1);
-
-        super.disconnectedCallback();
     }
 
-    ready() {
+    onReady() {
         if (this.reverse) {
             this.goToLastFrame();
         }
     }
 
-    complete() {
+    onComplete() {
         this.direction = -this.direction;
         this.setDirection(this.direction);
     }
@@ -49,5 +45,6 @@ class Custom extends BasicTrigger {
 }
 
 Element.registerTrigger('custom', Custom);
+Element.setAnimationLoader(lottie.loadAnimation);
 
-defineLordIconElement(lottie.loadAnimation);
+customElements.define("lord-icon", Element);

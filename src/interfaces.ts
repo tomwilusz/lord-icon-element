@@ -1,8 +1,8 @@
-import { AnimationItem, AnimationConfigWithPath, AnimationConfigWithData } from "lottie-web";
+import { AnimationConfigWithData, AnimationConfigWithPath, AnimationItem } from "lottie-web";
 
 export type LottieColor = [number, number, number];
 export type LottieFieldType = 'color' | 'slider' | 'point' | 'checkbox';
-export type LordiconFeature = 'css-variables' | 'background';
+export type LordiconFeature = 'css-variables';
 
 /**
  * Interface for colors parameters.
@@ -30,12 +30,12 @@ export interface ITrigger {
     /**
      * The trigger has been connected.
      */
-    connectedCallback(): void;
+    connect(): void;
 
     /**
      * The trigger has been disconnected.
      */
-    disconnectedCallback(): void;
+    disconnect(): void;
 }
 
 /**
@@ -45,30 +45,15 @@ export interface ITrigger {
  * @param lottie Lottie player instance
  */
 export interface ITriggerConstructor {
-    new(element: HTMLElement & IElement, lottie: AnimationItem): ITrigger;
+    new(element: HTMLElement, lottie: AnimationItem): ITrigger;
 }
 
 /**
- * Interface for our custom element.
+ * Icon loader.
  */
-export interface IElement {
-    connectedTrigger?: ITrigger;
-    properties: ILottieProperty[];
-    states: string[];
-
-    icon: any;
-    src: string | null;
-    state: string | null;
-    colors: string | null;
-    trigger: string | null;
-    speed: number | null;
-    stroke: number | null;
-    scale: number | null;
-    axisX: number | null;
-    axisY: number | null;
-}
+export type IconLoader = (name: string) => Promise<any>;
 
 /**
  * Type for loadAnimation method from Lottie.
  */
-export type LottieAnimationLoader = (params: AnimationConfigWithPath | AnimationConfigWithData) => AnimationItem;
+export type AnimationLoader = (params: AnimationConfigWithPath | AnimationConfigWithData) => AnimationItem;

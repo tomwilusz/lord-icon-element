@@ -5,12 +5,12 @@ defineLordIconElement(lottie.loadAnimation);
 function handleIconStates(iconElement) {
     let nextState = null;
 
-    iconElement.addEventListener('icon-ready', e => {
+    iconElement.addEventListener('ready', e => {
         iconElement.state = 'intro';
         iconElement.connectedTrigger.playFromBegining();
     });
 
-    iconElement.addEventListener('animation-complete', e => {
+    iconElement.addEventListener('complete', e => {
         iconElement.state = nextState ?? 'loop';
         iconElement.connectedTrigger.playFromBegining();
 

@@ -1,6 +1,6 @@
-import { Basic, ITargetEvent } from './basic.js';
+import { Trigger } from '../trigger.js';
 
-const CLICK_EVENTS: Array<string | ITargetEvent> = [
+const CLICK_EVENTS = [
     'mousedown',
     { name: 'touchstart', options: { passive: true } },
 ];
@@ -8,10 +8,8 @@ const CLICK_EVENTS: Array<string | ITargetEvent> = [
 /**
  * Enter animation after icon click.
  */
-export class Click extends Basic {
-    connectedCallback() {
-        super.connectedCallback();
-
+export class Click extends Trigger {
+    onConnected() {
         for (const event of CLICK_EVENTS) {
             this.addTargetEventListener(event, () => {
                 if (!this.inAnimation) {

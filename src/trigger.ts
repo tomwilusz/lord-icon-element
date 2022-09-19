@@ -1,16 +1,22 @@
-import { AnimationItem, AnimationDirection } from 'lottie-web';
-import { IElement, ITrigger } from '../interfaces';
+import { AnimationDirection, AnimationItem } from 'lottie-web';
+import { ITrigger } from './interfaces';
+
+interface ITargetEvent {
+    name: string;
+    options?: any;
+}
 
 /**
- * Base helper for triggers.
+ * Main trigger. Important for creating new one.
  */
-export class Base implements ITrigger {
+export class Trigger implements ITrigger {
     private _inAnimation: boolean = false;
     private _isReady: boolean = false;
-    private _connected: boolean = false;
+    private _isConnected: boolean = false;
+    private _events: any[] = []
 
     constructor(
-        protected readonly element: HTMLElement & IElement,
+        protected readonly element: HTMLElement,
         protected readonly lottie: AnimationItem,
     ) {
         const lottieReady = () => {
@@ -19,43 +25,76 @@ export class Base implements ITrigger {
             }
 
             this._isReady = true;
-            this.ready();
+            this.onReady();
         }
 
         lottie.addEventListener('complete', () => {
             this._inAnimation = false;
-            this.complete();
+            this.onComplete();
         });
 
         lottie.addEventListener('config_ready', lottieReady);
+
         if (this.lottie.isLoaded) {
             lottieReady();
         }
     }
 
     /**
+     * The trigger has been connected.
+     */
+    connect() {
+        this._isConnected = true;
+
+        this.onConnected();
+    }
+
+    /**
+     * The trigger has been disconnected.
+     */
+    disconnect() {
+        this._isConnected = false;
+        this.clearAllTargetEventsListeners();
+
+        this.onDisconnected();
+    }
+
+    /**
      * The animation has been connected.
      */
-    connectedCallback() {
-        this._connected = true;
-    }
+    onConnected() { }
 
     /**
      * The animation has been disconnected.
      */
-    disconnectedCallback() {
-        this._connected = false;
-    }
+    onDisconnected() { }
 
     /**
      * Callback for animation ready.
      */
-    ready() { }
+    onReady() { }
 
     /**
      * Callback for animation complete.
      */
-    complete() { }
+    onComplete() { }
+
+    addTargetEventListener(event: string | ITargetEvent, callback: () => any) {
+        const newEvent: ITargetEvent = typeof event == 'string' ? { name: event } : event;
+        const name = newEvent.name;
+
+        this._events.push({ name, callback });
+
+        this.targetElement.addEventListener(name, callback, newEvent.options);
+    }
+
+    clearAllTargetEventsListeners() {
+        for (const event of this._events) {
+            this.targetElement.removeEventListener(event.name, event.callback);
+        }
+
+        this._events = [];
+    }
 
     /**
      * Play animation.
@@ -143,7 +182,18 @@ export class Base implements ITrigger {
     /**
      * Trigger is connected.
      */
-    get connected() {
-        return this._connected;
+    get isConnected() {
+        return this._isConnected;
+    }
+
+    /**
+     * Get target element.
+     */
+    get targetElement() {
+        const element = this.element;
+        const targetProperty = element.getAttribute('target');
+        const target = targetProperty ? element.closest(targetProperty) : null;
+
+        return target || element;
     }
 }
