@@ -2,10 +2,6 @@
 
 Easy to use _custom element_ for embedding interactive, animated icons downloaded from [lordicon.com](https://lordicon.com/) on the web.
 
-## Documentation
-
-Full documentation is available at [element.lordicon.com](https://element.lordicon.com).
-
 ## Overview
 
 This project is meant to give developers full control over customize and animate icons. It can assist you with many areas:
@@ -14,12 +10,12 @@ This project is meant to give developers full control over customize and animate
 - Customize stroke, colors and other supported properties on the fly.
 - Manually interact with icon and its animation. React to the state / phases of the animation.
 - Provides triggers which allows to choose build in interaction strategy with users:
-  - __click__ - Play animation after click.
-  - __hover__ - Play animation when mouse in.
-  - __morph__ - Play animation when mouse in. Reverse animation on mouse out.
-  - __loop__ - Loop animation.
-  - __loop-on-hover__ - Loop animation while mouse in.
-  - __boomerang__ - Play animation when mouse in and after complete reverse it.
+  - {@link triggers/click.Click | click} - Play animation after click.
+  - {@link triggers/hover.Hover | hover} - Play animation when mouse in.
+  - {@link triggers/morph.Morph | morph} - Play animation when mouse in. Reverse animation on mouse out.
+  - {@link triggers/loop.Loop | loop} - Loop animation.
+  - {@link triggers/loop-on-hover.LoopOnHover | loop-on-hover}__loop-on-hover__ - Loop animation while mouse in.
+  - {@link triggers/boomerang.Boomerang | boomerang} - Play animation when mouse in and after complete reverse it.
 
 This package should be used in pair with [lottie-web](https://www.npmjs.com/package/lottie-web). It's recommended to use this package with module bundler like [webpack](https://www.npmjs.com/package/webpack).
 
@@ -68,7 +64,7 @@ List of available examples:
 - __icon loader__ - Example of creating icon loader callback which can be used to provide icon data from alternate sources.
 - __background__ - This example presents the use of the element as a content container.
 - __state__ - This example presents usage for icons state animation. It is easier than ever to switch between each motion type to use them as stand-alone animations or combine and create an interactive experience.
-- __custom trigger__ - If none of the provided triggers meet what we need to implement, we allow building custom animation triggers. The process is simplified as you inherit from the Trigger class. Provided example show how to create trigger which will reverse animation on second click.
+- __custom trigger__ - If none of the provided triggers meet what we need to implement, we allow building custom animation triggers. The process is simplified as you inherit from the {@link trigger.Trigger | Trigger} class. Provided example show how to create trigger which will reverse animation on second click.
 - __lottie light__ - Example of use our element with lottie-web-light which is a lot smaller but don't support expressions. You can use light version in pair with our raw icons.
 
 ## Related

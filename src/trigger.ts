@@ -1,7 +1,7 @@
 import { AnimationDirection, AnimationItem } from 'lottie-web';
 import { ITrigger } from './interfaces';
 
-interface ITargetEvent {
+export interface ITargetEvent {
     name: string;
     options?: any;
 }

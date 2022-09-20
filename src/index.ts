@@ -1,6 +1,4 @@
 import { Element } from "./element.js";
-export { Element } from "./element.js";
-
 import { AnimationLoader } from "./interfaces.js";
 import { Boomerang } from "./triggers/boomerang.js";
 import { Click } from "./triggers/click.js";

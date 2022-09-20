@@ -98,6 +98,9 @@ type SUPPORTED_ATTRIBUTES = |
   "axis-x" |
   "axis-y";
 
+/**
+ * Description.
+ */
 export class Element extends HTMLElement {
   private _root: ShadowRoot;
   private _isReady: boolean = false;
@@ -687,11 +690,11 @@ export class Element extends HTMLElement {
     return this.getAttribute('trigger');
   }
 
-  set stroke(value: any) {
+  set stroke(value: number | null) {
     if (isNil(value)) {
       this.removeAttribute('stroke');
     } else {
-      this.setAttribute('stroke', value);
+      this.setAttribute('stroke', '' + value);
     }
   }
 
