@@ -1,42 +1,55 @@
 import { Element } from '/dist/element.js';
-import { Trigger } from '/dist/trigger.js';
+import { defineLordIconElement } from '/dist/index.js';
 
 const CLICK_EVENTS = [
-    'mousedown',
+    { name: 'mousedown' },
     { name: 'touchstart', options: { passive: true } },
 ];
 
-class Custom extends Trigger {
-    constructor(element, lottie) {
-        super(element, lottie);
+class Custom {
+    element;
+    targetElement;
+    player;
 
+    constructor(element, targetElement, player) {
+        this.element = element;
+        this.targetElement = targetElement;
+        this.player = player;
         this.direction = this.reverse ? -1 : 1;
-        this.setDirection(this.direction);
+        this.onClick = this.onClick.bind(this);
     }
 
     onConnected() {
         for (const event of CLICK_EVENTS) {
-            this.addTargetEventListener(event, () => {
-                if (!this.inAnimation) {
-                    this.play();
-                }
-            });
+            this.targetElement.addEventListener(event.name, this.onClick, event.options);
         }
     }
 
     onDisconnected() {
-        this.setDirection(1);
+        for (const event of CLICK_EVENTS) {
+            this.targetElement.removeEventListener(event.name, this.onClick);
+        }
+
+        this.player.setDirection(1);
     }
 
     onReady() {
+        this.player.setDirection(this.direction);
+
         if (this.reverse) {
-            this.goToLastFrame();
+            this.player.goToLastFrame();
         }
     }
 
     onComplete() {
         this.direction = -this.direction;
-        this.setDirection(this.direction);
+        this.player.setDirection(this.direction);
+    }
+
+    onClick() {
+        if (!this.player.inAnimation) {
+            this.player.play();
+        }
     }
 
     get reverse() {
@@ -45,6 +58,5 @@ class Custom extends Trigger {
 }
 
 Element.registerTrigger('custom', Custom);
-Element.setAnimationLoader(lottie.loadAnimation);
 
-customElements.define("lord-icon", Element);
+defineLordIconElement(lottie.loadAnimation);

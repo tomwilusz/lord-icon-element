@@ -1,9 +1,37 @@
-import { ILottieProperty, IRGBColor, LordiconFeature, LottieColor } from '../interfaces.js';
-import { handleColor } from './colors.js';
+import { IconData } from '../interfaces.js';
+import { parseColor } from './colors.js';
 import { get, has, set } from './helpers.js';
 
+export type LottieColor = [number, number, number];
+
+export type LottieFieldType = 'color' | 'slider' | 'point' | 'checkbox';
+
+/**
+ * Interface for colors parameters.
+ */
+export interface IRGBColor {
+    r: number;
+    g: number;
+    b: number;
+}
+
+/**
+ * Interface for found property.
+ */
+export interface ILottieProperty {
+    name: string;
+    path: string;
+    value: any;
+    type: LottieFieldType;
+}
+
+/**
+ * Convert to hexadecimal value.
+ * @param c 
+ * @returns 
+ */
 function componentToHex(c: number) {
-    var hex = c.toString(16);
+    const hex = c.toString(16);
     return hex.length == 1 ? '0' + hex : hex;
 }
 
@@ -12,7 +40,7 @@ function componentToHex(c: number) {
  * @param value 
  * @returns 
  */
-export function rgbToHex(value: IRGBColor): string {
+function rgbToHex(value: IRGBColor): string {
     return (
         '#' +
         componentToHex(value.r) +
@@ -26,7 +54,7 @@ export function rgbToHex(value: IRGBColor): string {
  * @param hex 
  * @returns 
  */
-export function hexToRgb(hex: string): IRGBColor {
+function hexToRgb(hex: string): IRGBColor {
     let data = parseInt(hex[0] != '#' ? hex : hex.substring(1), 16);
     return {
         r: (data >> 16) & 255,
@@ -40,7 +68,7 @@ export function hexToRgb(hex: string): IRGBColor {
  * @param n
  * @returns 
  */
-export function toUnitVector(n: number) {
+function toUnitVector(n: number) {
     return Math.round((n / 255) * 1000) / 1000;
 }
 
@@ -49,12 +77,12 @@ export function toUnitVector(n: number) {
  * @param n
  * @returns 
  */
-export function fromUnitVector(n: number) {
+function fromUnitVector(n: number) {
     return Math.round(n * 255);
 }
 
 /**
- * Helper method for lottie color.
+ * Convert hex color to lottie representation.
  * @param hex
  * @returns 
  */
@@ -68,7 +96,7 @@ export function hexToLottieColor(hex: string): LottieColor {
 }
 
 /**
- * Conver from lottie color to hex.
+ * Conver lottie color representation to hex.
  * @param value 
  * @returns 
  */
@@ -82,14 +110,14 @@ export function lottieColorToHex(value: LottieColor): string {
 }
 
 /**
- * Return all supported properties for provided icon.
+ * Return all supported customizable properties.
  * @param data Icon data.
- * @param lottieInstance Provide property path for running lottie instance.
+ * @param lottieInstance Resolve property path for running lottie instance.
  * @returns 
  */
-export function allProperties(
-    data: any,
-    lottieInstance: boolean = false,
+export function properties(
+    data: IconData,
+    { lottieInstance }: { lottieInstance?: boolean } = {},
 ): ILottieProperty[] {
     const result: any[] = [];
 
@@ -143,7 +171,7 @@ export function allProperties(
                 continue;
             }
 
-            const name = field.nm;
+            const name = field.nm.toLowerCase();
 
             result.push({
                 name,
@@ -157,154 +185,40 @@ export function allProperties(
     return result;
 }
 
-/**
- * Reset single color.
- * @param data
- * @param properties
- * @param name
- */
-export function resetColor(data: any, properties: ILottieProperty[], name: string) {
-    for (const field of properties) {
-        if (field.type !== 'color' || field.name.toLowerCase() !== name.toLowerCase()) {
-            continue;
-        }
-
-        set(data, field.path, field.value);
+export function resetProperties(data: IconData, properties: ILottieProperty[]): any {
+    for (const property of properties) {
+        set(data, property.path, property.value);
     }
 }
 
-/**
- * Update single color.
- * @param data
- * @param properties 
- * @param name 
- * @param value 
- */
-export function updateColor(data: any, properties: ILottieProperty[], name: string, value: any): any {
-    for (const field of properties) {
-        if (field.type !== 'color' || field.name.toLowerCase() !== name.toLowerCase()) {
-            continue;
-        }
-
-        if (typeof value === 'object') {
-            if ('r' in value && 'g' in value && 'b' in value) {
-                set(data, field.path, [toUnitVector(value.r), toUnitVector(value.g), toUnitVector(value.b)]);
+export function updateProperties(data: IconData, properties: ILottieProperty[], value: any, { scale }: { scale?: number } = {}): any {
+    for (const property of properties) {
+        if (property.type === 'color') {
+            if (typeof value === 'object' && 'r' in value && 'g' in value && 'b' in value) {
+                set(data, property.path, [toUnitVector(value.r), toUnitVector(value.g), toUnitVector(value.b)]);
             } else if (Array.isArray(value)) {
-                set(data, field.path, value);
+                set(data, property.path, value);
+            } else if (typeof value === 'string') {
+                set(data, property.path, hexToLottieColor(parseColor(value)));
             }
-        } else if (typeof value === 'string') {
-            set(data, field.path, hexToLottieColor(handleColor(value)));
-        }
-    }
-}
-
-/**
- * Reset colors to original.
- * @param data
- * @param properties
- */
-export function resetColors(data: any, properties: ILottieProperty[]) {
-    for (const field of properties) {
-        if (field.type !== 'color') {
-            continue;
-        }
-
-        set(data, field.path, field.value);
-    }
-}
-
-/**
- * Update colors.
- * @param data
- * @param properties
- * @param colors
- */
-export function updateColors(data: any, properties: ILottieProperty[], colors: string): any {
-    const parsedColors = colors.split(',');
-
-    if (parsedColors.length) {
-        for (const color of parsedColors) {
-            const parts = color.split(':');
-            if (parts.length !== 2) {
-                continue;
-            }
-
-            for (const field of properties) {
-                if (field.type !== 'color') {
-                    continue;
-                }
-
-                if (field.name.toLowerCase() === parts[0].toLowerCase()) {
-                    set(data, field.path, hexToLottieColor(handleColor(parts[1])));
-                }
-            }
-        }
-    }
-}
-
-/**
- * Reset property to orignal value.
- * @param data
- * @param properties
- * @param name
- * @param extraPath
- */
-export function resetProperty(data: any, properties: ILottieProperty[], name: string, extraPath?: string): any {
-    for (const field of properties) {
-        if (field.name.toLowerCase() !== name.toLowerCase()) {
-            continue;
-        }
-
-        if (extraPath) {
-            set(data, field.path + `.${extraPath}`, get(field.value, extraPath));
-        } else {
-            set(data, field.path, field.value);
-        }
-    }
-}
-
-/**
- * Update property.
- * @param data
- * @param properties
- * @param name
- * @param value
- * @param extraPath
- * @param scale
- */
-export function updateProperty(data: any, properties: ILottieProperty[], name: string, value: any, extraPath?: string, scale?: number): any {
-    for (const field of properties) {
-        if (field.name.toLowerCase() !== name.toLowerCase()) {
-            continue;
-        }
-
-        const newPath = field.path + (extraPath ? `.${extraPath}` : '');
-
-        if (scale) {
+        } else if (property.type === 'point') {
             let ratio = 1;
-
-            if (field.type === 'slider') {
-                ratio = field.value / scale;
-            } else if (field.type === 'point') {
-                ratio = ((field.value[0] + field.value[1]) / 2) / scale;
+            if (scale) {
+                ratio = ((property.value[0] + property.value[1]) / 2) / scale
             }
-
-            set(data, newPath, value * ratio);
+            if (typeof value === 'object' && 'x' in value && 'y' in value) {
+                set(data, property.path + '.0', value.x * ratio);
+                set(data, property.path + '.1', value.y * ratio);
+            } else if (Array.isArray(value)) {
+                set(data, property.path + '.0', value[0] * ratio);
+                set(data, property.path + '.1', value[1] * ratio);
+            }
         } else {
-            set(data, newPath, value);
+            let ratio = 1;
+            if (scale) {
+                ratio = property.value / scale;
+            }
+            set(data, property.path, value * ratio);
         }
     }
-}
-
-/**
- * Return list of features.
- * @param data
- * @returns
- */
-export function iconFeatures(data: any): LordiconFeature[] {
-    if (data && data.features && Array.isArray(data.features)) {
-        return data.features;
-    }
-
-    return [];
 }

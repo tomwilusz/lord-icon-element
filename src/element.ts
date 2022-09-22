@@ -1,9 +1,7 @@
-import { AnimationItem } from 'lottie-web';
-import { ANIMATION_LOADER_OPTIONS, PROPERTY_SCALE, STATE_PREFIX, VERSION } from "./global.js";
-import { AnimationLoader, IconLoader, ILottieProperty, ITrigger, ITriggerConstructor } from './interfaces.js';
-import { Trigger } from './trigger.js';
-import { deepClone, get, isNil, isObjectLike } from './utils/helpers.js';
-import { allProperties, iconFeatures, lottieColorToHex, resetColor, resetColors, resetProperty, updateColor, updateColors, updateProperty } from './utils/lottie.js';
+import { VERSION } from "./global.js";
+import { IconData, IconFeature, IconLoader, IPlayer, ITrigger, ITriggerConstructor, PlayerLoader } from './interfaces.js';
+import { parseColors } from "./utils/colors.js";
+import { isNil, isObjectLike } from './utils/helpers.js';
 
 /**
  * Use constructable stylesheets if supported (https://developers.google.com/web/updates/2019/02/constructable-stylesheets)
@@ -68,79 +66,67 @@ const ELEMENT_STYLE = `
 `;
 
 /**
- * Current style sheet.
+ * Current style sheet instance (if supported).
  */
 let styleSheet: CSSStyleSheet;
 
 /**
- * Observed attributes for this custom element.
+ * Supported attributes for this custom element.
  */
-const OBSERVED_ATTRIBUTES = [
-  "colors",
-  "src",
-  "icon",
-  "state",
-  "trigger",
-  "stroke",
-  "scale",
-  "axis-x",
-  "axis-y",
-];
-
 type SUPPORTED_ATTRIBUTES = |
   "colors" |
   "src" |
   "icon" |
   "state" |
   "trigger" |
+  "target" |
   "stroke" |
   "scale" |
   "axis-x" |
   "axis-y";
 
 /**
+ * Observed attributes for this custom element.
+ */
+const OBSERVED_ATTRIBUTES: SUPPORTED_ATTRIBUTES[] = [
+  "colors",
+  "src",
+  "icon",
+  "state",
+  "trigger",
+  "target",
+  "stroke",
+  "scale",
+  "axis-x",
+  "axis-y",
+];
+
+/**
+ * Return list of supported features by icon.
+ * @param data
+ * @returns
+ */
+function iconFeatures(data: IconData): IconFeature[] {
+  if (data && data.features && Array.isArray(data.features)) {
+    return data.features;
+  }
+
+  return [];
+}
+
+/**
  * Description.
  */
-export class Element extends HTMLElement {
-  private _root: ShadowRoot;
-  private _isReady: boolean = false;
-  private _lottie?: AnimationItem;
-  private _properties?: ILottieProperty[];
-  private _connectedTrigger?: ITrigger;
-  private _assignedIconData?: any;
-  private _loadedIconData?: any;
-  private _palette?: any;
-
+export class Element<P extends IPlayer = IPlayer> extends HTMLElement {
   private static _iconLoader?: IconLoader;
-  private static _animationLoader?: AnimationLoader;
-  private static _triggers: Map<string, any> = new Map<string, any>();
-  private static _animationLoaderOptions: any = ANIMATION_LOADER_OPTIONS;
+  private static _playerLoader?: PlayerLoader;
+  private static _supportedTriggers: Map<string, ITriggerConstructor> = new Map<string, ITriggerConstructor>();
 
-  /**
-   * Set icon loader.
-   * @param loader
+  /** 
+   * Get element version.
    */
-  static setIconLoader(loader: IconLoader) {
-    Element._iconLoader = loader;
-  }
-
-  /**
-   * Register Lottie library
-   * @param loader Provide "loadAnimation" here from Lottie.
-   * @param options Options for lottie-web.
-   */
-  static setAnimationLoader(loader: AnimationLoader, options?: any) {
-    Element._animationLoader = loader;
-    Element._animationLoaderOptions = options || ANIMATION_LOADER_OPTIONS;
-  }
-
-  /**
-   * Register supported animation.
-   * @param name
-   * @param triggerClass
-   */
-  static registerTrigger(name: string, triggerClass: ITriggerConstructor) {
-    Element._triggers.set(name, triggerClass);
+  static get version() {
+    return VERSION;
   }
 
   /**
@@ -150,38 +136,38 @@ export class Element extends HTMLElement {
     return OBSERVED_ATTRIBUTES;
   }
 
-  /** 
-   * Check element version.
+  /**
+   * Assign callback responsible for loading icons.
+   * @param loader
    */
-  static get version() {
-    return VERSION;
-  }
-
-  constructor() {
-    super();
-
-    // create shadow root for this element
-    this._root = this.attachShadow({
-      mode: "open"
-    });
+  static setIconLoader(loader: IconLoader) {
+    Element._iconLoader = loader;
   }
 
   /**
-   * Element connected.
+   * Assign callback which create a player. Player is responsible for customizing icons and playing animations.
+   * @param loader
    */
-  protected connectedCallback() {
-    // execute init only once after connected
-    if (!this._isReady) {
-      this.init();
-    }
+  static setPlayerLoader(loader: PlayerLoader) {
+    Element._playerLoader = loader;
   }
 
   /**
-   * Element disconnected.
+   * Register supported trigger. Triggers allows to define interaction strategy with icon.
+   * @param name
+   * @param triggerClass
    */
-  protected disconnectedCallback() {
-    this.unregisterLottie();
+  static registerTrigger(name: string, triggerClass: ITriggerConstructor) {
+    Element._supportedTriggers.set(name, triggerClass);
   }
+
+  private _root?: ShadowRoot;
+  private _isInitialized: boolean = false;
+  private _isReady: boolean = false;
+  private _triggerInstance?: ITrigger;
+  private _assignedIconData?: IconData;
+  private _loadedIconData?: IconData;
+  private _player?: IPlayer;
 
   /**
    * Handle attribute update.
@@ -194,28 +180,50 @@ export class Element extends HTMLElement {
     oldValue: any,
     newValue: any
   ) {
-    if (name === 'axis-x') {
-      this.axisXChanged();
-    } else if (name === 'axis-y') {
-      this.axisYChanged();
-    } else {
-      const method = (this as any)[`${name}Changed`];
-      if (method) {
-        method.call(this);
-      }
+    switch (name) {
+      case 'axis-x':
+        this.axisXChanged();
+        break;
+      case 'axis-y':
+        this.axisYChanged();
+        break;
+      default:
+        this[`${name}Changed`].call(this);
+        break;
     }
   }
 
   /**
-   * Init element.
-   * @returns
+   * Element connected.
    */
-  protected init() {
-    if (this._isReady) {
+  protected connectedCallback() {
+    // execute init only once after connected
+    if (this._isInitialized) {
       return;
     }
 
-    this._isReady = true;
+    this._isInitialized = true;
+
+    this.createElements();
+    this.createPlayer();
+  }
+
+  /**
+   * Element disconnected.
+   */
+  protected disconnectedCallback() {
+    this.destroyPlayer();
+  }
+
+  /**
+   * Create DOM elements.
+   * @returns
+   */
+  protected createElements() {
+    // create shadow root for this element
+    this._root = this.attachShadow({
+      mode: "open"
+    });
 
     if (SUPPORTS_ADOPTING_STYLE_SHEETS) {
       if (!styleSheet) {
@@ -238,11 +246,103 @@ export class Element extends HTMLElement {
     const container = document.createElement("div");
     container.classList.add('body');
     this._root.appendChild(container);
-
-    this.registerLottie();
   }
 
-  protected async loadIcon() {
+  protected async createPlayer(): Promise<void> {
+    if (!Element._playerLoader) {
+      throw new Error('Missing player loader!');
+    }
+
+    const iconData = await this.loadIconData();
+    if (!iconData) {
+      return;
+    }
+
+    this._player = Element._playerLoader(this.animationContainer!, iconData);
+    this._player.connect();
+
+    // assign initial properties for icon
+    if (this.state || this.colors || this.stroke || this.scale || this.axisX || this.axisY) {
+      this.player!.resetProperties({
+        colors: parseColors(this.colors || ''),
+        stroke: this.stroke,
+        scale: this.scale,
+        state: this.state,
+        axis: isNil(this.axisX) && isNil(this.axisY) ? null : {
+          x: isNil(this.axisX) ? 50 : this.axisX!,
+          y: isNil(this.axisY) ? 50 : this.axisY!,
+        },
+      });
+    }
+
+    // listen for ready
+    this._player.addEventListener('ready', () => {
+      if (this._triggerInstance && this._triggerInstance.onReady) {
+        this._triggerInstance.onReady();
+      }
+    });
+
+    // listen for complete
+    this._player.addEventListener('complete', () => {
+      if (this._triggerInstance && this._triggerInstance.onComplete) {
+        this._triggerInstance.onComplete();
+      }
+    });
+
+    // listen for refresh
+    this._player.addEventListener('refresh', () => {
+      this.refresh();
+
+      if (this._triggerInstance && this._triggerInstance.onRefresh) {
+        this._triggerInstance.onRefresh();
+      }
+    });
+
+    // refresh element instantly
+    this.refresh();
+
+    // create trigger (only if assigned)
+    this.triggerChanged();
+
+    // wait for player ready
+    await new Promise<void>((resolve, reject) => {
+      if (this._player!.isReady) {
+        resolve();
+      } else {
+        this._player!.addEventListener('ready', resolve);
+      }
+    });
+
+    // mark ready
+    this._isReady = true;
+
+    // notify about ready
+    this.dispatchEvent(new CustomEvent("ready"));
+  }
+
+  protected destroyPlayer() {
+    // mark not ready
+    this._isReady = false;
+
+    // clear stored icon data
+    this._loadedIconData = undefined;
+
+    // remove trigger
+    if (this._triggerInstance) {
+      if (this._triggerInstance.onDisconnected) {
+        this._triggerInstance.onDisconnected();
+      }
+      this._triggerInstance = undefined;
+    }
+
+    // remove player
+    if (this._player) {
+      this._player.disconnect();
+      this._player = undefined;
+    }
+  }
+
+  protected async loadIconData(): Promise<IconData> {
     let iconData = this.iconData;
 
     if (!iconData) {
@@ -257,360 +357,132 @@ export class Element extends HTMLElement {
     return iconData;
   }
 
-  protected async registerLottie() {
-    if (!Element._animationLoader) {
-      throw new Error('Missing animation loader!');
-    }
-
-    const iconData = await this.loadIcon();
-    if (!iconData) {
-      return;
-    }
-
-    this._lottie = Element._animationLoader!({
-      container: this.container!,
-      animationData: deepClone(iconData),
-      ...Element._animationLoaderOptions,
-    });
-
-    if (this.state || this.colors || this.stroke || this.scale || this.axisX || this.axisY) {
-      const properties = this.properties;
-
-      if (properties) {
-        if (this.colors) {
-          updateColors(this._lottie, properties, this.colors);
-        }
-        if (this.state) {
-          for (const state of this.states) {
-            updateProperty(this._lottie, properties, STATE_PREFIX + state, 0);
-          }
-          updateProperty(this._lottie, properties, STATE_PREFIX + this.state, 1);
-        }
-        if (this.stroke) {
-          updateProperty(this._lottie, properties, 'stroke', this.stroke, undefined, PROPERTY_SCALE);
-        }
-        if (this.scale) {
-          updateProperty(this._lottie, properties, 'scale', this.scale, undefined, PROPERTY_SCALE);
-        }
-        if (this.axisX) {
-          updateProperty(this._lottie, properties, 'axis', this.axisX, '0', PROPERTY_SCALE);
-        }
-        if (this.axisY) {
-          updateProperty(this._lottie, properties, 'axis', this.axisY, '1', PROPERTY_SCALE);
-        }
-
-        this._lottie!.renderer.renderFrame(null);
-      }
-    }
-
-    // dispatch complete
-    this._lottie.addEventListener("complete", () => {
-      this.dispatchEvent(new CustomEvent("complete"));
-    });
-
-    this.triggerChanged();
-
-    // move palette to css variables instantly on this icon
-    if (iconFeatures(iconData).includes('css-variables')) {
-      this.movePaletteToCssVariables();
-    }
-
-    // notify about ready
-    this.dispatchEvent(new CustomEvent("ready"));
-  }
-
-  protected unregisterLottie() {
-    this._properties = undefined;
-    this._loadedIconData = undefined;
-
-    if (this._connectedTrigger) {
-      this._connectedTrigger.disconnect();
-      this._connectedTrigger = undefined;
-    }
-
-    if (this._lottie) {
-      this._lottie.destroy();
-      this._lottie = undefined;
-    }
-  }
-
+  /**
+   * Synchronize element state with player.
+   */
   protected refresh() {
-    this._lottie?.renderer.renderFrame(null);
-
     if (iconFeatures(this.iconData).includes('css-variables')) {
       this.movePaletteToCssVariables();
     }
   }
 
+  /**
+   * Update default css variables.
+   */
+  protected movePaletteToCssVariables() {
+    for (const [key, value] of Object.entries(this.player!.colors || {})) {
+      (this._root!.querySelector('.body') as HTMLElement).style.setProperty(`--lord-icon-${key}-base`, value);
+    }
+  }
+
+  protected targetChanged() {
+    this.triggerChanged();
+  }
+
   protected triggerChanged() {
-    if (this._connectedTrigger) {
-      this._connectedTrigger.disconnect();
-      this._connectedTrigger = undefined;
+    if (this._triggerInstance) {
+      if (this._triggerInstance.onDisconnected) {
+        this._triggerInstance.onDisconnected();
+      }
+      this._triggerInstance = undefined;
     }
 
-    if (this._lottie) {
-      if (this.trigger) {
-        const TriggerClass = Element._triggers.get(this.trigger);
-        if (!TriggerClass) {
-          throw new Error(`Can't use unregistered trigger!`)
-        }
-        this._connectedTrigger = new TriggerClass(this, this._lottie);
-      } else {
-        this._connectedTrigger = new Trigger(this, this._lottie);
-      }
+    if (!this.trigger || !this._player) {
+      return;
+    }
 
-      this._connectedTrigger!.connect();
+    const TriggerClass = Element._supportedTriggers.get(this.trigger);
+    if (!TriggerClass) {
+      throw new Error(`Can't use unregistered trigger!`)
+    }
+
+    const targetElement = this.target ? this.closest<HTMLElement>(this.target) : null;
+
+    this._triggerInstance = new TriggerClass(
+      this,
+      targetElement || this,
+      this._player,
+    );
+
+    if (this._triggerInstance.onConnected) {
+      this._triggerInstance.onConnected();
+    }
+
+    if (this._player.isReady && this._triggerInstance.onReady) {
+      this._triggerInstance.onReady();
     }
   }
 
   protected colorsChanged() {
-    if (!this.customizable) {
+    if (!this.player) {
       return;
     }
 
-    if (this.colors) {
-      updateColors(this._lottie, this.properties, this.colors);
-    } else {
-      resetColors(this._lottie, this.properties);
-    }
-
-    this.refresh();
+    this.player.colors = parseColors(this.colors || '');
   }
 
   protected strokeChanged() {
-    if (!this.customizable) {
+    if (!this.player) {
       return;
     }
 
-    if (isNil(this.stroke)) {
-      resetProperty(this._lottie, this.properties, 'stroke');
-    } else {
-      updateProperty(this._lottie, this.properties, 'stroke', this.stroke, undefined, PROPERTY_SCALE);
-    }
-
-    this.refresh();
+    this.player.stroke = this.stroke;
   }
 
   protected stateChanged() {
-    if (!this.customizable) {
+    if (!this.player) {
       return;
     }
 
-    if (this.state) {
-      for (const state of this.states) {
-        updateProperty(this._lottie, this.properties, STATE_PREFIX + state, 0);
-      }
-      updateProperty(this._lottie, this.properties, STATE_PREFIX + this.state, 1);
-    } else {
-      for (const state of this.states) {
-        resetProperty(this._lottie, this.properties, STATE_PREFIX + state);
-      }
-    }
-
-    this.refresh();
+    this.player.state = this.state;
   }
 
   protected scaleChanged() {
-    if (!this.customizable) {
+    if (!this.player) {
       return;
     }
 
-    if (isNil(this.scale)) {
-      resetProperty(this._lottie, this.properties, 'scale');
-    } else {
-      updateProperty(this._lottie, this.properties, 'scale', this.scale, undefined, PROPERTY_SCALE);
-    }
-
-    this.refresh();
+    this.player.scale = this.scale;
   }
 
   protected axisXChanged() {
-    if (!this.customizable) {
+    if (!this.player) {
       return;
     }
 
-    if (isNil(this.axisX)) {
-      resetProperty(this._lottie, this.properties, 'axis', '0');
-    } else {
-      updateProperty(this._lottie, this.properties, 'axis', this.axisX, '0', PROPERTY_SCALE);
-    }
-
-    this.refresh();
+    this.player.axis = {
+      x: isNil(this.axisX) ? 50 : this.axisX!,
+      y: isNil(this.axisY) ? 50 : this.axisX!,
+    };
   }
 
   protected axisYChanged() {
-    if (!this.customizable) {
+    if (!this.player) {
       return;
     }
 
-    if (isNil(this.axisY)) {
-      resetProperty(this._lottie, this.properties, 'axis', '1');
-    } else {
-      updateProperty(this._lottie, this.properties, 'axis', this.axisY, '1', PROPERTY_SCALE);
-    }
-
-    this.refresh();
+    this.player.axis = {
+      x: isNil(this.axisX) ? 50 : this.axisX!,
+      y: isNil(this.axisY) ? 50 : this.axisX!,
+    };
   }
 
   protected iconChanged() {
-    if (!this._isReady) {
+    if (!this._isInitialized) {
       return;
     }
 
-    this.unregisterLottie();
-    this.registerLottie();
-
+    this.destroyPlayer();
+    this.createPlayer();
   }
 
-  protected async srcChanged() {
-    if (!this._isReady) {
+  protected srcChanged() {
+    if (!this._isInitialized) {
       return;
     }
 
-    this.unregisterLottie();
-    this.registerLottie();
-  }
-
-  protected movePaletteToCssVariables() {
-    for (const [key, value] of Object.entries(this.palette)) {
-      (this._root.querySelector('.body') as HTMLElement).style.setProperty(`--lord-icon-${key}-base`, value);
-    }
-  }
-
-  /**
-   * Access current trigger instance.
-   */
-  get connectedTrigger() {
-    return this._connectedTrigger;
-  }
-
-  /**
-   * Available properties for current icon.
-   */
-  get properties(): ILottieProperty[] {
-    if (!this._properties && this.iconData) {
-      this._properties = allProperties(this.iconData, true);
-    }
-
-    return this._properties || [];
-  }
-
-  /**
-   * Available states for current icon.
-   */
-  get states(): string[] {
-    return this.properties.filter(c => c.name.startsWith(STATE_PREFIX)).map(c => {
-      return c.name.substr(STATE_PREFIX.length).toLowerCase();
-    });
-  }
-
-  /**
-   * Find default state.
-   */
-  get defaultState(): string | undefined {
-    const states = this.properties.filter(c => c.name.startsWith(STATE_PREFIX) && c.value);
-    if (states.length) {
-      return states[0].name.substr(STATE_PREFIX.length).toLowerCase();
-    }
-    return undefined;
-  }
-
-  /**
-   * Check whether the element is ready.
-   */
-  get isReady() {
-    return this._isReady;
-  }
-
-  /**
-   * Access lottie animation instance.
-   */
-  get lottie() {
-    return this._lottie;
-  }
-
-  /**
-   * Update palette.
-   */
-  set palette(colors: { [key: string]: string }) {
-    if (!colors || typeof colors !== 'object') {
-      return;
-    }
-
-    for (const current of this.properties) {
-      if (current.type !== 'color') {
-        continue;
-      }
-
-      const name = current.name.toLowerCase();
-
-      if (name in colors && colors[name]) {
-        updateColor(this._lottie, this.properties, name, colors[name]);
-      } else {
-        resetColor(this._lottie, this.properties, name);
-      }
-    }
-
-    this.refresh();
-  }
-
-  /**
-   * Access to colors get / update with convenient way. 
-   */
-  get palette() {
-    if (!this._palette) {
-      this._palette = new Proxy(this, {
-        set: (target, property, value, receiver): boolean => {
-          for (const current of target.properties) {
-            if (current.type == 'color' && typeof property === 'string' && property.toLowerCase() == current.name.toLowerCase()) {
-              if (value) {
-                updateColor(target._lottie, target.properties, property, value);
-              } else if (value === undefined) {
-                resetColor(target._lottie, target.properties, property);
-              }
-              target.refresh();
-            }
-          }
-          return true;
-        },
-        get: (target, property, receiver) => {
-          for (const current of target.properties) {
-            if (current.type == 'color' && typeof property === 'string' && property.toLowerCase() == current.name.toLowerCase()) {
-              return lottieColorToHex(get(target._lottie, current.path));
-            }
-          }
-          return undefined;
-        },
-        deleteProperty: (target, property) => {
-          for (const current of target.properties) {
-            if (current.type == 'color' && typeof property === 'string' && property.toLowerCase() == current.name.toLowerCase()) {
-              resetColor(target._lottie, target.properties, property);
-              target.refresh();
-            }
-          }
-          return true;
-        },
-        ownKeys: (target) => {
-          return target.properties.filter(c => c.type == 'color').map(c => c.name.toLowerCase());
-        },
-        has: (target, property) => {
-          for (const current of target.properties) {
-            if (current.type == 'color' && typeof property === 'string' && property.toLowerCase() == current.name.toLowerCase()) {
-              return true;
-            }
-          }
-          return false;
-        },
-        getOwnPropertyDescriptor: (target) => {
-          return {
-            enumerable: true,
-            configurable: true,
-          };
-        },
-      });
-    }
-
-    return this._palette;
+    this.destroyPlayer();
+    this.createPlayer();
   }
 
   set icon(value: any) {
@@ -690,6 +562,18 @@ export class Element extends HTMLElement {
     return this.getAttribute('trigger');
   }
 
+  set target(value: string | null) {
+    if (value) {
+      this.setAttribute('target', value);
+    } else {
+      this.removeAttribute('target');
+    }
+  }
+
+  get target(): string | null {
+    return this.getAttribute('target');
+  }
+
   set stroke(value: number | null) {
     if (isNil(value)) {
       this.removeAttribute('stroke');
@@ -705,11 +589,11 @@ export class Element extends HTMLElement {
     return null;
   }
 
-  set scale(value: any) {
+  set scale(value: number | null) {
     if (isNil(value)) {
       this.removeAttribute('scale');
     } else {
-      this.setAttribute('scale', value);
+      this.setAttribute('scale', '' + value);
     }
   }
 
@@ -720,11 +604,11 @@ export class Element extends HTMLElement {
     return null;
   }
 
-  set axisX(value: any) {
+  set axisX(value: number | null) {
     if (isNil(value)) {
       this.removeAttribute('axis-x');
     } else {
-      this.setAttribute('axis-x', value);
+      this.setAttribute('axis-x', '' + value);
     }
   }
 
@@ -735,11 +619,11 @@ export class Element extends HTMLElement {
     return null;
   }
 
-  set axisY(value: any) {
+  set axisY(value: number | null) {
     if (isNil(value)) {
       this.removeAttribute('axis-y');
     } else {
-      this.setAttribute('axis-y', value);
+      this.setAttribute('axis-y', '' + value);
     }
   }
 
@@ -751,30 +635,37 @@ export class Element extends HTMLElement {
   }
 
   /**
+   * Access animation player.
+   */
+  get player(): P | undefined {
+    return this._player as any;
+  }
+
+  /**
+   * Check whether the element is ready.
+   */
+  get isReady() {
+    return this._isReady;
+  }
+
+  /**
+   * Access current trigger instance.
+   */
+  get triggerInstance() {
+    return this._triggerInstance;
+  }
+
+  /**
    * Access animation container element.
    */
-  private get container(): HTMLElement | undefined {
-    return this._root.lastElementChild as any;
+  private get animationContainer(): HTMLElement | undefined {
+    return this._root!.lastElementChild as any;
   }
 
   /**
-   * Access icon data for this element.
+   * Access loaded icon data.
    */
-  private get iconData(): any {
+  private get iconData(): IconData | undefined {
     return this._assignedIconData || this._loadedIconData;
-  }
-
-  /**
-   * Current icon is customizable.
-   */
-  private get customizable(): boolean {
-    return (this._isReady && this._lottie && this.properties) ? true : false;
-  }
-
-  /** 
-   * Check element version.
-   */
-  get version() {
-    return VERSION;
   }
 }

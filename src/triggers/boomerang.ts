@@ -1,23 +1,34 @@
-import { Trigger } from '../trigger.js';
+import { IPlayer, ITrigger } from '../interfaces.js';
 
 /**
  * Morph animation from point A to B and then from B to A after mouse enter.
- * @category Trigger
  */
-export class Boomerang extends Trigger {
+export class Boomerang implements ITrigger {
+    constructor(
+        protected element: HTMLElement,
+        protected targetElement: HTMLElement,
+        protected player: IPlayer,
+    ) {
+        this.onHover = this.onHover.bind(this);
+    }
+
     onConnected() {
-        this.addTargetEventListener('mouseenter', () => {
-            this.setDirection(1);
-            this.play();
-        });
+        this.targetElement.addEventListener('mouseenter', this.onHover);
     }
 
     onDisconnected() {
-        this.setDirection(1);
+        this.targetElement.removeEventListener('mouseenter', this.onHover);
+
+        this.player.setDirection(1);
     }
 
     onComplete() {
-        this.setDirection(-1);
-        this.play();
+        this.player.setDirection(-1);
+        this.player.play();
+    }
+
+    onHover() {
+        this.player.setDirection(1);
+        this.player.play();
     }
 }

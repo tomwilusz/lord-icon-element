@@ -65,7 +65,7 @@ List of available examples:
 - __background__ - This example presents the use of the element as a content container.
 - __state__ - This example presents usage for icons state animation. It is easier than ever to switch between each motion type to use them as stand-alone animations or combine and create an interactive experience.
 - __custom trigger__ - If none of the provided triggers meet what we need to implement, we allow building custom animation triggers. The process is simplified as you inherit from the {@link trigger.Trigger | Trigger} class. Provided example show how to create trigger which will reverse animation on second click.
-- __lottie light__ - Example of use our element with lottie-web-light which is a lot smaller but don't support expressions. You can use light version in pair with our raw icons.
+- __lottie light__ - Example of use our element with lottie-web-light which is a lot smaller but don't support expressions (and as a consequence dynamic customization). You can use light version in pair with our raw icons.
 
 ## Related
 - [lordicon](https://lordicon.com/) - Lordicon is a powerful library of carefully crafted animated icons,

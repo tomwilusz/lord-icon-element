@@ -1,5 +1,5 @@
-import { defineLordIconElement } from '/dist/index.js';
 import { Element } from '/dist/element.js';
+import { defineLordIconElement } from '/dist/index.js';
 
 // List of supported icons by our icon loader.
 const ICONS = {

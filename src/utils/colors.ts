@@ -1,4 +1,6 @@
-const COLOURS: any = {
+import { IColors } from "../interfaces.js";
+
+const COLORS: any = {
     "aliceblue": "#f0f8ff",
     "antiquewhite": "#faebd7",
     "aqua": "#00ffff",
@@ -147,7 +149,7 @@ const COLOURS: any = {
  * @param colorName 
  * @returns 
  */
-export function handleColor(colorName: string): string {
+export function parseColor(colorName: string): string {
     if (colorName.startsWith('#')) {
         if (colorName.length === 4) {
             // support shorthand
@@ -156,6 +158,16 @@ export function handleColor(colorName: string): string {
             return colorName;
         }
     } else {
-        return COLOURS[colorName.toLowerCase()] || '#000000';
+        return COLORS[colorName.toLowerCase()] || '#000000';
     }
+}
+
+export function parseColors(colors: string): IColors {
+    const list = colors.split(',').filter(c => c).map(c => c.split(':')).filter(c => c.length == 2);
+
+    return list.reduce<IColors>((p, c) => {
+        const a = c[0];
+        p[a.toLowerCase()] = parseColor(c[1]);
+        return p;
+    }, {});
 }

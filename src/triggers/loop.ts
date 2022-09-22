@@ -1,13 +1,20 @@
-import { Trigger } from '../trigger.js';
+import { IPlayer, ITrigger } from '../interfaces.js';
 
 /**
  * Animation with auto start and loop.
  */
-export class Loop extends Trigger {
-    playDelay: any = null;
+export class Loop implements ITrigger {
+    private playTimeout: any = null;
+
+    constructor(
+        protected element: HTMLElement,
+        protected targetElement: HTMLElement,
+        protected player: IPlayer,
+    ) {
+    }
 
     onReady() {
-        this.play();
+        this.player.play();
     }
 
     onDisconnected() {
@@ -17,26 +24,22 @@ export class Loop extends Trigger {
     onComplete() {
         this.resetPlayDelayTimer();
 
-        if (!this.isConnected) {
-            return;
-        }
-
         if (this.delay > 0) {
-            this.playDelay = setTimeout(() => {
-                this.playFromBegining();
+            this.playTimeout = setTimeout(() => {
+                this.player.playFromBegining();
             }, this.delay)
         } else {
-            this.playFromBegining();
+            this.player.playFromBegining();
         }
     }
 
     resetPlayDelayTimer() {
-        if (!this.playDelay) {
+        if (!this.playTimeout) {
             return;
         }
 
-        clearTimeout(this.playDelay);
-        this.playDelay = null;
+        clearTimeout(this.playTimeout);
+        this.playTimeout = null;
     }
 
     get delay() {

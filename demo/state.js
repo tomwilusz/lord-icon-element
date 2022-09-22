@@ -2,24 +2,31 @@ import { defineLordIconElement } from '/dist/index.js';
 
 defineLordIconElement(lottie.loadAnimation);
 
-function handleIconStates(iconElement) {
+const iconElement = document.getElementById('main-icon');
+
+iconElement.addEventListener('ready', () => {
+    // initial play intro
+    iconElement.state = 'intro';
+    iconElement.player.playFromBegining();
+
+    // store next state
     let nextState = null;
 
-    iconElement.addEventListener('ready', e => {
-        iconElement.state = 'intro';
-        iconElement.connectedTrigger.playFromBegining();
-    });
-
-    iconElement.addEventListener('complete', e => {
+    // react on animation complete
+    iconElement.player.addEventListener('complete', e => {
+        // change to assigned state
         iconElement.state = nextState ?? 'loop';
-        iconElement.connectedTrigger.playFromBegining();
 
+        // play from begining
+        iconElement.player.playFromBegining();
+
+        // clear next state
         nextState = null;
     });
 
+    // react to mouse enter
     iconElement.addEventListener('mouseenter', e => {
+        // set next state to hover
         nextState = 'hover';
     });
-}
-
-handleIconStates(document.getElementById('main-icon'));
+});

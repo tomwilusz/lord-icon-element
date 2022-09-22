@@ -1,20 +1,15 @@
 import { Element } from '/dist/element.js';
+import { Player } from '/dist/player.js';
+import { Loop } from '/dist/triggers/loop.js';
 
-Element.setAnimationLoader(lottie.loadAnimation);
+Element.setPlayerLoader((container, iconData) => {
+    return new Player(
+        lottie.loadAnimation,
+        container,
+        iconData,
+    );
+});
+
+Element.registerTrigger('loop', Loop);
 
 customElements.define("lord-icon", Element);
-
-const lordIconElement = document.querySelector('lord-icon');
-
-lordIconElement.addEventListener('ready', () => {
-    console.log('ready');
-});
-
-lordIconElement.addEventListener('complete', () => {
-    console.log('complete');
-});
-
-document.getElementById('btn').addEventListener('click', e => {
-    e.preventDefault();
-    lordIconElement.connectedTrigger.playFromBegining();
-});

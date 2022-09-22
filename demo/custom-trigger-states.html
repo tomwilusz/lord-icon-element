@@ -3,18 +3,17 @@
 
 <head>
   <meta charset="utf-8" />
-  <title>Manual control</title>
+  <title>Custom trigger states</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="stylesheet" type="text/css" href="/style.css" />
-
 </head>
 
 <body>
-  <lord-icon src="/icons/book.json"></lord-icon>
-  <a href="#" id="btn">click me!</a>
+  <lord-icon class="clickable" trigger="trash" src="/icons/trash.json"></lord-icon>
+  <lord-icon colorize class="clickable" trigger="trash" src="/icons/trash.json"></lord-icon>
 
   <script type="module" src="/node_modules/lottie-web/build/player/lottie_svg.min.js"></script>
-  <script type="module" src="/manual-control.js"></script>
+  <script type="module" src="/custom-trigger-states.js"></script>
 </body>
 
 </html>
