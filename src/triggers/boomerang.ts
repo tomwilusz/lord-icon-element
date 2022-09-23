@@ -19,16 +19,16 @@ export class Boomerang implements ITrigger {
     onDisconnected() {
         this.targetElement.removeEventListener('mouseenter', this.onHover);
 
-        this.player.setDirection(1);
+        this.player.direction = 1;
     }
 
     onComplete() {
-        this.player.setDirection(-1);
+        this.player.direction = -1;
         this.player.play();
     }
 
     onHover() {
-        this.player.setDirection(1);
+        this.player.direction = 1;
         this.player.play();
     }
 }

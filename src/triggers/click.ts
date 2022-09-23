@@ -30,7 +30,7 @@ export class Click implements ITrigger {
     }
 
     onClick() {
-        if (this.player.inAnimation) {
+        if (this.player.isPlaying) {
             return;
         }
 

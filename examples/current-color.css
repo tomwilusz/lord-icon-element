@@ -1,0 +1,9 @@
+.btn {
+    cursor: pointer;
+    display: inline-block;
+    color: #fdd394;
+}
+
+.btn:hover {
+    color: #03a9f4;
+}

@@ -1,9 +1,16 @@
+import { AnimationItem } from 'lottie-web';
 import { IconData } from '../interfaces.js';
 import { parseColor } from './colors.js';
 import { get, has, set } from './helpers.js';
 
+/**
+ * Lottie color type.
+ */
 export type LottieColor = [number, number, number];
 
+/**
+ * Supported field types.
+ */
 export type LottieFieldType = 'color' | 'slider' | 'point' | 'checkbox';
 
 /**
@@ -112,14 +119,15 @@ export function lottieColorToHex(value: LottieColor): string {
 /**
  * Return all supported customizable properties.
  * @param data Icon data.
- * @param lottieInstance Resolve property path for running lottie instance.
+ * @param options Options.
  * @returns 
  */
 export function properties(
     data: IconData,
-    { lottieInstance }: { lottieInstance?: boolean } = {},
+    options: { lottieInstance?: boolean } = {},
 ): ILottieProperty[] {
     const result: any[] = [];
+    const { lottieInstance } = options;
 
     if (!data || !data.layers) {
         return result;
@@ -185,13 +193,25 @@ export function properties(
     return result;
 }
 
-export function resetProperties(data: IconData, properties: ILottieProperty[]): any {
+/**
+ * Reset data by indicated properties.
+ * @param data 
+ * @param properties 
+ */
+export function resetProperties(data: IconData | AnimationItem, properties: ILottieProperty[]): any {
     for (const property of properties) {
         set(data, property.path, property.value);
     }
 }
 
-export function updateProperties(data: IconData, properties: ILottieProperty[], value: any, { scale }: { scale?: number } = {}): any {
+/**
+ * Update data to value by indicated properties.
+ * @param data 
+ * @param properties 
+ * @param value 
+ * @param param3 
+ */
+export function updateProperties(data: IconData | AnimationItem, properties: ILottieProperty[], value: any, { scale }: { scale?: number } = {}): any {
     for (const property of properties) {
         if (property.type === 'color') {
             if (typeof value === 'object' && 'r' in value && 'g' in value && 'b' in value) {

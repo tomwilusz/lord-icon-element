@@ -1,10 +1,16 @@
 :root {
     --palette-font: #3c3c3c;
     --palette-primary: #08c18a;
+    --palette-bg-1: hsl(50deg 34% 85%);
+    --palette-bg-2: hsl(100deg 34% 85%);
+    --palette-bg-3: hsl(150deg 34% 85%);
 }
 
 body {
     color: var(--palette-font);
+    padding: 10px;
+    margin: 0;
+    line-height: 1.8;
 }
 
 a {
@@ -33,8 +39,8 @@ td {
 }
 
 lord-icon {
-    width: 128px;
-    height: 128px;
+    width: 150px;
+    height: 150px;
 }
 
 lord-icon[trigger=click],

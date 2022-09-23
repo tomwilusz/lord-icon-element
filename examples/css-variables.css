@@ -1,0 +1,15 @@
+body {
+    color: orange;
+}
+
+.first {
+    --lord-icon-primary: #009688;
+}
+
+.second {
+    --lord-icon-primary: #673ab7;
+}
+
+.third {
+    --lord-icon-primary: currentColor;
+}

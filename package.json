@@ -9,7 +9,7 @@
     "animation"
   ],
   "scripts": {
-    "start": "tsc-watch --onFirstSuccess \"node ./scripts/open.js\" --onSuccess \"node ./scripts/demo.js\"",
+    "start": "tsc-watch --onFirstSuccess \"node ./scripts/open.js\" --onSuccess \"node ./scripts/examples.js\"",
     "compile": "tsc",
     "release": "npm run compile && webpack --mode production",
     "clean": "rm -rf dist",

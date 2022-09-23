@@ -2,7 +2,7 @@ import { Element } from '/dist/element.js';
 import { Player } from '/dist/player.js';
 import { Loop } from '/dist/triggers/loop.js';
 
-Element.setPlayerLoader((container, iconData) => {
+Element.setPlayerFactory((container, iconData) => {
     return new Player(
         lottie.loadAnimation,
         container,
@@ -10,6 +10,6 @@ Element.setPlayerLoader((container, iconData) => {
     );
 });
 
-Element.registerTrigger('loop', Loop);
+Element.defineTrigger('loop', Loop);
 
 customElements.define("lord-icon", Element);

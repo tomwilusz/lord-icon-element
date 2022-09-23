@@ -31,7 +31,7 @@ export class LoopOnHover implements ITrigger {
     onMouseEnter() {
         this.mouseIn = true;
 
-        if (!this.player.inAnimation) {
+        if (!this.player.isPlaying) {
             this.player.playFromBegining();
         }
     }

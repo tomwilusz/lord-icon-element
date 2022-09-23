@@ -1,0 +1,67 @@
+@media (max-width: 479px) {
+    .block:not(:last-child) {
+        margin-bottom: 20px;
+    }
+}
+
+@media (min-width: 480px) {
+    .blocks {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+    }
+}
+
+body {
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.block {
+    background: #e8e8e8;
+    border-radius: 10px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    cursor: pointer;
+}
+
+.block:nth-child(1) {
+    background-color: var(--palette-bg-1);
+}
+
+.block:nth-child(2) {
+    background-color: var(--palette-bg-2);
+}
+
+.block:nth-child(3) {
+    background-color: var(--palette-bg-3);
+}
+
+.block .icon {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    background: rgb(255 255 255 / 50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.block .icon lord-icon {
+    width: 55px;
+    height: 55px;
+}
+
+.block p {
+    margin: 0;
+}
+
+.block:hover {
+    box-shadow: 0 4px 18px 0 rgb(0 0 0 / 10%);
+    color: var(--palette-primary);
+}

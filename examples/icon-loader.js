@@ -1,5 +1,5 @@
 import { Element } from '/dist/element.js';
-import { defineLordIconElement } from '/dist/index.js';
+import { defineElement } from '/dist/index.js';
 
 // List of supported icons by our icon loader.
 const ICONS = {
@@ -15,4 +15,4 @@ Element.setIconLoader(async (iconName) => {
 });
 
 // Register element.
-defineLordIconElement(lottie.loadAnimation);
+defineElement(lottie.loadAnimation);

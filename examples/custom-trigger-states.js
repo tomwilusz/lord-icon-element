@@ -1,10 +1,5 @@
 import { Element } from '/dist/element.js';
-import { defineLordIconElement } from '/dist/index.js';
-
-const CLICK_EVENTS = [
-    { name: 'mousedown' },
-    { name: 'touchstart', options: { passive: true } },
-];
+import { defineElement } from '/dist/index.js';
 
 class Trash {
     element;
@@ -37,30 +32,17 @@ class Trash {
     }
 
     onReady() {
-        if (this.colorize) {
-            this.player.colors.primary = 'red';
-        }
         this.player.state = 'intro-empty';
         this.player.playFromBegining();
     }
 
-    onComplete() {
-    }
-
     onClick() {
         if (this.empty) {
-            if (this.colorize) {
-                this.player.colors.primary = 'green';
-            }
             this.player.state = 'morph-fill';
             this.empty = false;
         } else {
-            if (this.colorize) {
-                this.player.colors.primary = 'blue';
-            }
             this.player.state = 'morph-erase';
             this.empty = true;
-
         }
 
         this.player.playFromBegining();
@@ -68,14 +50,8 @@ class Trash {
 
     onMouseEnter() {
         if (this.empty) {
-            if (this.colorize) {
-                this.player.colors.primary = 'darkkhaki';
-            }
             this.player.state = 'hover-empty';
         } else {
-            if (this.colorize) {
-                this.player.colors.primary = 'darksalmon';
-            }
             this.player.state = 'hover-full';
         }
 
@@ -85,11 +61,44 @@ class Trash {
     onMouseLeave() {
     }
 
-    get colorize() {
-        return this.element.hasAttribute('colorize');
+    trashIntro() {
+        this.player.state = 'intro-empty';
+        this.empty = true;
+        this.player.playFromBegining();
+    }
+
+    trashFill() {
+        this.player.state = 'morph-fill';
+        this.empty = false;
+        this.player.playFromBegining();
+    }
+
+    trashErase() {
+        this.player.state = 'morph-erase';
+        this.empty = true;
+        this.player.playFromBegining();
     }
 }
 
-Element.registerTrigger('trash', Trash);
+Element.defineTrigger('trash', Trash);
 
-defineLordIconElement(lottie.loadAnimation);
+defineElement(lottie.loadAnimation);
+
+// control animation manualy with trigger instance
+const element = document.querySelector('lord-icon');
+element.addEventListener('ready', () => {
+    document.getElementById('trash-intro').addEventListener('click', e => {
+        e.preventDefault();
+        element.triggerInstance.trashIntro()
+    });
+
+    document.getElementById('trash-fill').addEventListener('click', e => {
+        e.preventDefault();
+        element.triggerInstance.trashFill()
+    });
+
+    document.getElementById('trash-erase').addEventListener('click', e => {
+        e.preventDefault();
+        element.triggerInstance.trashErase()
+    });
+});

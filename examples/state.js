@@ -1,6 +1,6 @@
-import { defineLordIconElement } from '/dist/index.js';
+import { defineElement } from '/dist/index.js';
 
-defineLordIconElement(lottie.loadAnimation);
+defineElement(lottie.loadAnimation);
 
 const iconElement = document.getElementById('main-icon');
 

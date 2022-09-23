@@ -21,7 +21,7 @@ export class Hover implements ITrigger {
     }
 
     onHover() {
-        if (this.player.inAnimation) {
+        if (this.player.isPlaying) {
             return;
         }
 

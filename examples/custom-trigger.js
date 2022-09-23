@@ -1,5 +1,5 @@
 import { Element } from '/dist/element.js';
-import { defineLordIconElement } from '/dist/index.js';
+import { defineElement } from '/dist/index.js';
 
 const CLICK_EVENTS = [
     { name: 'mousedown' },
@@ -30,11 +30,11 @@ class Custom {
             this.targetElement.removeEventListener(event.name, this.onClick);
         }
 
-        this.player.setDirection(1);
+        this.player.direction = 1;
     }
 
     onReady() {
-        this.player.setDirection(this.direction);
+        this.player.direction = this.direction;
 
         if (this.reverse) {
             this.player.goToLastFrame();
@@ -43,11 +43,11 @@ class Custom {
 
     onComplete() {
         this.direction = -this.direction;
-        this.player.setDirection(this.direction);
+        this.player.direction = this.direction;
     }
 
     onClick() {
-        if (!this.player.inAnimation) {
+        if (!this.player.isPlaying) {
             this.player.play();
         }
     }
@@ -57,6 +57,6 @@ class Custom {
     }
 }
 
-Element.registerTrigger('custom', Custom);
+Element.defineTrigger('custom', Custom);
 
-defineLordIconElement(lottie.loadAnimation);
+defineElement(lottie.loadAnimation);

@@ -1,12 +1,19 @@
 import { VERSION } from "./global.js";
-import { IconData, IconFeature, IconLoader, IPlayer, ITrigger, ITriggerConstructor, PlayerLoader } from './interfaces.js';
+import { IconData, IconLoader, IPlayer, ITrigger, ITriggerConstructor, PlayerFactory } from './interfaces.js';
 import { parseColors } from "./utils/colors.js";
 import { isNil, isObjectLike } from './utils/helpers.js';
+
+/**
+ * List of icon extra features that need special treatment by our {@link Element | Element}.
+ */
+type IconFeature = 'css-variables';
 
 /**
  * Use constructable stylesheets if supported (https://developers.google.com/web/updates/2019/02/constructable-stylesheets)
  */
 const SUPPORTS_ADOPTING_STYLE_SHEETS = 'adoptedStyleSheets' in Document.prototype && 'replace' in CSSStyleSheet.prototype;
+
+const CENTER_VALUE = 50;
 
 /**
  * Style for this element.
@@ -79,6 +86,7 @@ type SUPPORTED_ATTRIBUTES = |
   "icon" |
   "state" |
   "trigger" |
+  "loading" |
   "target" |
   "stroke" |
   "scale" |
@@ -94,6 +102,7 @@ const OBSERVED_ATTRIBUTES: SUPPORTED_ATTRIBUTES[] = [
   "icon",
   "state",
   "trigger",
+  "loading",
   "target",
   "stroke",
   "scale",
@@ -119,8 +128,8 @@ function iconFeatures(data: IconData): IconFeature[] {
  */
 export class Element<P extends IPlayer = IPlayer> extends HTMLElement {
   private static _iconLoader?: IconLoader;
-  private static _playerLoader?: PlayerLoader;
-  private static _supportedTriggers: Map<string, ITriggerConstructor> = new Map<string, ITriggerConstructor>();
+  private static _playerFactory?: PlayerFactory;
+  private static _definedTriggers: Map<string, ITriggerConstructor> = new Map<string, ITriggerConstructor>();
 
   /** 
    * Get element version.
@@ -148,17 +157,17 @@ export class Element<P extends IPlayer = IPlayer> extends HTMLElement {
    * Assign callback which create a player. Player is responsible for customizing icons and playing animations.
    * @param loader
    */
-  static setPlayerLoader(loader: PlayerLoader) {
-    Element._playerLoader = loader;
+  static setPlayerFactory(loader: PlayerFactory) {
+    Element._playerFactory = loader;
   }
 
   /**
-   * Register supported trigger. Triggers allows to define interaction strategy with icon.
+   * Define supported trigger. Triggers allows to define interaction strategy with icon.
    * @param name
    * @param triggerClass
    */
-  static registerTrigger(name: string, triggerClass: ITriggerConstructor) {
-    Element._supportedTriggers.set(name, triggerClass);
+  static defineTrigger(name: string, triggerClass: ITriggerConstructor) {
+    Element._definedTriggers.set(name, triggerClass);
   }
 
   private _root?: ShadowRoot;
@@ -168,6 +177,7 @@ export class Element<P extends IPlayer = IPlayer> extends HTMLElement {
   private _assignedIconData?: IconData;
   private _loadedIconData?: IconData;
   private _player?: IPlayer;
+  private _intersectionObserver?: IntersectionObserver;
 
   /**
    * Handle attribute update.
@@ -205,7 +215,22 @@ export class Element<P extends IPlayer = IPlayer> extends HTMLElement {
     this._isInitialized = true;
 
     this.createElements();
-    this.createPlayer();
+
+    if (this.loading && this.loading.toLowerCase() === 'lazy') {
+      const callback: IntersectionObserverCallback = (entries, observer) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            this._intersectionObserver!.unobserve(this);
+            this._intersectionObserver = undefined;
+            this.createPlayer();
+          }
+        });
+      };
+      this._intersectionObserver = new IntersectionObserver(callback);
+      this._intersectionObserver.observe(this);
+    } else {
+      this.createPlayer();
+    }
   }
 
   /**
@@ -249,8 +274,14 @@ export class Element<P extends IPlayer = IPlayer> extends HTMLElement {
   }
 
   protected async createPlayer(): Promise<void> {
-    if (!Element._playerLoader) {
+    // notify about missing loader
+    if (!Element._playerFactory) {
       throw new Error('Missing player loader!');
+    }
+
+    // already on awaiting state
+    if (this._intersectionObserver) {
+      return;
     }
 
     const iconData = await this.loadIconData();
@@ -258,7 +289,7 @@ export class Element<P extends IPlayer = IPlayer> extends HTMLElement {
       return;
     }
 
-    this._player = Element._playerLoader(this.animationContainer!, iconData);
+    this._player = Element._playerFactory(this.animationContainer!, iconData);
     this._player.connect();
 
     // assign initial properties for icon
@@ -269,8 +300,8 @@ export class Element<P extends IPlayer = IPlayer> extends HTMLElement {
         scale: this.scale,
         state: this.state,
         axis: isNil(this.axisX) && isNil(this.axisY) ? null : {
-          x: isNil(this.axisX) ? 50 : this.axisX!,
-          y: isNil(this.axisY) ? 50 : this.axisY!,
+          x: isNil(this.axisX) ? CENTER_VALUE : this.axisX!,
+          y: isNil(this.axisY) ? CENTER_VALUE : this.axisY!,
         },
       });
     }
@@ -282,6 +313,15 @@ export class Element<P extends IPlayer = IPlayer> extends HTMLElement {
       }
     });
 
+    // listen for refresh
+    this._player.addEventListener('refresh', () => {
+      this.refresh();
+
+      if (this._triggerInstance && this._triggerInstance.onRefresh) {
+        this._triggerInstance.onRefresh();
+      }
+    });
+
     // listen for complete
     this._player.addEventListener('complete', () => {
       if (this._triggerInstance && this._triggerInstance.onComplete) {
@@ -289,12 +329,10 @@ export class Element<P extends IPlayer = IPlayer> extends HTMLElement {
       }
     });
 
-    // listen for refresh
-    this._player.addEventListener('refresh', () => {
-      this.refresh();
-
-      if (this._triggerInstance && this._triggerInstance.onRefresh) {
-        this._triggerInstance.onRefresh();
+    // listen for frame
+    this._player.addEventListener('frame', () => {
+      if (this._triggerInstance && this._triggerInstance.onFrame) {
+        this._triggerInstance.onFrame();
       }
     });
 
@@ -379,6 +417,9 @@ export class Element<P extends IPlayer = IPlayer> extends HTMLElement {
     this.triggerChanged();
   }
 
+  protected loadingChanged() {
+  }
+
   protected triggerChanged() {
     if (this._triggerInstance) {
       if (this._triggerInstance.onDisconnected) {
@@ -391,7 +432,7 @@ export class Element<P extends IPlayer = IPlayer> extends HTMLElement {
       return;
     }
 
-    const TriggerClass = Element._supportedTriggers.get(this.trigger);
+    const TriggerClass = Element._definedTriggers.get(this.trigger);
     if (!TriggerClass) {
       throw new Error(`Can't use unregistered trigger!`)
     }
@@ -451,8 +492,8 @@ export class Element<P extends IPlayer = IPlayer> extends HTMLElement {
     }
 
     this.player.axis = {
-      x: isNil(this.axisX) ? 50 : this.axisX!,
-      y: isNil(this.axisY) ? 50 : this.axisX!,
+      x: isNil(this.axisX) ? CENTER_VALUE : this.axisX!,
+      y: isNil(this.axisY) ? CENTER_VALUE : this.axisX!,
     };
   }
 
@@ -462,8 +503,8 @@ export class Element<P extends IPlayer = IPlayer> extends HTMLElement {
     }
 
     this.player.axis = {
-      x: isNil(this.axisX) ? 50 : this.axisX!,
-      y: isNil(this.axisY) ? 50 : this.axisX!,
+      x: isNil(this.axisX) ? CENTER_VALUE : this.axisX!,
+      y: isNil(this.axisY) ? CENTER_VALUE : this.axisX!,
     };
   }
 
@@ -562,6 +603,18 @@ export class Element<P extends IPlayer = IPlayer> extends HTMLElement {
     return this.getAttribute('trigger');
   }
 
+  set loading(value: string | null) {
+    if (value) {
+      this.setAttribute('loading', value);
+    } else {
+      this.removeAttribute('loading');
+    }
+  }
+
+  get loading(): string | null {
+    return this.getAttribute('loading');
+  }
+
   set target(value: string | null) {
     if (value) {
       this.setAttribute('target', value);
@@ -649,7 +702,7 @@ export class Element<P extends IPlayer = IPlayer> extends HTMLElement {
   }
 
   /**
-   * Access current trigger instance.
+   * Access connected trigger instance.
    */
   get triggerInstance() {
     return this._triggerInstance;

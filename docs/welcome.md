@@ -31,10 +31,10 @@ From script module:
 
 ```js
 import lottie from 'lottie-web';
-import { defineLordIconElement } from 'lord-icon-element';
+import { defineElement } from 'lord-icon-element';
 
 // define "lord-icon" custom element, with default set of supported triggers and provided animation player
-defineLordIconElement(lottie.loadAnimation);
+defineElement(lottie.loadAnimation);
 ```
 
 From markup:

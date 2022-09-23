@@ -22,16 +22,16 @@ export class Morph implements ITrigger {
         this.targetElement.removeEventListener('mouseenter', this.onMouseEnter);
         this.targetElement.removeEventListener('mouseleave', this.onMouseLeave);
 
-        this.player.setDirection(1);
+        this.player.direction = 1;
     }
 
     onMouseEnter() {
-        this.player.setDirection(1);
+        this.player.direction = 1;
         this.player.play();
     }
 
     onMouseLeave() {
-        this.player.setDirection(-1);
+        this.player.direction = -1;
         this.player.play();
     }
 }

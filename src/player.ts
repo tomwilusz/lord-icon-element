@@ -1,17 +1,25 @@
-import { AnimationConfig, AnimationDirection, AnimationItem } from 'lottie-web';
-import { AnimationLoader, IColors, IconData, IPlayer, IProperties, PlayerEventCallback, PlayerEventName } from './interfaces.js';
+import { AnimationConfig, AnimationConfigWithData, AnimationConfigWithPath, AnimationDirection, AnimationItem } from 'lottie-web';
+import { IColors, IconData, IPlayer, IProperties, PlayerEventCallback, PlayerEventName } from './interfaces.js';
 import { deepClone, get, isNil } from './utils/helpers.js';
 import { ILottieProperty, lottieColorToHex, properties, resetProperties, updateProperties } from './utils/lottie.js';
 
+/**
+ * Type for options supported by {@link player.Player | Player}.
+ */
 export type LOTTIE_OPTIONS = Omit<AnimationConfig, 'container'>;
 
 /**
- * Scale factor for supported properties.
+ * Type for `loadAnimation` method from `lottie-web` package.
+ */
+export type AnimationLoader = (params: AnimationConfigWithPath | AnimationConfigWithData) => AnimationItem;
+
+/**
+ * Scale factor for supported customizable properties.
  */
 export const PROPERTY_SCALE = 50;
 
 /**
- * Prefix for icon states.
+ * Prefix for icon states. Properties with this prefix are handled as icon states.
  */
 export const STATE_PREFIX = 'state-';
 
@@ -24,25 +32,28 @@ export const DEFAULT_LOTTIE_WEB_OPTIONS: Omit<AnimationConfig, 'container'> = {
     autoplay: false,
     rendererSettings: {
         preserveAspectRatio: "xMidYMid meet",
-        progressiveLoad: false,
+        progressiveLoad: true,
         hideOnTransparent: true,
     },
 }
 
-function createColorsProxy(player: Player) {
-    return new Proxy<Player>(player, {
+/**
+ * Create convenient proxy for manipulating colors.
+ */
+function createColorsProxy(this: Player) {
+    return new Proxy<Player>(this, {
         set: (target, property, value, receiver): boolean => {
             if (typeof property === 'string') {
                 if (value) {
                     updateProperties(
-                        player.lottie,
-                        player.rawProperties.filter(c => c.type === 'color' && c.name === property.toLowerCase()),
+                        this.lottie,
+                        this.rawProperties.filter(c => c.type === 'color' && c.name === property.toLowerCase()),
                         value,
                     );
                 } else {
                     resetProperties(
-                        player.lottie,
-                        player.rawProperties.filter(c => c.type === 'color' && c.name === property.toLowerCase()),
+                        this.lottie,
+                        this.rawProperties.filter(c => c.type === 'color' && c.name === property.toLowerCase()),
                     );
                 }
                 target.refresh();
@@ -52,7 +63,7 @@ function createColorsProxy(player: Player) {
         get: (target, property, receiver) => {
             for (const current of target.rawProperties) {
                 if (current.type == 'color' && typeof property === 'string' && property.toLowerCase() == current.name) {
-                    return lottieColorToHex(get(player.lottie, current.path));
+                    return lottieColorToHex(get(this.lottie, current.path));
                 }
             }
             return undefined;
@@ -60,8 +71,8 @@ function createColorsProxy(player: Player) {
         deleteProperty: (target, property) => {
             if (typeof property === 'string') {
                 resetProperties(
-                    player.lottie,
-                    player.rawProperties.filter(c => c.type === 'color' && c.name === property.toLowerCase()),
+                    this.lottie,
+                    this.rawProperties.filter(c => c.type === 'color' && c.name === property.toLowerCase()),
                 );
                 target.refresh();
             }
@@ -88,9 +99,12 @@ function createColorsProxy(player: Player) {
 }
 
 /**
- * Wrapper arround lottie-web. Main purposes:
- * - Separate integration with lottie-web with this wprapper.
- * - Provide simple API to control animation and customize properties on the fly.
+ * Player implementation used as wrapper around `lottie-web`. Main purposes:
+ * - Provides simple API to control animation and customize icon properties on the fly.
+ * - Allows to react on animation life cycle.
+ * - Separate integration with `lottie-web` from our custom element. That way we can use this player potentially without _custom element_.
+ * - Simplifies custom element implementation.
+ * - Simplifies testing.
  */
 export class Player implements IPlayer {
     private _animationLoader: AnimationLoader;
@@ -100,15 +114,17 @@ export class Player implements IPlayer {
     private _lottie?: AnimationItem;
     private _isReady: boolean = false;
     private _colorsProxy?: any;
+    private _direction: AnimationDirection = 1;
+    private _speed: number = 1;
     private _rawProperties?: ILottieProperty[];
     private _eventCallbacks: any = {};
 
     /**
      * 
-     * @param animationLoader Provide "loadAnimation" here from lottie-web.
+     * @param animationLoader Provide `loadAnimation` here from `lottie-web`.
      * @param container DOM element in which the animation will be drawn.
      * @param iconData Lottie icon data.
-     * @param options Options for lottie-web. If not provided default will be used.
+     * @param options Options for `lottie-web`. If not provided {@link DEFAULT_LOTTIE_WEB_OPTIONS | default} will be used.
      */
     constructor(animationLoader: AnimationLoader, container: HTMLElement, iconData: IconData, options?: LOTTIE_OPTIONS) {
         this._animationLoader = animationLoader;
@@ -130,6 +146,14 @@ export class Player implements IPlayer {
 
         this._lottie.addEventListener('complete', () => {
             this.triggerEvent('complete');
+        });
+
+        this._lottie.addEventListener('loopComplete', () => {
+            this.triggerEvent('complete');
+        });
+
+        this._lottie.addEventListener('enterFrame', (params) => {
+            this.triggerEvent('frame');
         });
 
         if (this._lottie.isLoaded) {
@@ -188,6 +212,11 @@ export class Player implements IPlayer {
         }
     }
 
+    /**
+     * Trigger event.
+     * @param eventName Event name.
+     * @param args Args.
+     */
     protected triggerEvent(eventName: PlayerEventName, args?: any) {
         if (this._eventCallbacks[eventName]) {
             const callbacks = this._eventCallbacks[eventName];
@@ -198,76 +227,36 @@ export class Player implements IPlayer {
     }
 
     /**
-     * Play animation.
+     * Refresh animation and notify about that fact.
      */
+    protected refresh() {
+        this._lottie?.renderer.renderFrame(null);
+
+        this.triggerEvent('refresh');
+    }
+
     play() {
         this._lottie!.play();
     }
 
-    /**
-     * Play animation from begining.
-     */
     playFromBegining() {
         this._lottie!.goToAndPlay(0);
     }
 
-    /**
-     * Stop animation.
-     */
     stop() {
         this._lottie!.stop();
     }
 
-    /**
-     * Go to animation frame.
-     * @param frame
-     */
     goToFrame(frame: number) {
         this._lottie!.goToAndStop(frame, true);
     }
 
-    /**
-     * Go to first animation frame.
-     */
     goToFirstFrame() {
         this.goToFrame(0);
     }
 
-    /**
-     * Go to last animation frame.
-     */
     goToLastFrame() {
         this.goToFrame(Math.max(0, this._lottie!.getDuration(true) - 1));
-    }
-
-    /**
-     * Set direction of animation.
-     * @param direction Forward (1), backward (-1)
-     */
-    setDirection(direction: AnimationDirection) {
-        this._lottie!.setDirection(direction);
-    }
-
-    /**
-     * Enable or disable loop for this animation.
-     * @param enabled
-     */
-    setLoop(enabled: boolean) {
-        this._lottie!.loop = enabled;
-    }
-
-    /**
-     * Controls speed of animation.
-     * @param speed Animation speed (1 is normal speed)
-     */
-    setSpeed(speed: number) {
-        this._lottie!.setSpeed(speed);
-    }
-
-    refresh() {
-        this._lottie?.renderer.renderFrame(null);
-
-        this.triggerEvent('refresh');
     }
 
     resetProperties(properties: IProperties = {}) {
@@ -364,10 +353,6 @@ export class Player implements IPlayer {
         this.refresh();
     }
 
-
-    /**
-     * Assign multiple colors at once.
-     */
     set colors(colors: IColors | null) {
         resetProperties(
             this._lottie,
@@ -387,23 +372,12 @@ export class Player implements IPlayer {
         this.refresh();
     }
 
-    /**
-     * Access to colors with convenient proxy.
-     */
     get colors() {
         if (!this._colorsProxy) {
-            this._colorsProxy = createColorsProxy(this);
+            this._colorsProxy = createColorsProxy.call(this);
         }
 
         return this._colorsProxy;
-    }
-
-    get stroke(): number | null {
-        const property = this.rawProperties.filter(c => c.name === 'stroke')[0];
-        if (property) {
-            return get(this._lottie, property.path) * (PROPERTY_SCALE / property.value);
-        }
-        return null;
     }
 
     set stroke(stroke: number | null) {
@@ -424,8 +398,8 @@ export class Player implements IPlayer {
         this.refresh();
     }
 
-    get scale(): number | null {
-        const property = this.rawProperties.filter(c => c.name === 'scale')[0];
+    get stroke(): number | null {
+        const property = this.rawProperties.filter(c => c.name === 'stroke')[0];
         if (property) {
             return get(this._lottie, property.path) * (PROPERTY_SCALE / property.value);
         }
@@ -450,14 +424,11 @@ export class Player implements IPlayer {
         this.refresh();
     }
 
-    get state(): string | null {
-        for (const property of this.rawProperties.filter(c => c.name.startsWith(STATE_PREFIX))) {
-            const value = get(this._lottie, property.path);
-            if (value) {
-                return property.name.substr(STATE_PREFIX.length);
-            }
+    get scale(): number | null {
+        const property = this.rawProperties.filter(c => c.name === 'scale')[0];
+        if (property) {
+            return get(this._lottie, property.path) * (PROPERTY_SCALE / property.value);
         }
-
         return null;
     }
 
@@ -484,13 +455,14 @@ export class Player implements IPlayer {
         this.refresh();
     }
 
-    get axis(): { x: number, y: number } | null {
-        const property = this.rawProperties.filter(c => c.name === 'axis')[0];
-        if (property) {
-            const x = get(this._lottie, property.path + '.0') * (PROPERTY_SCALE / property.value[0]);
-            const y = get(this._lottie, property.path + '.1') * (PROPERTY_SCALE / property.value[1]);
-            return { x, y };
+    get state(): string | null {
+        for (const property of this.rawProperties.filter(c => c.name.startsWith(STATE_PREFIX))) {
+            const value = get(this._lottie, property.path);
+            if (value) {
+                return property.name.substr(STATE_PREFIX.length);
+            }
         }
+
         return null;
     }
 
@@ -512,27 +484,70 @@ export class Player implements IPlayer {
         this.refresh();
     }
 
-    /**
-     * Available states for current icon.
-     */
+    get axis(): { x: number, y: number } | null {
+        const property = this.rawProperties.filter(c => c.name === 'axis')[0];
+        if (property) {
+            const x = get(this._lottie, property.path + '.0') * (PROPERTY_SCALE / property.value[0]);
+            const y = get(this._lottie, property.path + '.1') * (PROPERTY_SCALE / property.value[1]);
+            return { x, y };
+        }
+        return null;
+    }
+
+    set speed(speed: number) {
+        this._speed = speed;
+        this._lottie?.setSpeed(speed);
+    }
+
+    get speed() {
+        return this._speed;
+    }
+
+    set direction(direction: AnimationDirection) {
+        this._direction = direction;
+        this._lottie!.setDirection(direction);
+    }
+
+    get direction() {
+        return this._direction;
+    }
+
+    set loop(loop: boolean) {
+        this._lottie!.loop = loop;
+    }
+
+    get loop() {
+        return this._lottie!.loop ? true : false;
+    }
+
+    set frame(frame: number) {
+        this.goToFrame(Math.max(0, Math.min(this.frames, frame)));
+    }
+
+    get frame() {
+        return this._lottie!.currentFrame;
+    }
+
     get states(): string[] {
         return this.rawProperties.filter(c => c.name.startsWith(STATE_PREFIX)).map(c => {
             return c.name.substr(STATE_PREFIX.length);
         });
     }
 
-    /**
-     * Checks whether the animation is in progress.
-     */
-    get inAnimation() {
+    get isPlaying() {
         return !this._lottie!.isPaused;
     }
 
-    /**
-     * Check whether the animation is ready.
-     */
     get isReady() {
         return this._isReady;
+    }
+
+    get frames() {
+        return this._lottie!.getDuration(true) - 1;
+    }
+
+    get duration() {
+        return this._lottie!.getDuration(false);
     }
 
     /**
@@ -543,7 +558,7 @@ export class Player implements IPlayer {
     }
 
     /**
-     * Supported customizable properties by provided icon data.
+     * Supported customizable properties by loaded icon.
      */
     get rawProperties(): ILottieProperty[] {
         if (!this._rawProperties && this._iconData) {
