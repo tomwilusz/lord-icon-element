@@ -18,12 +18,17 @@ import { Morph } from './triggers/morph.js';
  * - {@link triggers/morph.Morph | morph}
  * - {@link triggers/boomerang.Boomerang | boomerang}
  *
- * Example:
+ * Example of tag definition with default setup:
  * ```js
  * import lottie from 'lottie-web';
  * import { defineElement } from 'lord-icon-element';
  * 
  * defineElement(lottie.loadAnimation);
+ * ```
+ * 
+ * And basic usage from markup which is possible after tag defining:
+ * ```html
+ * <lord-icon trigger="hover" src="/icons/confetti.json"></lord-icon>
  * ```
  * 
  * @param animationLoader Use `loadAnimation` from `lottie-web` package.

@@ -14,7 +14,7 @@ export type PlayerEventName = 'ready' | 'refresh' | 'complete' | 'frame';
 export type PlayerEventCallback = () => void;
 
 /**
- * Custom icon loader. Allows our {@link element.Element | Element} to load {@link IconData | icon data} from any source.
+ * Callback with custom icon loader. Allows our {@link element.Element | Element} to load {@link IconData | icon data} from any source.
  * Remember to assign _icon loader_ before defining `lord-icon` custom element to take effect.
  * 
  * Example:

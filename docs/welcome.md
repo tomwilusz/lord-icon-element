@@ -14,7 +14,7 @@ This project is meant to give developers full control over customize and animate
   - {@link triggers/hover.Hover | hover} - Play animation when mouse in.
   - {@link triggers/morph.Morph | morph} - Play animation when mouse in. Reverse animation on mouse out.
   - {@link triggers/loop.Loop | loop} - Loop animation.
-  - {@link triggers/loop-on-hover.LoopOnHover | loop-on-hover}__loop-on-hover__ - Loop animation while mouse in.
+  - {@link triggers/loop-on-hover.LoopOnHover | loop-on-hover} - Loop animation while mouse in.
   - {@link triggers/boomerang.Boomerang | boomerang} - Play animation when mouse in and after complete reverse it.
 
 This package should be used in pair with [lottie-web](https://www.npmjs.com/package/lottie-web). It's recommended to use this package with module bundler like [webpack](https://www.npmjs.com/package/webpack).
@@ -54,18 +54,22 @@ npm start
 
 List of available examples:
 
-- __release__ - This example presents the easiest way to use the Lordicon _custom element_ with released version. It is not the most efficient method as the entire library (including lottie-web) is initialized by default.
+- __release__ - This example presents the easiest way to use the Lordicon custom element with released version. It is not the most efficient method as the entire library (including lottie-web) is initialized by default.
 - __triggers__ - In this example, we present all available build-in animation triggers.
-- __manual control__ - Example of manual interaction with icon and animation.
-- __current color__ - This case study presents, a class built into element: current-color. With this class icon will inherit color from parent.
-- __css variables__ - Example usage of css variables to customize colors on supported icons (all icons from system family).
 - __trigger target__ - Use the target attribute to indicate which parent element should activate the trigger. Helpful functionality when building all kinds of links, buttons where we don't want the user to have to point the mouse cursor at the icon to activate it.
-- __customization__ - In this example, we present all customizable attributes supported by element.
-- __icon loader__ - Example of creating icon loader callback which can be used to provide icon data from alternate sources.
+- __customization__ - In this example, we present all customizable attribiutes supported by element.
+- __current color__ - This case study presents, a class built into element: current-color. With this class icon will inherit color from parent.
+- __css variables__ - Example usage of css variables to customize colors on supported icons (at the moment all icons from system family).
 - __background__ - This example presents the use of the element as a content container.
+- __manual control__ - Example of manual interaction with icon and player.
+- __icon loader__ - Example of creating icon loader callback which can be used to provide icon data from alternate sources.
+- __lazy loading__ - Load icons only when needed.
+- __lazy loading effect__ - Load icons only when needed. Fade in icons after load completes.
 - __state__ - This example presents usage for icons state animation. It is easier than ever to switch between each motion type to use them as stand-alone animations or combine and create an interactive experience.
-- __custom trigger__ - If none of the provided triggers meet what we need to implement, we allow building custom animation triggers. The process is simplified as you inherit from the {@link trigger.Trigger | Trigger} class. Provided example show how to create trigger which will reverse animation on second click.
-- __lottie light__ - Example of use our element with lottie-web-light which is a lot smaller but don't support expressions (and as a consequence dynamic customization). You can use light version in pair with our raw icons.
+- __custom trigger__ - If none of the provided triggers meet what we need to implement, we allow building custom animation triggers. Provided example show how to create trigger which will reverse animation on second click.
+- __custom trigger in screen__ - This example presents how to build an animation trigger, which plays animation once icon appears in the browser viewport.
+- __custom trigger states__ - Complex usage example of states with custom trigger. See how the trash appears, fills, and empties as the user interacts.
+- __lottie light__ - Example of use our element with lottie-web-light which is a lot smaller but don't support expressions (and as a consequence dynamic customization). You can use light version in pair with our raw icons data.
 
 ## Related
 - [lordicon](https://lordicon.com/) - Lordicon is a powerful library of carefully crafted animated icons,

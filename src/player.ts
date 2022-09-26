@@ -6,7 +6,7 @@ import { ILottieProperty, lottieColorToHex, properties, resetProperties, updateP
 /**
  * Type for options supported by {@link player.Player | Player}.
  */
-export type LOTTIE_OPTIONS = Omit<AnimationConfig, 'container'>;
+export type LottieOptions = Omit<AnimationConfig, 'container'>;
 
 /**
  * Type for `loadAnimation` method from `lottie-web` package.
@@ -107,17 +107,17 @@ function createColorsProxy(this: Player) {
  * - Simplifies testing.
  */
 export class Player implements IPlayer {
-    private _animationLoader: AnimationLoader;
-    private _container: HTMLElement;
-    private _iconData: any;
-    private _options: LOTTIE_OPTIONS;
-    private _lottie?: AnimationItem;
-    private _isReady: boolean = false;
-    private _colorsProxy?: any;
-    private _direction: AnimationDirection = 1;
-    private _speed: number = 1;
-    private _rawProperties?: ILottieProperty[];
-    private _eventCallbacks: any = {};
+    protected _animationLoader: AnimationLoader;
+    protected _container: HTMLElement;
+    protected _iconData: any;
+    protected _options: LottieOptions;
+    protected _lottie?: AnimationItem;
+    protected _isReady: boolean = false;
+    protected _colorsProxy?: any;
+    protected _direction: AnimationDirection = 1;
+    protected _speed: number = 1;
+    protected _rawProperties?: ILottieProperty[];
+    protected _eventCallbacks: any = {};
 
     /**
      * 
@@ -126,7 +126,7 @@ export class Player implements IPlayer {
      * @param iconData Lottie icon data.
      * @param options Options for `lottie-web`. If not provided {@link DEFAULT_LOTTIE_WEB_OPTIONS | default} will be used.
      */
-    constructor(animationLoader: AnimationLoader, container: HTMLElement, iconData: IconData, options?: LOTTIE_OPTIONS) {
+    constructor(animationLoader: AnimationLoader, container: HTMLElement, iconData: IconData, options?: LottieOptions) {
         this._animationLoader = animationLoader;
         this._container = container;
         this._iconData = iconData;
