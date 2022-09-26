@@ -13,7 +13,6 @@ async function main() {
             "src",
         ],
         hideGenerator: true,
-        readme: 'docs/welcome.md',
         includes: 'docs/includes',
         media: 'docs/media',
         customCss: 'docs/lordicon.css',
