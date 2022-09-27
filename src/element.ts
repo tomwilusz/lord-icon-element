@@ -587,7 +587,7 @@ export class Element<P extends IPlayer = IPlayer> extends HTMLElement {
 
         this.player.axis = {
             x: isNil(this.axisX) ? CENTER_VALUE : this.axisX!,
-            y: isNil(this.axisY) ? CENTER_VALUE : this.axisX!,
+            y: isNil(this.axisY) ? CENTER_VALUE : this.axisY!,
         };
     }
 
