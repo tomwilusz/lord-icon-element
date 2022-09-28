@@ -14,8 +14,8 @@
     "compile": "tsc",
     "release": "npm run compile && webpack --mode production",
     "clean": "rm -rf dist",
-    "prebuildpackage": "npm run clean && npm run compile && node ./scripts/setup-package.js",
-    "buildpackage": "npm run prebuildpackage && cd dist && npm pack",
+    "build-package": "npm run clean && npm run compile && node ./scripts/setup-package.js",
+    "test-build-package": "npm run build-package && cd dist && npm pack",
     "docs": "node ./scripts/docs.js"
   },
   "devDependencies": {

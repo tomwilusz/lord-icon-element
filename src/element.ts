@@ -263,7 +263,7 @@ export class Element<P extends IPlayer = IPlayer> extends HTMLElement {
         if (this.loading === 'lazy') {
             const callback: IntersectionObserverCallback = (entries, observer) => {
                 entries.forEach(entry => {
-                    if (entry.isIntersecting) {
+                    if (entry.isIntersecting && this._intersectionObserver) {
                         this._intersectionObserver!.unobserve(this);
                         this._intersectionObserver = undefined;
                         this.createPlayer();
@@ -281,6 +281,11 @@ export class Element<P extends IPlayer = IPlayer> extends HTMLElement {
      * Element disconnected.
      */
     protected disconnectedCallback() {
+        if (this._intersectionObserver) {
+            this._intersectionObserver!.unobserve(this);
+            this._intersectionObserver = undefined;
+        }
+
         this.destroyPlayer();
     }
 
@@ -455,13 +460,14 @@ export class Element<P extends IPlayer = IPlayer> extends HTMLElement {
      * Synchronize element state with player.
      */
     protected refresh() {
-        if (iconFeatures(this.iconData).includes('css-variables')) {
-            this.movePaletteToCssVariables();
-        }
+        // if (iconFeatures(this.iconData).includes('css-variables')) {
+        this.movePaletteToCssVariables();
+        // }
     }
 
     /**
-     * Update default css variables.
+     * Update defaults for css variables.
+     * Notice: css variables take precedence over colors assigned by other methods!
      */
     protected movePaletteToCssVariables() {
         for (const [key, value] of Object.entries(this.player!.colors || {})) {

@@ -51,7 +51,7 @@ List of available examples:
 - __trigger target__ - Use the target attribute to indicate which parent element should activate the trigger. Helpful functionality when building all kinds of links, buttons where we don't want the user to have to point the mouse cursor at the icon to activate it.
 - __customization__ - In this example, we present all customizable attribiutes supported by element.
 - __current color__ - This case study presents, a class built into element: _current-color_. With this class icon will inherit color from parent.
-- __css variables__ - Example usage of css variables to customize colors on supported icons (at the moment all icons from system family).
+- __css variables__ - Example usage of css variables to customize colors on supported icons (at the moment all icons from system family). Notice: css variables take precedence over colors assigned by other methods!
 - __background__ - This example presents the use of the element as a content container.
 - __manual control__ - Example of manual interaction with icon and player.
 - __icon loader__ - Example of creating icon loader callback which can be used to provide icon data from alternate sources.

@@ -1,7 +1,7 @@
 import { AnimationItem } from 'lottie-web';
 import { IconData } from '../interfaces.js';
 import { parseColor } from './colors.js';
-import { get, has, set } from './helpers.js';
+import { set } from './helpers.js';
 
 /**
  * Lottie color type.
@@ -133,37 +133,25 @@ export function properties(
         return result;
     }
 
-    for (const [layerIndex, layer] of Object.entries(data.layers) as any) {
-        if (!layer.nm) {
-            continue;
+    data.layers.forEach((layer: any, layerIndex: number) => {
+        if (!layer.nm || !layer.ef || !layer.nm.toLowerCase().includes('change')) {
+            return;
         }
 
-        if (!layer.nm.toLowerCase().includes('change')) {
-            continue;
-        }
+        layer.ef.forEach((field: any, fieldIndex: number) => {
+            const value = field?.ef?.[0]?.v?.k;
+            if (value === undefined) {
+                return;
+            }
 
-        if (!layer.ef) {
-            continue;
-        }
-
-        for (const [fieldIndex, field] of Object.entries(layer.ef) as any) {
-            const subpath = 'ef.0.v.k';
-
-            let path;
+            let path: string | undefined;
             if (lottieInstance) {
                 path = `renderer.elements.${layerIndex}.effectsManager.effectElements.${fieldIndex}.effectElements.0.p.v`;
             } else {
-                path = `layers.${layerIndex}.ef.${fieldIndex}.${subpath}`;
+                path = `layers.${layerIndex}.ef.${fieldIndex}.ef.0.v.k`;
             }
 
-            const hasValue = has(field, subpath);
-            if (!hasValue) {
-                continue;
-            }
-
-            const value = get(field, subpath);
-
-            let type = 'unkown';
+            let type: LottieFieldType | undefined;
 
             if (field.mn === 'ADBE Color Control') {
                 type = 'color';
@@ -175,8 +163,8 @@ export function properties(
                 type = 'checkbox';
             }
 
-            if (type === 'unkown') {
-                continue;
+            if (!type) {
+                return;
             }
 
             const name = field.nm.toLowerCase();
@@ -187,8 +175,8 @@ export function properties(
                 value,
                 type,
             });
-        }
-    }
+        });
+    });
 
     return result;
 }

@@ -50,6 +50,7 @@ export default function () {
         describe('properties', () => {
             it('basic', async () => {
                 const icon = await loadIcon('confetti');
+
                 expect(properties(icon)).to.be.eql(CONFETTI_PROPERTIES);
             });
         });
