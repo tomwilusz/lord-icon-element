@@ -4,11 +4,6 @@ import { parseColors } from "./utils/colors.js";
 import { isNil, isObjectLike } from './utils/helpers.js';
 
 /**
- * List of icon extra features that need special treatment by our {@link Element | Element}.
- */
-type IconFeature = 'css-variables';
-
-/**
  * Supported icon loading strategies by our {@link Element | Element}.
  */
 type LoadingType = 'lazy';
@@ -118,19 +113,6 @@ const OBSERVED_ATTRIBUTES: SUPPORTED_ATTRIBUTES[] = [
     "axis-x",
     "axis-y",
 ];
-
-/**
- * Return list of supported features by icon.
- * @param data
- * @returns
- */
-function iconFeatures(data: IconData): IconFeature[] {
-    if (data && data.features && Array.isArray(data.features)) {
-        return data.features;
-    }
-
-    return [];
-}
 
 /**
  * Custom element implementation that supports rendering, customizing and controlling of our icons in simple way.
@@ -460,9 +442,7 @@ export class Element<P extends IPlayer = IPlayer> extends HTMLElement {
      * Synchronize element state with player.
      */
     protected refresh() {
-        // if (iconFeatures(this.iconData).includes('css-variables')) {
         this.movePaletteToCssVariables();
-        // }
     }
 
     /**

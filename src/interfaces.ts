@@ -269,6 +269,11 @@ export interface IPlayer {
     playFromBegining(): void;
 
     /**
+     * Pause animation;
+     */
+    pause(): void;
+
+    /**
      * Stop animation.
      */
     stop(): void;
