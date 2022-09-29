@@ -369,9 +369,7 @@ export class Element extends HTMLElement implements IElement {
     this.dispatchEvent(new CustomEvent("icon-ready"));
 
     // move palette to css variables instantly on this icon
-    if ((defaultFeatures || iconFeatures(iconData)).includes('css-variables')) {
-      this.movePaletteToCssVariables();
-    }
+    this.movePaletteToCssVariables();
   }
 
   protected unregisterLottie() {
@@ -393,9 +391,7 @@ export class Element extends HTMLElement implements IElement {
   protected refresh() {
     this._lottie?.renderer.renderFrame(null);
 
-    if ((defaultFeatures || iconFeatures(this.iconData)).includes('css-variables')) {
-      this.movePaletteToCssVariables();
-    }
+    this.movePaletteToCssVariables();
   }
 
   protected notify(name: string, from: "icon" | "trigger") {
