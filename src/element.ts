@@ -24,38 +24,40 @@ const CENTER_VALUE = 50;
  */
 const ELEMENT_STYLE = `
     :host {
-      display: inline-block;
-      width: 32px;
-      height: 32px;
+        position: relative;
+        display: inline-block;
+        width: 32px;
+        height: 32px;
     }
 
     :host(.current-color) svg path[fill] {
-      fill: currentColor;
+        fill: currentColor;
     }
 
     :host(.current-color) svg path[stroke] {
-      stroke: currentColor;
+        stroke: currentColor;
     }
 
     :host(:not(.current-color)) svg .primary path[fill] {
-      fill: var(--lord-icon-primary, var(--lord-icon-primary-base));
+        fill: var(--lord-icon-primary, var(--lord-icon-primary-base));
     }
 
     :host(:not(.current-color)) svg .primary path[stroke] {
-      stroke: var(--lord-icon-primary, var(--lord-icon-primary-base));
+        stroke: var(--lord-icon-primary, var(--lord-icon-primary-base));
     }
 
     :host(:not(.current-color)) svg .secondary path[fill] {
-      fill: var(--lord-icon-secondary, var(--lord-icon-secondary-base));
+        fill: var(--lord-icon-secondary, var(--lord-icon-secondary-base));
     }
 
     :host(:not(.current-color)) svg .secondary path[stroke] {
-      stroke: var(--lord-icon-secondary, var(--lord-icon-secondary-base));
+        stroke: var(--lord-icon-secondary, var(--lord-icon-secondary-base));
     }
 
     svg {
-      pointer-events: none;
-      display: block;
+        position: absolute;
+        pointer-events: none;
+        display: block;
     }
 `;
 
