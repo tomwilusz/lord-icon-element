@@ -24,14 +24,9 @@ const CENTER_VALUE = 50;
  */
 const ELEMENT_STYLE = `
     :host {
-      display: inline-flex;
+      display: inline-block;
       width: 32px;
       height: 32px;
-      align-items: center;
-      justify-content: center;
-      position: relative;
-      vertical-align: middle;
-      overflow: hidden;
     }
 
     :host(.current-color) svg path[fill] {
@@ -61,18 +56,6 @@ const ELEMENT_STYLE = `
     svg {
       pointer-events: none;
       display: block;
-    }
-
-    div {
-      width: 100%;
-      height: 100%;
-    }
-
-    div.slot {
-      position: absolute;
-      left: 0;
-      top: 0;
-      z-index: 2;
     }
 `;
 
@@ -294,11 +277,6 @@ export class Element<P extends IPlayer = IPlayer> extends HTMLElement {
             this._root.appendChild(style);
         }
 
-        const slotContainer = document.createElement("div");
-        slotContainer.innerHTML = "<slot></slot>";
-        slotContainer.classList.add("slot");
-        this._root.appendChild(slotContainer);
-
         const container = document.createElement("div");
         container.classList.add('body');
         this._root.appendChild(container);
@@ -451,7 +429,7 @@ export class Element<P extends IPlayer = IPlayer> extends HTMLElement {
      */
     protected movePaletteToCssVariables() {
         for (const [key, value] of Object.entries(this.player!.colors || {})) {
-            (this._root!.querySelector('.body') as HTMLElement).style.setProperty(`--lord-icon-${key}-base`, value);
+            this.animationContainer!.style.setProperty(`--lord-icon-${key}-base`, value);
         }
     }
 
