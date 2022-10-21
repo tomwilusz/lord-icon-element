@@ -182,7 +182,7 @@ export class Element<P extends IPlayer = IPlayer> extends HTMLElement {
     }
 
     protected _root?: ShadowRoot;
-    protected _isInitialized: boolean = false;
+    protected _isConnected: boolean = false;
     protected _isReady: boolean = false;
     protected _triggerInstance?: ITrigger;
     protected _assignedIconData?: IconData;
@@ -218,14 +218,10 @@ export class Element<P extends IPlayer = IPlayer> extends HTMLElement {
      * Element connected.
      */
     protected connectedCallback() {
-        // execute init only once after connected
-        if (this._isInitialized) {
-            return;
+        // create elements only once
+        if (!this._root) {
+            this.createElements();
         }
-
-        this._isInitialized = true;
-
-        this.createElements();
 
         if (this.loading === 'lazy') {
             const callback: IntersectionObserverCallback = (entries, observer) => {
@@ -242,6 +238,8 @@ export class Element<P extends IPlayer = IPlayer> extends HTMLElement {
         } else {
             this.createPlayer();
         }
+
+        this._isConnected = true;
     }
 
     /**
@@ -254,6 +252,8 @@ export class Element<P extends IPlayer = IPlayer> extends HTMLElement {
         }
 
         this.destroyPlayer();
+
+        this._isConnected = false;
     }
 
     /**
@@ -561,7 +561,7 @@ export class Element<P extends IPlayer = IPlayer> extends HTMLElement {
      * Icon attribute changed. Reload our player.
      */
     protected iconChanged() {
-        if (!this._isInitialized) {
+        if (!this._isConnected) {
             return;
         }
 
@@ -573,7 +573,7 @@ export class Element<P extends IPlayer = IPlayer> extends HTMLElement {
      * Src attribute changed. Reload our player.
      */
     protected srcChanged() {
-        if (!this._isInitialized) {
+        if (!this._isConnected) {
             return;
         }
 
@@ -586,12 +586,14 @@ export class Element<P extends IPlayer = IPlayer> extends HTMLElement {
      */
     set icon(value: any) {
         if (value && isObjectLike(value)) {
-            this._assignedIconData = value;
+            if (this._assignedIconData !== value) {
+                this._assignedIconData = value;
 
-            if (this.hasAttribute('icon')) {
-                this.removeAttribute('icon');
-            } else {
-                this.iconChanged();
+                if (this.hasAttribute('icon')) {
+                    this.removeAttribute('icon');
+                } else {
+                    this.iconChanged();
+                }
             }
         } else {
             const oldIconData = this._assignedIconData;

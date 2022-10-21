@@ -193,5 +193,24 @@ export default function () {
             expect(element.player).not.be.undefined;
             expect(element.iconData).to.be.eql(stateIconData);
         });
+
+        it('connected', async () => {
+            expect(element.player).not.be.undefined;
+
+            const container = element.parentElement;
+
+            // player destroyed after disconnected
+            container.removeChild(element);
+            expect(element.player).to.be.undefined;
+
+            // player created again after connected
+            container.appendChild(element);
+            await new Promise((resolve, reject) => {
+                element.addEventListener('ready', () => {
+                    resolve();
+                });
+            });
+            expect(element.player).not.be.undefined;
+        });
     });
 }
