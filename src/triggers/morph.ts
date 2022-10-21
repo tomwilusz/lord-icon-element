@@ -1,25 +1,37 @@
-import { Basic } from './basic.js';
+import { IPlayer, ITrigger } from '../interfaces.js';
 
 /**
- * Morph animation from point A to B after mouse enter and from B to A after mouse leave.
+ * Hover or click the icon to plays the animation from first to the last frame. After moving or clicking away, the animation plays in reverse.
  */
-export class Morph extends Basic {
-    connectedCallback() {
-        super.connectedCallback();
-
-        this.addTargetEventListener('mouseenter', () => {
-            this.setDirection(1);
-            this.play();
-        });
-
-        this.addTargetEventListener('mouseleave', () => {
-            this.setDirection(-1);
-            this.play();
-        });
+export class Morph implements ITrigger {
+    constructor(
+        protected element: HTMLElement,
+        protected targetElement: HTMLElement,
+        protected player: IPlayer,
+    ) {
+        this.onMouseEnter = this.onMouseEnter.bind(this);
+        this.onMouseLeave = this.onMouseLeave.bind(this);
     }
 
-    disconnectedCallback() {
-        this.setDirection(1);
-        super.disconnectedCallback();
+    onConnected() {
+        this.targetElement.addEventListener('mouseenter', this.onMouseEnter);
+        this.targetElement.addEventListener('mouseleave', this.onMouseLeave);
+    }
+
+    onDisconnected() {
+        this.targetElement.removeEventListener('mouseenter', this.onMouseEnter);
+        this.targetElement.removeEventListener('mouseleave', this.onMouseLeave);
+
+        this.player.direction = 1;
+    }
+
+    onMouseEnter() {
+        this.player.direction = 1;
+        this.player.play();
+    }
+
+    onMouseLeave() {
+        this.player.direction = -1;
+        this.player.play();
     }
 }

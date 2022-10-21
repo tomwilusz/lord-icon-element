@@ -1,26 +1,34 @@
-import { Basic } from './basic.js';
+import { IPlayer, ITrigger } from '../interfaces.js';
 
 /**
- * Morph animation from point A to B and then from B to A after mouse enter.
+ * Boomerang trigger plays animation from first to last frame when you hover over them, then play in reverse once you move the cursor away.
  */
-export class Boomerang extends Basic {
-    connectedCallback() {
-        super.connectedCallback();
-
-        this.addTargetEventListener('mouseenter', () => {
-            this.setDirection(1);
-            this.play();
-        });
+export class Boomerang implements ITrigger {
+    constructor(
+        protected element: HTMLElement,
+        protected targetElement: HTMLElement,
+        protected player: IPlayer,
+    ) {
+        this.onHover = this.onHover.bind(this);
     }
 
-    disconnectedCallback() {
-        this.setDirection(1);
-
-        super.disconnectedCallback();
+    onConnected() {
+        this.targetElement.addEventListener('mouseenter', this.onHover);
     }
 
-    complete() {
-        this.setDirection(-1);
-        this.play();
+    onDisconnected() {
+        this.targetElement.removeEventListener('mouseenter', this.onHover);
+
+        this.player.direction = 1;
+    }
+
+    onComplete() {
+        this.player.direction = -1;
+        this.player.play();
+    }
+
+    onHover() {
+        this.player.direction = 1;
+        this.player.play();
     }
 }

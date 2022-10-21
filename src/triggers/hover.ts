@@ -1,16 +1,30 @@
-import { Basic } from './basic.js';
+import { IPlayer, ITrigger } from '../interfaces.js';
 
 /**
- * Enter animation on icon hover.
+ * Hover trigger plays the animation from the first to last frame when the cursor hovers over the icon bounding box.
  */
-export class Hover extends Basic {
-    connectedCallback() {
-        super.connectedCallback();
+export class Hover implements ITrigger {
+    constructor(
+        protected element: HTMLElement,
+        protected targetElement: HTMLElement,
+        protected player: IPlayer,
+    ) {
+        this.onHover = this.onHover.bind(this);
+    }
 
-        this.addTargetEventListener('mouseenter', () => {
-            if (!this.inAnimation) {
-                this.playFromBegining();
-            }
-        });
+    onConnected() {
+        this.targetElement.addEventListener('mouseenter', this.onHover);
+    }
+
+    onDisconnected() {
+        this.targetElement.removeEventListener('mouseenter', this.onHover);
+    }
+
+    onHover() {
+        if (this.player.isPlaying) {
+            return;
+        }
+
+        this.player.playFromBegining();
     }
 }

@@ -1,57 +1,68 @@
-import { Basic } from './basic.js';
+import { IPlayer, ITrigger } from '../interfaces.js';
 
 /**
- * Loop animation when mouse is on icon.
+ * LoopOnHover trigger plays the animation from first to last frame infinitely, when the cursor hovers over the icon.
  */
-export class LoopOnHover extends Basic {
-    playDelay: any = null;
-    active = false;
+export class LoopOnHover implements ITrigger {
+    playTimeout: any = null;
+    mouseIn: boolean = false;
 
-    connectedCallback() {
-        super.connectedCallback();
-
-        this.addTargetEventListener('mouseenter', () => {
-            this.active = true;
-
-            if (!this.inAnimation) {
-                this.playFromBegining();
-            }
-        });
-
-        this.addTargetEventListener('mouseleave', () => {
-            this.active = false;
-        });
+    constructor(
+        protected element: HTMLElement,
+        protected targetElement: HTMLElement,
+        protected player: IPlayer,
+    ) {
+        this.onMouseEnter = this.onMouseEnter.bind(this);
+        this.onMouseLeave = this.onMouseLeave.bind(this);
     }
 
-    disconnectedCallback() {
-        this.resetPlayDelayTimer();
-
-        super.disconnectedCallback();
+    onConnected() {
+        this.targetElement.addEventListener('mouseenter', this.onMouseEnter);
+        this.targetElement.addEventListener('mouseleave', this.onMouseLeave);
     }
 
-    complete() {
+    onDisconnected() {
+        this.targetElement.removeEventListener('mouseenter', this.onMouseEnter);
+        this.targetElement.removeEventListener('mouseleave', this.onMouseLeave);
+
+        this.resetPlayDelayTimer();
+    }
+
+    onMouseEnter() {
+        this.mouseIn = true;
+
+        if (!this.player.isPlaying) {
+            this.player.playFromBegining();
+        }
+    }
+
+    onMouseLeave() {
+        this.mouseIn = false;
+    }
+
+    onComplete() {
         this.resetPlayDelayTimer();
 
-        if (!this.active || !this.connected) {
+        if (!this.mouseIn) {
             return;
         }
 
         if (this.delay > 0) {
-            this.playDelay = setTimeout(() => {
-                this.playFromBegining();
+            this.playTimeout = setTimeout(() => {
+                this.player.playFromBegining();
             }, this.delay)
         } else {
-            this.playFromBegining();
+            this.player.playFromBegining();
         }
     }
 
     resetPlayDelayTimer() {
-        if (!this.playDelay) {
+        if (!this.playTimeout) {
             return;
         }
 
-        clearTimeout(this.playDelay);
-        this.playDelay = null;
+        clearTimeout(this.playTimeout);
+        this.playTimeout = null;
     }
 
     get delay() {

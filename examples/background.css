@@ -1,0 +1,23 @@
+.container {
+    display: flex;
+    width: 256px;
+    height: 256px;
+    position: relative;
+    align-items: center;
+    justify-content: center;
+    padding: 50px;
+    box-sizing: border-box;
+}
+
+lord-icon {
+    position: absolute;
+    z-index: -1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.text {
+    text-align: center;
+}

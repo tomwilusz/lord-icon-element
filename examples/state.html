@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <title>State</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" type="text/css" href="/style.css" />
+</head>
+
+<body>
+  <table>
+    <tr>
+      <td>description</td>
+      <td>preview</td>
+    </tr>
+    <tr>
+      <td>state: intro</td>
+      <td>
+        <lord-icon trigger="loop" state="intro" src="/icons/state.json"></lord-icon>
+      </td>
+    </tr>
+    <tr>
+      <td>state: hover</td>
+      <td>
+        <lord-icon trigger="loop" state="hover" src="/icons/state.json"></lord-icon>
+      </td>
+    </tr>
+    <tr>
+      <td>state: loop</td>
+      <td>
+        <lord-icon trigger="loop" state="loop" src="/icons/state.json"></lord-icon>
+      </td>
+    </tr>
+    <tr>
+      <td>state: handle with custom code (from intro to hover / loop)</td>
+      <td>
+        <lord-icon id="main-icon" src="/icons/state.json"></lord-icon>
+      </td>
+    </tr>
+  </table>
+
+  <script type="module" src="/node_modules/lottie-web/build/player/lottie_svg.min.js"></script>
+  <script type="module" src="/state.js"></script>
+</body>
+
+</html>

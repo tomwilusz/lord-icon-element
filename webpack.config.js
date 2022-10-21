@@ -3,7 +3,7 @@ const TerserPlugin = require('terser-webpack-plugin');
 
 module.exports = {
     entry: {
-        'lord-icon': path.resolve(__dirname, 'src-ext', 'release'),
+        'lord-icon': path.resolve(__dirname, 'scripts', 'release-entry'),
     },
 
     output: {
@@ -12,12 +12,12 @@ module.exports = {
     },
 
     resolve: {
-        extensions: [ '.js' ],
+        extensions: ['.js'],
         modules: [
             path.resolve(__dirname, 'node_modules')
         ]
     },
-    
+
     optimization: {
         minimizer: [
             new TerserPlugin(),

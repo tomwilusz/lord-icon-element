@@ -1,44 +1,45 @@
-import { Basic } from './basic.js';
+import { IPlayer, ITrigger } from '../interfaces.js';
 
 /**
- * Animation with auto start and loop.
+ * Loop trigger plays the animation from first to last frame infinitely, with no interaction necessary.
  */
-export class Loop extends Basic {
-    playDelay: any = null;
+export class Loop implements ITrigger {
+    private playTimeout: any = null;
 
-    ready() {
-        this.play();
+    constructor(
+        protected element: HTMLElement,
+        protected targetElement: HTMLElement,
+        protected player: IPlayer,
+    ) {
     }
 
-    disconnectedCallback() {
-        this.resetPlayDelayTimer();
-
-        super.disconnectedCallback();
+    onReady() {
+        this.player.play();
     }
 
-    complete() {
+    onDisconnected() {
         this.resetPlayDelayTimer();
+    }
 
-        if (!this.connected) {
-            return;
-        }
+    onComplete() {
+        this.resetPlayDelayTimer();
 
         if (this.delay > 0) {
-            this.playDelay = setTimeout(() => {
-                this.playFromBegining();
+            this.playTimeout = setTimeout(() => {
+                this.player.playFromBegining();
             }, this.delay)
         } else {
-            this.playFromBegining();
+            this.player.playFromBegining();
         }
     }
 
     resetPlayDelayTimer() {
-        if (!this.playDelay) {
+        if (!this.playTimeout) {
             return;
         }
 
-        clearTimeout(this.playDelay);
-        this.playDelay = null;
+        clearTimeout(this.playTimeout);
+        this.playTimeout = null;
     }
 
     get delay() {

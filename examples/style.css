@@ -1,0 +1,49 @@
+:root {
+    --palette-font: #3c3c3c;
+    --palette-primary: #08c18a;
+    --palette-bg-1: hsl(50deg 34% 85%);
+    --palette-bg-2: hsl(100deg 34% 85%);
+    --palette-bg-3: hsl(150deg 34% 85%);
+}
+
+body {
+    color: var(--palette-font);
+    padding: 10px;
+    margin: 0;
+    line-height: 1.8;
+}
+
+a {
+    color: var(--palette-primary);
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+table,
+td,
+th {
+    border: 1px solid #d2d2d8;
+    padding: 10px;
+}
+
+td {
+    width: 50%;
+}
+
+lord-icon {
+    width: 150px;
+    height: 150px;
+}
+
+lord-icon[trigger=click],
+.clickable {
+    cursor: pointer;
+}

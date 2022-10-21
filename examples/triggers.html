@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <title>Triggers</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" type="text/css" href="/style.css" />
+</head>
+
+<body>
+  <table>
+    <tr>
+      <td>trigger</td>
+      <td>preview</td>
+    </tr>
+    <tr>
+      <td>empty</td>
+      <td>
+        <lord-icon src="/icons/confetti.json"></lord-icon>
+      </td>
+    </tr>
+    <tr>
+      <td>click</td>
+      <td>
+        <lord-icon trigger="click" src="/icons/confetti.json"></lord-icon>
+      </td>
+    </tr>
+    <tr>
+      <td>hover</td>
+      <td>
+        <lord-icon trigger="hover" src="/icons/confetti.json"></lord-icon>
+      </td>
+    </tr>
+    <tr>
+      <td>loop</td>
+      <td>
+        <lord-icon trigger="loop" src="/icons/confetti.json"></lord-icon>
+        <lord-icon trigger="loop" delay="1000" src="/icons/confetti.json"></lord-icon>
+      </td>
+    </tr>
+    <tr>
+      <td>loop-on-hover</td>
+      <td>
+        <lord-icon trigger="loop-on-hover" src="/icons/confetti.json"></lord-icon>
+        <lord-icon trigger="loop-on-hover" delay="1000" src="/icons/confetti.json"></lord-icon>
+      </td>
+    </tr>
+    <tr>
+      <td>morph</td>
+      <td>
+        <lord-icon trigger="morph" src="/icons/book.json"></lord-icon>
+      </td>
+    </tr>
+    <tr>
+      <td>boomerang</td>
+      <td>
+        <lord-icon trigger="boomerang" src="/icons/book.json"></lord-icon>
+      </td>
+    </tr>
+  </table>
+
+  <script type="module" src="/node_modules/lottie-web/build/player/lottie_svg.min.js"></script>
+  <script type="module" src="/triggers.js"></script>
+</body>
+
+</html>

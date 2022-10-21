@@ -1,4 +1,5 @@
 /*.log
 /*.tgz
 node_modules
-build
+dist
+dist-docs

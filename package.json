@@ -1,5 +1,6 @@
 {
   "name": "lord-icon-element",
+<<<<<<< HEAD
   "version": "3.4.4",
   "private": false,
   "main": "./build/lord-icon-element.js",
@@ -24,14 +25,57 @@
     "prepack": "npm run build",
     "release": "npm run build && webpack --mode production"
   },
+=======
+  "version": "4.0.0",
+  "private": true,
+>>>>>>> develop
   "keywords": [
-    "lord-icon",
+    "lordicon",
     "lottie",
-    "icons"
+    "icon",
+    "animation"
   ],
+  "scripts": {
+    "start": "tsc-watch --onFirstSuccess \"node ./scripts/open.js\" --onSuccess \"node ./scripts/examples.js\"",
+    "test": "tsc-watch --onFirstSuccess \"node ./scripts/open.js\" --onSuccess \"node ./scripts/test.js\"",
+    "compile": "tsc",
+    "release": "npm run compile && node ./scripts/setup-package.js && webpack --mode production",
+    "clean": "rm -rf dist",
+    "build-package": "npm run clean && npm run compile && node ./scripts/setup-package.js",
+    "test-build-package": "npm run build-package && cd dist && npm pack",
+    "docs": "node ./scripts/docs.js"
+  },
+  "devDependencies": {
+    "@types/node": "^16.11.7",
+    "@types/chai": "^4.3.3",
+    "@types/mocha": "^9.1.1",
+    "base-64": "^1.0.0",
+    "lottie-web": "^5.9.6",
+    "lottie-web-light": "^1.1.0",
+    "terser-webpack-plugin": "^5.3.6",
+    "serve-static": "^1.15.0",
+    "express": "^4.18.1",
+    "open": "^8.4.0",
+    "csso": "^5.0.5",
+    "typescript": "^4.8.3",
+    "tsc-watch": "^5.0.3",
+    "webpack": "^5.74.0",
+    "webpack-cli": "^4.10.0",
+    "resemblejs": "^4.1.0",
+    "typedoc": "^0.23.15",
+    "chai": "^4.3.6",
+    "mocha": "^10.0.0"
+  },
   "sideEffects": false,
   "author": "Marcin Baszczewski <marcin@baszczewski.pl> (https://www.baszczewski.pl/)",
   "homepage": "https://lordicon.com/",
   "repository": "git@github.com:tomwilusz/lord-icon-element.git",
+<<<<<<< HEAD
   "license": "MIT"
+=======
+  "license": "MIT",
+  "engines": {
+    "node": ">=16.0.0"
+  }
+>>>>>>> develop
 }
