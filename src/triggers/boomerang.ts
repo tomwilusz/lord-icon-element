@@ -1,7 +1,7 @@
 import { IPlayer, ITrigger } from '../interfaces.js';
 
 /**
- * Morph animation from point A to B and then from B to A after mouse enter.
+ * Boomerang trigger plays animation from first to last frame when you hover over them, then play in reverse once you move the cursor away.
  */
 export class Boomerang implements ITrigger {
     constructor(

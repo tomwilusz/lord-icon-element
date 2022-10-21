@@ -99,10 +99,13 @@ function createColorsProxy(this: Player) {
 }
 
 /**
- * Player implementation used as wrapper around `lottie-web`. Main purposes:
+ * The player implementation as a wrapper around `lottie-web`.
+ * 
+ * Main purposes:
+ * 
  * - Provides simple API to control animation and customize icon properties on the fly.
- * - Allows to react on animation life cycle.
- * - Separate integration with `lottie-web` from our custom element. That way we can use this player potentially without _custom element_.
+ * - Allows to react on the animation life cycle.
+ * - Separate integration with `lottie-web` from our custom element. That way, the player can potentially work without a _custom element_.
  * - Simplifies custom element implementation.
  * - Simplifies testing.
  */

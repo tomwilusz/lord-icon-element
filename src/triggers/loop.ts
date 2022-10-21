@@ -1,7 +1,7 @@
 import { IPlayer, ITrigger } from '../interfaces.js';
 
 /**
- * Animation with auto start and loop.
+ * Loop trigger plays the animation from first to last frame infinitely, with no interaction necessary.
  */
 export class Loop implements ITrigger {
     private playTimeout: any = null;

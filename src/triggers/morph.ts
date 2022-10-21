@@ -1,7 +1,7 @@
 import { IPlayer, ITrigger } from '../interfaces.js';
 
 /**
- * Morph animation from point A to B after mouse enter and from B to A after mouse leave.
+ * Hover or click the icon to plays the animation from first to the last frame. After moving or clicking away, the animation plays in reverse.
  */
 export class Morph implements ITrigger {
     constructor(

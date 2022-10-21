@@ -1,7 +1,7 @@
 import { IPlayer, ITrigger } from '../interfaces.js';
 
 /**
- * Loop animation when mouse is on icon.
+ * LoopOnHover trigger plays the animation from first to last frame infinitely, when the cursor hovers over the icon.
  */
 export class LoopOnHover implements ITrigger {
     playTimeout: any = null;

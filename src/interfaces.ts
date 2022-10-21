@@ -1,5 +1,5 @@
 /**
- * Icon data in JSON format. Our player is optimized to handle icons from [lordicon.com](https://lordicon.com/).
+ * Icon data in JSON format. This player is optimized to handle JSON (Lordicon Lottie) icons from [Lordicon Library](https://lordicon.com/).
  */
 export type IconData = any;
 
@@ -40,8 +40,8 @@ export type IconLoader = (name: string) => Promise<IconData>;
  * 
  * Some use cases for providing own player factory:
  * 
- * - Abandon use {@link index.defineElement | defineElement} which defines default triggers potentially redundant for you (in this case remember to assign player factory before defining custom element).
- * - Allows to provide your own {@link IPlayer | player} implementation. 
+ * - Abandon use {@link index.defineElement | defineElement} which defines default triggers as potentially redundant (in this case assign player factory before defining custom element).
+ * - Allows to provide custom (your own) {@link IPlayer | player} implementation. 
  * 
  * Example:
  * ```js
@@ -63,7 +63,7 @@ export type IconLoader = (name: string) => Promise<IconData>;
 export type PlayerFactory = (container: HTMLElement, iconData: IconData) => IPlayer;
 
 /**
- * Animation direction supported by {@link IPlayer | player instance}. 1 is forward and -1 is reverse.
+ * Animation direction supported by {@link IPlayer | player instance}. "1" plays animation forward and "-1" plays the animation in reverse.
  */
 export type AnimationDirection = 1 | -1;
 
@@ -91,7 +91,7 @@ export interface IPoint {
 }
 
 /**
- * Interface for object that stores multiple colors.
+ * Interface for the object that stores multiple colors.
  * 
  * Example:
  * ```js
@@ -106,9 +106,9 @@ export interface IColors {
 }
 
 /**
- * Interface for object with customizable properties supported by our {@link IPlayer | player}.
+ * Interface for an object with customizable properties supported by {@link IPlayer | player}.
  * 
- * Notice: not every icon support all of that properties. This usually depends by icon family.
+ * Notice: not every icon support all of that properties. This usually depends on the icon family.
  * 
  * Example:
  * ```js
@@ -123,22 +123,22 @@ export interface IColors {
  */
 export interface IProperties {
     /**
-     * Stroke. Number in range: 0-100.
+     * Stroke width in the range: 0-100.
      */
     stroke?: number | null;
 
     /**
-     * Scale. Number in range: 0-100.
+     * Scale in the range: 0-100, within the icon bounding box.
      */
     scale?: number | null;
 
     /**
-     * State.
+     * State (motion type) of the icon. States allow switching between multiple animations built into a single icon file.
      */
     state?: string | null;
 
     /**
-     * Axis.
+     * Icon position within the icon bounding box.
      */
     axis?: IPoint | null;
 
@@ -149,9 +149,175 @@ export interface IProperties {
 }
 
 /**
- * Interface for trigger. Triggers provides interactions strategies which can be handled by our {@link element.Element | Element}. 
+ * Interface for animation player. 
+ * Provides simple API to control animation and customize icon properties on the fly.
+ */
+export interface IPlayer {
+    /**
+     * Connect the player with the element.
+     */
+    connect(): void;
+
+    /**
+     * Disconnect the player from the element.
+     */
+    disconnect(): void;
+
+    /**
+     * Start listening for event.
+     * @param name Event name.
+     * @param callback Event callback.
+     */
+    addEventListener(name: PlayerEventName, callback: PlayerEventCallback): () => void;
+
+    /**
+     * Stop listening for event.
+     * @param eventName Event name.
+     * @param callback Event callback.
+     */
+    removeEventListener(eventName: PlayerEventName, callback?: PlayerEventCallback): void;
+
+    /**
+     * Play animation. 
+     * 
+     * Notice: finished animation can't be played again on the last frame.
+     */
+    play(): void;
+
+    /**
+     * Play animation from beginning.
+     */
+    playFromBegining(): void;
+
+    /**
+     * Pause animation.
+     */
+    pause(): void;
+
+    /**
+     * Stop animation.
+     */
+    stop(): void;
+
+    /**
+     * Go to the extact frame.
+     * @param frame Frame number.
+     */
+    goToFrame(frame: number): void;
+
+    /**
+     * Go to the first animation frame.
+     */
+    goToFirstFrame(): void;
+
+    /**
+     * Go to the last animation frame.
+     */
+    goToLastFrame(): void;
+
+    /**
+     * Reset properties to default and optionally assign new one from provided param.
+     * 
+     * @param properties New properties to assign.
+     */
+    resetProperties(properties?: IProperties): void;
+
+    /**
+     * This property let you find out customizable colors or update them within a processed icon.
+     * 
+     * Example (list all supported colors by icon):
+     * ```js
+     * { ...iconElement.player.colors }
+     * ```
+     * 
+     * Example (update just single color):
+     * ```js
+     * iconElement.player.colors.primary = '#ff0000';
+     * ```
+     * 
+     * Example (update many colors at once):
+     * ```js
+     * iconElement.player.colors = { primary: 'red', secondary: 'blue' };
+     * ```
+     * 
+     * Example (reset all colors to default):
+     * ```js
+     * iconElement.player.colors = null;
+     * ```
+     */
+    colors: IColors | null;
+
+    /**
+     * Stroke gives you the value of icon stroke width.
+     */
+    stroke: number | null;
+
+    /**
+     * Scale gives you the value of icon size, within the icon bounding box.
+     */
+    scale: number | null;
+
+    /**
+     * Axis gives you control over the icon position within the icon bounding box.
+     */
+    axis: IPoint | null;
+
+    /**
+     * This property allows to control state (motion type) of the icon.
+     * States allow switching between multiple animations build into single icon file.
+     */
+    state: string | null;
+
+    /**
+     * This property allows to control the speed of the icon animation.
+     */
+    speed: number;
+
+    /**
+     * Access to player frame. You can control animation playing with changing this frame.
+     */
+    frame: number;
+
+    /**
+     * Direction lets you influence the playing course of the animation. Whether it plays forward (1) or reverse (-1).
+     */
+    direction: AnimationDirection;
+
+    /**
+     * This property allows to control player loop.
+     */
+    loop: boolean;
+
+    /**
+     * The player is ready.
+     */
+    readonly isReady: boolean;
+
+    /**
+     * The player is playing animation.
+     */
+    readonly isPlaying: boolean;
+
+    /**
+     * States give you the list of supported states by a processed icon.
+     */
+    readonly states: string[];
+
+    /**
+     * Frames give you the value of animation length in a number of frames.
+     */
+    readonly frames: number;
+
+    /**
+     * Duration gives you the value of animation length in seconds.
+     */
+    readonly duration: number;
+}
+
+/**
+ * This is an interface for the trigger. Triggers provide interaction chains that can be handled by {@link element.Element | Element}. 
  * Implement this interface while creating new trigger.
- * You can get access to current _element_, _targetElement_ and _player_ from trigger {@link interfaces.ITriggerConstructor | constructor}.
+ * You can get access to the current _element_, _targetElement_ and _player_ from trigger {@link interfaces.ITriggerConstructor | constructor}.
  * 
  * Example:
  * ```js
@@ -194,22 +360,22 @@ export interface ITrigger {
     onDisconnected?: () => void;
 
     /**
-     * The {@link IPlayer | player} is ready. Now you can control animation and icon properties with it.
+     * The {@link interfaces.IPlayer | player} is ready. Now you can control animation and icon properties with it.
      */
     onReady?: () => void;
 
     /**
-     * The {@link IPlayer | player} was refreshed. For example by icon customization.
+     * The {@link interfaces.IPlayer | player} was refreshed. For example by icon customization.
      */
     onRefresh?: () => void;
 
     /**
-     * The {@link IPlayer | player} completes an animation.
+     * The {@link interfaces.IPlayer | player} completes an animation.
      */
     onComplete?: () => void;
 
     /**
-     * The {@link IPlayer | player} renders frame.
+     * The {@link interfaces.IPlayer | player} renders frame.
      */
     onFrame?: () => void;
 }
@@ -224,172 +390,4 @@ export interface ITriggerConstructor {
      * @param player Player instance.
      */
     new(element: HTMLElement, targetElement: HTMLElement, player: IPlayer): ITrigger;
-}
-
-/**
- * Interface for animation player.
- * Provides simple API to control animation and customize icon properties on the fly.
- * Allows to react on animation life cycle.
- */
-export interface IPlayer {
-    /**
-     * Connect player with element.
-     */
-    connect(): void;
-
-    /**
-     * Disconnect player from element.
-     */
-    disconnect(): void;
-
-    /**
-     * Start listening for event.
-     * @param name Event name.
-     * @param callback Event callback.
-     */
-    addEventListener(name: PlayerEventName, callback: PlayerEventCallback): () => void;
-
-    /**
-     * Stop listening for event.
-     * @param eventName Event name.
-     * @param callback Event callback.
-     */
-    removeEventListener(eventName: PlayerEventName, callback?: PlayerEventCallback): void;
-
-    /**
-     * Play animation. 
-     * 
-     * Notice: finished animation can't be played again on last frame.
-     */
-    play(): void;
-
-    /**
-     * Play animation from begining.
-     */
-    playFromBegining(): void;
-
-    /**
-     * Pause animation;
-     */
-    pause(): void;
-
-    /**
-     * Stop animation.
-     */
-    stop(): void;
-
-    /**
-     * Go to frame.
-     * @param frame Frame number.
-     */
-    goToFrame(frame: number): void;
-
-    /**
-     * Go to first animation frame.
-     */
-    goToFirstFrame(): void;
-
-    /**
-     * Go to last animation frame.
-     */
-    goToLastFrame(): void;
-
-    /**
-     * Reset properties to default and assign new one from provided param.
-     * 
-     * @param properties New properties to assign.
-     */
-    resetProperties(properties?: IProperties): void;
-
-    /**
-     * Access to icon colors.
-     * With this object you can check supported colors by loaded icon or update any color with convenient way.
-     * 
-     * Example (list all supported colors by icon):
-     * ```js
-     * { ...iconElement.player.colors }
-     * ```
-     * 
-     * Example (update just single color):
-     * ```js
-     * iconElement.player.colors.primary = '#ff0000';
-     * ```
-     * 
-     * Example (update many colors at once):
-     * ```js
-     * iconElement.player.colors = { primary: 'red', secondary: 'blue' };
-     * ```
-     * 
-     * Example (reset all colors to default):
-     * ```js
-     * iconElement.player.colors = null;
-     * ```
-     */
-    colors: IColors | null;
-
-    /**
-     * Access to icon stroke.
-     */
-    stroke: number | null;
-
-    /**
-     * Access to icon scale.
-     */
-    scale: number | null;
-
-    /**
-     * Access to icon axis.
-     */
-    axis: IPoint | null;
-
-    /**
-     * Access to icon state. 
-     * States allow to switch between multiple animations build into single icon file. 
-     */
-    state: string | null;
-
-    /**
-     * Access to playing speed. 
-     */
-    speed: number;
-
-    /**
-     * Access to player frame. You can control animation playing with changing this frame.
-     */
-    frame: number;
-
-    /**
-     * Access to player playing direction.
-     */
-    direction: AnimationDirection;
-
-    /**
-     * Allow control player loop. 
-     */
-    loop: boolean;
-
-    /**
-     * Player is ready.
-     */
-    readonly isReady: boolean;
-
-    /**
-     * Player is playing animation.
-     */
-    readonly isPlaying: boolean;
-
-    /**
-     * List of supported states by loaded icon.
-     */
-    readonly states: string[];
-
-    /**
-     * Animation frames inside loaded icon.
-     */
-    readonly frames: number;
-
-    /**
-     * Animation duration (in seconds).
-     */
-    readonly duration: number;
 }

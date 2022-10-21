@@ -1,7 +1,7 @@
 import { IPlayer, ITrigger } from '../interfaces.js';
 
 /**
- * Enter animation on icon hover.
+ * Hover trigger plays the animation from the first to last frame when the cursor hovers over the icon bounding box.
  */
 export class Hover implements ITrigger {
     constructor(
