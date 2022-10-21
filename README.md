@@ -25,17 +25,10 @@ From script module:
 
 ```js
 import lottie from 'lottie-web';
-<<<<<<< HEAD
-import { defineLordIconElement } from "lord-icon-element";
-
-// register lottie and define custom element
-defineLordIconElement(lottie.loadAnimation);
-=======
 import { defineElement } from 'lord-icon-element';
 
 // define "lord-icon" custom element with default properties
 defineElement(lottie.loadAnimation);
->>>>>>> develop
 ```
 
 From markup:
