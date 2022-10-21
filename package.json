@@ -12,7 +12,7 @@
     "start": "tsc-watch --onFirstSuccess \"node ./scripts/open.js\" --onSuccess \"node ./scripts/examples.js\"",
     "test": "tsc-watch --onFirstSuccess \"node ./scripts/open.js\" --onSuccess \"node ./scripts/test.js\"",
     "compile": "tsc",
-    "release": "npm run compile && webpack --mode production",
+    "release": "npm run compile && node ./scripts/setup-package.js && webpack --mode production",
     "clean": "rm -rf dist",
     "build-package": "npm run clean && npm run compile && node ./scripts/setup-package.js",
     "test-build-package": "npm run build-package && cd dist && npm pack",
