@@ -36,6 +36,11 @@ function minifyStyle() {
 }
 
 function main() {
+    fs.copyFileSync(
+        path.join(process.cwd(), 'README.md'),
+        path.join(process.cwd(), DIST_DIR, 'README.md'),
+    );
+
     const source = fs.readFileSync(path.join(process.cwd(), 'package.json')).toString('utf-8');
 
     const sourceObj = JSON.parse(source);
