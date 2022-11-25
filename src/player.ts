@@ -443,7 +443,7 @@ export class Player implements IPlayer {
         if (isNil(state)) {
             resetProperties(
                 this._lottie,
-                this.rawProperties.filter(c => c.name === 'scale'),
+                this.rawProperties.filter(c => c.name.startsWith(STATE_PREFIX)),
             );
         } else {
             const name = `${STATE_PREFIX}${state!.toLowerCase()}`;
