@@ -62,6 +62,7 @@ List of available examples:
 - __lazy loading effect__ - Load icons only when needed. Fade in icons after the load completes, to create a simultaneous smooth appearance.
 - __state__ - This example presents usage for icons state animation. It is easier than ever to switch between each motion type to use them as stand-alone animations or combine and create an interactive experience.
 - __custom trigger__ - If none of the provided triggers meet what we need to implement, we allow building custom animation triggers. Provided example shows how to create trigger which will reverse animation on the second click.
+- __custom trigger scroll__ - Scroll.
 - __custom trigger in screen__ - This example presents how to build an animation trigger, which plays animation once the icon appears in the browser viewport.
 - __custom trigger states__ - Complex usage example of states with the custom trigger. Eg. see how the trash icon appears, fills, and erases as the user interacts.
 - __lottie light__ - Example of use our element with _lottie-web-light_ which is a way smaller in size but doesn't support expressions (and as a consequence dynamic customization). You can use the light version in pair with our raw icon data.

@@ -1,0 +1,56 @@
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    padding: 0;
+}
+
+lord-icon {
+    width: 256px;
+    height: 256px;
+}
+
+@media (min-width: 900px) {
+    lord-icon {
+        width: 512px;
+        height: 512px;
+    }
+}
+
+.row {
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+    padding: 20px;
+}
+
+.row:nth-child(1n) {
+    background-color: var(--palette-bg-1);
+}
+
+.row:nth-child(2n) {
+    background-color: var(--palette-bg-2);
+}
+
+.row:nth-child(3n) {
+    background-color: var(--palette-bg-3);
+}
+
+@media (min-width: 900px) {
+    .row {
+        flex-direction: row;
+        align-items: center;
+    }
+
+    .row:nth-child(even) {
+        flex-direction: row-reverse;
+    }
+}
+
+a {
+    background: var(--palette-primary);
+    color: #fff;
+    padding: 15px 20px;
+    border-radius: 5px;
+}
