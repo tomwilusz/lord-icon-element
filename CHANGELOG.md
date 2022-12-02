@@ -1,3 +1,7 @@
+## v4.0.2 (2022-12-02)
+
+- New examples.
+
 ## v4.0.1 (2022-11-25)
 
 - Fix icon state reset.
