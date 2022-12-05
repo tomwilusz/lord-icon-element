@@ -1,6 +1,7 @@
-## v4.0.2 (2022-12-02)
+## v4.0.2 (2022-12-05)
 
 - New examples.
+- Fix for player colors proxy used with rough icon.
 
 ## v4.0.1 (2022-11-25)
 
