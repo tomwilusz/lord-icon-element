@@ -63,7 +63,10 @@ function createColorsProxy(this: Player) {
         get: (target, property, receiver) => {
             for (const current of target.rawProperties) {
                 if (current.type == 'color' && typeof property === 'string' && property.toLowerCase() == current.name) {
-                    return lottieColorToHex(get(this.lottie, current.path));
+                    const data = get(this.lottie, current.path);
+                    if (data) {
+                        return lottieColorToHex(data);
+                    }
                 }
             }
             return undefined;
