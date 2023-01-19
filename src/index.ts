@@ -6,6 +6,7 @@ import { Hover } from './triggers/hover.js';
 import { LoopOnHover } from './triggers/loop-on-hover.js';
 import { Loop } from './triggers/loop.js';
 import { Morph } from './triggers/morph.js';
+import { Sequence } from './triggers/sequence.js';
 
 /**
  * Defines `lord-icon` custom element with premade triggers and {@link interfaces.PlayerFactory | player factory}.
@@ -17,6 +18,7 @@ import { Morph } from './triggers/morph.js';
  * - {@link triggers/loop-on-hover.LoopOnHover | loop-on-hover}
  * - {@link triggers/morph.Morph | morph}
  * - {@link triggers/boomerang.Boomerang | boomerang}
+ * - {@link triggers/sequence.Sequence | sequence}
  *
  * Example of tag definition with default setup:
  * ```js
@@ -48,6 +50,7 @@ export function defineElement(animationLoader: AnimationLoader) {
   Element.defineTrigger('loop-on-hover', LoopOnHover);
   Element.defineTrigger('morph', Morph);
   Element.defineTrigger('boomerang', Boomerang);
+  Element.defineTrigger('sequence', Sequence);
 
   if (!customElements.get || !customElements.get('lord-icon')) {
     customElements.define('lord-icon', Element);

@@ -1,3 +1,8 @@
+## v4.0.3 (2023-01-19)
+
+- Update used lottie-web version.
+- Provide new build-in trigger: "sequence".
+
 ## v4.0.2 (2022-12-05)
 
 - New examples.

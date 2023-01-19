@@ -4,8 +4,6 @@ This package gives developers an easy way to embed, control and customize [Lordi
 
 It can assist with:
 
-
-
 - Load and render animated icons with the simple HTML tag __lord-icon__.
 - Customize stroke width, colors, and other supported properties on the fly.
 - Manually interact with icons and their animation. React to the motion types / states of the animation.
