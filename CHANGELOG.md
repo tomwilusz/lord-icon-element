@@ -1,3 +1,7 @@
+## v4.0.4 (2023-01-30)
+
+- Update used lottie-web version.
+
 ## v4.0.3 (2023-01-19)
 
 - Update used lottie-web version.
