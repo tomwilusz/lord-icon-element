@@ -1,6 +1,7 @@
-## v4.0.4 (2023-01-30)
+## v4.0.4 (2023-02-01)
 
 - Update used lottie-web version.
+- Ignore translate3d tranform from lottie.
 
 ## v4.0.3 (2023-01-19)
 

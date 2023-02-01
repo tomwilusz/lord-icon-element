@@ -28,6 +28,7 @@ const ELEMENT_STYLE = `
         display: inline-block;
         width: 32px;
         height: 32px;
+        transform: translate3d(0px, 0px, 0px);
     }
 
     :host(.current-color) svg path[fill] {
@@ -58,6 +59,7 @@ const ELEMENT_STYLE = `
         position: absolute;
         pointer-events: none;
         display: block;
+        transform: none!important;
     }
 `;
 
