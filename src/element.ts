@@ -6,7 +6,7 @@ import { isNil, isObjectLike } from './utils/helpers.js';
 /**
  * Supported icon loading strategies by our {@link Element | Element}.
  */
-type LoadingType = 'lazy';
+type LoadingType = 'lazy' | 'interaction';
 
 /**
  * Use constructable stylesheets if supported (https://developers.google.com/web/updates/2019/02/constructable-stylesheets)
@@ -59,7 +59,19 @@ const ELEMENT_STYLE = `
         position: absolute;
         pointer-events: none;
         display: block;
-        transform: none!important;
+        transform: unset!important;
+    }
+
+    ::slotted(*) {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+    }
+
+    .body.ready ::slotted(*) {
+        display: none;
     }
 `;
 
@@ -191,6 +203,7 @@ export class Element<P extends IPlayer = IPlayer> extends HTMLElement {
     protected _loadedIconData?: IconData;
     protected _player?: IPlayer;
     protected _intersectionObserver?: IntersectionObserver;
+    protected _interactionEvent: string | undefined;
 
     /**
      * Handle attribute update.
@@ -237,6 +250,26 @@ export class Element<P extends IPlayer = IPlayer> extends HTMLElement {
             };
             this._intersectionObserver = new IntersectionObserver(callback);
             this._intersectionObserver.observe(this);
+        } else if (this.loading === 'interaction') {
+            let intersectionCallback: (this: Element) => void = () => {
+                const targetElement = this.target ? this.closest<HTMLElement>(this.target) : null;
+
+                this.createPlayer().then(() => {
+                    console.log('---dispatch!', this._interactionEvent);
+                    (targetElement || this).dispatchEvent(new Event(this._interactionEvent!));
+                });
+            }
+
+            for (const eventName of ['click', 'mouseenter', 'mouseleave']) {
+                this.addEventListener(eventName, () => {
+                    if (!this._interactionEvent) {
+                        this._interactionEvent = eventName;
+                        intersectionCallback.call(this);
+                    } else {
+                        this._interactionEvent = eventName;
+                    }
+                });
+            }
         } else {
             this.createPlayer();
         }
@@ -281,9 +314,14 @@ export class Element<P extends IPlayer = IPlayer> extends HTMLElement {
             this._root.appendChild(style);
         }
 
+        // create container
         const container = document.createElement("div");
         container.classList.add('body');
         this._root.appendChild(container);
+
+        // create slot
+        const slot = document.createElement("slot");
+        container.appendChild(slot);
     }
 
     /**
@@ -716,8 +754,13 @@ export class Element<P extends IPlayer = IPlayer> extends HTMLElement {
      * Get loading value.
      */
     get loading(): LoadingType | null {
-        if (this.getAttribute('loading') && this.getAttribute('loading')!.toLowerCase() === 'lazy') {
-            return 'lazy';
+        if (this.getAttribute('loading')) {
+            const param = this.getAttribute('loading')!.toLowerCase();
+            if (param === 'lazy') {
+                return 'lazy';
+            } else if (param === 'interaction') {
+                return 'interaction';
+            }
         }
 
         return null;

@@ -56,8 +56,10 @@ List of available examples:
 - __background__ - This example presents the use of the element as a background.
 - __manual control__ - Example of manual interaction with icon and player.
 - __icon loader__ - Example of creating icon loader callback which can be used to provide icon data from alternate sources.
-- __lazy loading__ - Load icons only when needed.
-- __lazy loading effect__ - Load icons only when needed. Fade in icons after the load completes, to create a simultaneous smooth appearance.
+- __loading lazy__ - Load icons only when needed.
+- __loading lazy effect__ - Load icons only when needed. Fade in icons after the load completes, to create a simultaneous smooth appearance.
+- __loading-placeholder__ - Example of showing super small SVG until custom element is ready.
+- __loading-placeholder-interaction__ - Example of showing super small SVG until first user interaction with element.
 - __state__ - This example presents usage for icons state animation. It is easier than ever to switch between each motion type to use them as stand-alone animations or combine and create an interactive experience.
 - __custom trigger__ - If none of the provided triggers meet what we need to implement, we allow building custom animation triggers. Provided example shows how to create trigger which will reverse animation on the second click.
 - __custom trigger scroll__ - This custom trigger plays an animation when a user scrolls the website.

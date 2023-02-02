@@ -3,15 +3,17 @@
 
 <head>
   <meta charset="utf-8" />
-  <title>Lazy loading</title>
+  <title>Loading Placeholder</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="stylesheet" type="text/css" href="/style.css" />
-  <link rel="stylesheet" type="text/css" href="/lazy-loading.css" />
+  <link rel="stylesheet" type="text/css" href="/loading-placeholder.css" />
 </head>
 
 <body>
   <div>
-    <lord-icon loading="lazy" trigger="hover" src="/icons/confetti.json"></lord-icon>
+    <lord-icon trigger="hover" icon="confetti">
+      <img alt="" src="/icons/confetti.svg" />
+    </lord-icon>
     <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore
       magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
       consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla
@@ -19,7 +21,9 @@
       laborum.</p>
   </div>
   <div>
-    <lord-icon loading="lazy" trigger="morph" src="/icons/book.json"></lord-icon>
+    <lord-icon trigger="morph" icon="book">
+      <img alt="" src="/icons/book.svg" />
+    </lord-icon>
     <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore
       magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
       consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla
@@ -27,7 +31,9 @@
       laborum.</p>
   </div>
   <div>
-    <lord-icon loading="lazy" trigger="hover" src="/icons/heart.json"></lord-icon>
+    <lord-icon trigger="hover" icon="heart">
+      <img alt="" src="/icons/heart.svg" />
+    </lord-icon>
     <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore
       magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
       consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla
@@ -36,7 +42,7 @@
   </div>
 
   <script type="module" src="/node_modules/lottie-web/build/player/lottie_svg.min.js"></script>
-  <script type="module" src="/lazy-loading.js"></script>
+  <script type="module" src="/loading-placeholder.js"></script>
 </body>
 
 </html>

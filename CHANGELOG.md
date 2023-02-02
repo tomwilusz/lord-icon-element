@@ -1,3 +1,7 @@
+## v4.0.5 (2023-02-02)
+
+- Support for loading icon placeholder.
+
 ## v4.0.4 (2023-02-01)
 
 - Update used lottie-web version.
