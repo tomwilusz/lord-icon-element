@@ -1,3 +1,7 @@
+## v4.0.7 (2023-02-02)
+
+- Remove support for axis and scale customization.
+
 ## v4.0.5 (2023-02-02)
 
 - Support for loading icon placeholder.

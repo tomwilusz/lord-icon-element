@@ -68,29 +68,6 @@ export type PlayerFactory = (container: HTMLElement, iconData: IconData) => IPla
 export type AnimationDirection = 1 | -1;
 
 /**
- * Interface for an x-y point in a two-dimensional space.
- * 
- * Example:
- * ```js
- * {
- *     x: 50,
- *     y: 50,
- * }
- * ```
- */
-export interface IPoint {
-    /**
-     * X value.
-     */
-    x: number;
-
-    /**
-     * Y value.
-     */
-    y: number;
-}
-
-/**
  * Interface for the object that stores multiple colors.
  * 
  * Example:
@@ -128,19 +105,9 @@ export interface IProperties {
     stroke?: number | null;
 
     /**
-     * Scale in the range: 0-100, within the icon bounding box.
-     */
-    scale?: number | null;
-
-    /**
      * State (motion type) of the icon. States allow switching between multiple animations built into a single icon file.
      */
     state?: string | null;
-
-    /**
-     * Icon position within the icon bounding box.
-     */
-    axis?: IPoint | null;
 
     /**
      * Colors.
@@ -251,16 +218,6 @@ export interface IPlayer {
      * Stroke gives you the value of icon stroke width.
      */
     stroke: number | null;
-
-    /**
-     * Scale gives you the value of icon size, within the icon bounding box.
-     */
-    scale: number | null;
-
-    /**
-     * Axis gives you control over the icon position within the icon bounding box.
-     */
-    axis: IPoint | null;
 
     /**
      * This property allows to control state (motion type) of the icon.

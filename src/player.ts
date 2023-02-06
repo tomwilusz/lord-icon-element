@@ -334,36 +334,6 @@ export class Player implements IPlayer {
             );
         }
 
-        // scale
-        if (!isNil(properties.scale)) {
-            updateProperties(
-                this._lottie,
-                this.rawProperties.filter(c => c.name === 'scale'),
-                properties.scale,
-                { scale: PROPERTY_SCALE },
-            );
-        } else if (alreadyCustomized) {
-            resetProperties(
-                this._lottie,
-                this.rawProperties.filter(c => c.name === 'scale'),
-            );
-        }
-
-        // axis
-        if (!isNil(properties.axis)) {
-            updateProperties(
-                this._lottie,
-                this.rawProperties.filter(c => c.name === 'axis'),
-                properties.axis,
-                { scale: PROPERTY_SCALE },
-            );
-        } else if (alreadyCustomized) {
-            resetProperties(
-                this._lottie,
-                this.rawProperties.filter(c => c.name === 'axis'),
-            );
-        }
-
         this.refresh();
     }
 
@@ -420,32 +390,6 @@ export class Player implements IPlayer {
         return null;
     }
 
-    set scale(scale: number | null) {
-        if (isNil(scale)) {
-            resetProperties(
-                this._lottie,
-                this.rawProperties.filter(c => c.name === 'scale'),
-            );
-        } else {
-            updateProperties(
-                this._lottie,
-                this.rawProperties.filter(c => c.name === 'scale'),
-                scale,
-                { scale: PROPERTY_SCALE },
-            );
-        }
-
-        this.refresh();
-    }
-
-    get scale(): number | null {
-        const property = this.rawProperties.filter(c => c.name === 'scale')[0];
-        if (property) {
-            return get(this._lottie, property.path) * (PROPERTY_SCALE / property.value);
-        }
-        return null;
-    }
-
     set state(state: string | null) {
         if (isNil(state)) {
             resetProperties(
@@ -477,34 +421,6 @@ export class Player implements IPlayer {
             }
         }
 
-        return null;
-    }
-
-    set axis(axis: { x: number, y: number } | null) {
-        if (isNil(axis)) {
-            resetProperties(
-                this._lottie,
-                this.rawProperties.filter(c => c.name === 'axis'),
-            );
-        } else {
-            updateProperties(
-                this._lottie,
-                this.rawProperties.filter(c => c.name === 'axis'),
-                axis,
-                { scale: PROPERTY_SCALE },
-            );
-        }
-
-        this.refresh();
-    }
-
-    get axis(): { x: number, y: number } | null {
-        const property = this.rawProperties.filter(c => c.name === 'axis')[0];
-        if (property) {
-            const x = get(this._lottie, property.path + '.0') * (PROPERTY_SCALE / property.value[0]);
-            const y = get(this._lottie, property.path + '.1') * (PROPERTY_SCALE / property.value[1]);
-            return { x, y };
-        }
         return null;
     }
 

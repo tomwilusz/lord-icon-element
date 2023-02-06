@@ -15,7 +15,7 @@ const SUPPORTS_ADOPTING_STYLE_SHEETS = 'adoptedStyleSheets' in Document.prototyp
 
 /**
  * Default value for many of supported properties.
- * For example stroke, scale can be changed in 0-100 range.
+ * For example stroke can be changed in 0-100 range.
  */
 const CENTER_VALUE = 50;
 
@@ -91,10 +91,7 @@ type SUPPORTED_ATTRIBUTES = |
     "trigger" |
     "loading" |
     "target" |
-    "stroke" |
-    "scale" |
-    "axis-x" |
-    "axis-y";
+    "stroke";
 
 /**
  * Observed attributes for this custom element.
@@ -108,9 +105,6 @@ const OBSERVED_ATTRIBUTES: SUPPORTED_ATTRIBUTES[] = [
     "loading",
     "target",
     "stroke",
-    "scale",
-    "axis-x",
-    "axis-y",
 ];
 
 /**
@@ -216,17 +210,7 @@ export class Element<P extends IPlayer = IPlayer> extends HTMLElement {
         oldValue: any,
         newValue: any
     ) {
-        switch (name) {
-            case 'axis-x':
-                this.axisXChanged();
-                break;
-            case 'axis-y':
-                this.axisYChanged();
-                break;
-            default:
-                this[`${name}Changed`].call(this);
-                break;
-        }
+        this[`${name}Changed`].call(this);
     }
 
     /**
@@ -251,17 +235,16 @@ export class Element<P extends IPlayer = IPlayer> extends HTMLElement {
             this._intersectionObserver = new IntersectionObserver(callback);
             this._intersectionObserver.observe(this);
         } else if (this.loading === 'interaction') {
-            let intersectionCallback: (this: Element) => void = () => {
-                const targetElement = this.target ? this.closest<HTMLElement>(this.target) : null;
+            const targetElement = this.target ? this.closest<HTMLElement>(this.target) : null;
 
+            let intersectionCallback: (this: Element) => void = () => {
                 this.createPlayer().then(() => {
-                    console.log('---dispatch!', this._interactionEvent);
                     (targetElement || this).dispatchEvent(new Event(this._interactionEvent!));
                 });
             }
 
             for (const eventName of ['click', 'mouseenter', 'mouseleave']) {
-                this.addEventListener(eventName, () => {
+                (targetElement || this).addEventListener(eventName, () => {
                     if (!this._interactionEvent) {
                         this._interactionEvent = eventName;
                         intersectionCallback.call(this);
@@ -348,16 +331,11 @@ export class Element<P extends IPlayer = IPlayer> extends HTMLElement {
         this._player.connect();
 
         // assign initial properties for icon
-        if (this.state || this.colors || this.stroke || this.scale || this.axisX || this.axisY) {
+        if (this.state || this.colors || this.stroke) {
             this.player!.resetProperties({
                 colors: parseColors(this.colors || ''),
                 stroke: this.stroke,
-                scale: this.scale,
                 state: this.state,
-                axis: isNil(this.axisX) && isNil(this.axisY) ? null : {
-                    x: isNil(this.axisX) ? CENTER_VALUE : this.axisX!,
-                    y: isNil(this.axisY) ? CENTER_VALUE : this.axisY!,
-                },
             });
         }
 
@@ -556,45 +534,6 @@ export class Element<P extends IPlayer = IPlayer> extends HTMLElement {
         }
 
         this.player.state = this.state;
-    }
-
-    /**
-     * Scale attribute changed. Notify about new value player.
-     */
-    protected scaleChanged() {
-        if (!this.player) {
-            return;
-        }
-
-        this.player.scale = this.scale;
-    }
-
-    /**
-     * Axis attribute changed. Notify about new value player.
-     */
-    protected axisXChanged() {
-        if (!this.player) {
-            return;
-        }
-
-        this.player.axis = {
-            x: isNil(this.axisX) ? CENTER_VALUE : this.axisX!,
-            y: isNil(this.axisY) ? CENTER_VALUE : this.axisX!,
-        };
-    }
-
-    /**
-     * Axis attribute changed. Notify about new value player.
-     */
-    protected axisYChanged() {
-        if (!this.player) {
-            return;
-        }
-
-        this.player.axis = {
-            x: isNil(this.axisX) ? CENTER_VALUE : this.axisX!,
-            y: isNil(this.axisY) ? CENTER_VALUE : this.axisY!,
-        };
     }
 
     /**
@@ -801,69 +740,6 @@ export class Element<P extends IPlayer = IPlayer> extends HTMLElement {
     get stroke(): number | null {
         if (this.hasAttribute('stroke')) {
             return parseFloat(this.getAttribute('stroke')!);
-        }
-        return null;
-    }
-
-    /**
-     * Set scale value (in range 0-100).
-     */
-    set scale(value: number | null) {
-        if (isNil(value)) {
-            this.removeAttribute('scale');
-        } else {
-            this.setAttribute('scale', '' + value);
-        }
-    }
-
-    /**
-     * Get scale value.
-     */
-    get scale(): number | null {
-        if (this.hasAttribute('scale')) {
-            return parseFloat(this.getAttribute('scale')!);
-        }
-        return null;
-    }
-
-    /**
-     * Set axisX value.
-     */
-    set axisX(value: number | null) {
-        if (isNil(value)) {
-            this.removeAttribute('axis-x');
-        } else {
-            this.setAttribute('axis-x', '' + value);
-        }
-    }
-
-    /**
-     * Get axisX value.
-     */
-    get axisX(): number | null {
-        if (this.hasAttribute('axis-x')) {
-            return parseFloat(this.getAttribute('axis-x')!);
-        }
-        return null;
-    }
-
-    /**
-     * Set axisY value.
-     */
-    set axisY(value: number | null) {
-        if (isNil(value)) {
-            this.removeAttribute('axis-y');
-        } else {
-            this.setAttribute('axis-y', '' + value);
-        }
-    }
-
-    /**
-     * Get axisY value.
-     */
-    get axisY() {
-        if (this.hasAttribute('axis-y')) {
-            return parseFloat(this.getAttribute('axis-y')!);
         }
         return null;
     }
