@@ -20,6 +20,11 @@ const SUPPORTS_ADOPTING_STYLE_SHEETS = 'adoptedStyleSheets' in Document.prototyp
 const CENTER_VALUE = 50;
 
 /**
+ * List of events support on intersection loading.
+ */
+const INTERSECTION_LOADING_EVENTS = ['click', 'mouseenter', 'mouseleave'];
+
+/**
  * Style for this element.
  */
 const ELEMENT_STYLE = `
@@ -196,9 +201,12 @@ export class Element<P extends IPlayer = IPlayer> extends HTMLElement {
     protected _assignedIconData?: IconData;
     protected _loadedIconData?: IconData;
     protected _player?: IPlayer;
-    protected _intersectionObserver?: IntersectionObserver;
-    protected _interactionEvent: string | undefined;
-    protected _delayCreatePlayer: boolean = false;
+
+    /**
+     * Callback created by one of the lazy loading methods.
+     * Enables the process to continue immediately.
+     */
+    delayedLoading: ((cancel?: boolean) => void) | null = null;
 
     /**
      * Handle attribute update.
@@ -224,40 +232,64 @@ export class Element<P extends IPlayer = IPlayer> extends HTMLElement {
         }
 
         if (this.loading === 'lazy') {
-            this._delayCreatePlayer = true;
+            let intersectionObserver: IntersectionObserver | undefined = undefined;
+
+            this.delayedLoading = (cancel?: boolean) => {
+                intersectionObserver!.unobserve(this);
+                intersectionObserver = undefined;
+                this.delayedLoading = null;
+
+                if (!cancel) {
+                    this.createPlayer();
+                }
+            };
 
             const callback: IntersectionObserverCallback = (entries, observer) => {
                 entries.forEach(entry => {
-                    if (entry.isIntersecting && this._intersectionObserver) {
-                        this._intersectionObserver!.unobserve(this);
-                        this._intersectionObserver = undefined;
-                        this._delayCreatePlayer = false;
-                        this.createPlayer();
+                    if (entry.isIntersecting && intersectionObserver) {
+                        if (this.delayedLoading) {
+                            this.delayedLoading();
+                        }
                     }
                 });
             };
-            this._intersectionObserver = new IntersectionObserver(callback);
-            this._intersectionObserver.observe(this);
+            intersectionObserver = new IntersectionObserver(callback);
+            intersectionObserver.observe(this);
         } else if (this.loading === 'interaction') {
-            this._delayCreatePlayer = true;
+            let interactionEvent: string | undefined = undefined;
+
+            this.delayedLoading = (cancel?: boolean) => {
+                for (const eventName of INTERSECTION_LOADING_EVENTS) {
+                    (targetElement || this).removeEventListener(eventName, intersectionCallback);
+                }
+                this.delayedLoading = null;
+
+                if (!cancel) {
+                    this.createPlayer().then(() => {
+                        (targetElement || this).dispatchEvent(new Event(interactionEvent!));
+                    });
+                }
+            };
+
             const targetElement = this.target ? this.closest<HTMLElement>(this.target) : null;
 
-            let intersectionCallback: (this: Element) => void = () => {
-                this._delayCreatePlayer = false;
-                this.createPlayer().then(() => {
-                    (targetElement || this).dispatchEvent(new Event(this._interactionEvent!));
-                });
+            let intersectionCallback: (this: Element, event: Event) => void = (event: Event) => {
+                const eventName = event?.type;
+
+                if (!interactionEvent) {
+                    interactionEvent = eventName;
+                    if (this.delayedLoading) {
+                        this.delayedLoading();
+                    }
+                } else {
+                    interactionEvent = eventName;
+                }
             }
 
-            for (const eventName of ['click', 'mouseenter', 'mouseleave']) {
-                (targetElement || this).addEventListener(eventName, () => {
-                    if (!this._interactionEvent) {
-                        this._interactionEvent = eventName;
-                        intersectionCallback.call(this);
-                    } else {
-                        this._interactionEvent = eventName;
-                    }
-                });
+            intersectionCallback = intersectionCallback.bind(this);
+
+            for (const eventName of INTERSECTION_LOADING_EVENTS) {
+                (targetElement || this).addEventListener(eventName, intersectionCallback);
             }
         } else {
             this.createPlayer();
@@ -270,11 +302,12 @@ export class Element<P extends IPlayer = IPlayer> extends HTMLElement {
      * Element disconnected.
      */
     protected disconnectedCallback() {
-        if (this._intersectionObserver) {
-            this._intersectionObserver.unobserve(this);
-            this._intersectionObserver = undefined;
+        // clean state from delayed loading
+        if (this.delayedLoading) {
+            this.delayedLoading(true);
         }
 
+        // remove player
         this.destroyPlayer();
 
         this._isConnected = false;
@@ -323,8 +356,8 @@ export class Element<P extends IPlayer = IPlayer> extends HTMLElement {
             throw new Error('Missing player loader!');
         }
 
-        // we are on lazy loading process
-        if (this._delayCreatePlayer) {
+        // we are already on lazy loading process
+        if (this.delayedLoading) {
             return;
         }
 

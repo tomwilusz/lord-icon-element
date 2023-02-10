@@ -73,29 +73,14 @@ export default function () {
             expect(element.trigger).to.be.null;
             expect(element.state).to.be.null;
             expect(element.stroke).to.be.null;
-            expect(element.scale).to.be.null;
             expect(element.colors).to.be.null;
             expect(element.icon).to.be.null;
-            expect(element.axisX).to.be.null;
-            expect(element.axisY).to.be.null;
         });
 
         it('attributes', () => {
             element.stroke = 100;
             expect(element.stroke).to.be.eql(100);
             expect(element.getAttribute('stroke')).to.be.eql('100');
-
-            element.scale = 100;
-            expect(element.scale).to.be.eql(100);
-            expect(element.getAttribute('scale')).to.be.eql('100');
-
-            element.axisX = 100;
-            expect(element.axisX).to.be.eql(100);
-            expect(element.getAttribute('axis-x')).to.be.eql('100');
-
-            element.axisY = 100;
-            expect(element.axisY).to.be.eql(100);
-            expect(element.getAttribute('axis-y')).to.be.eql('100');
 
             element.target = 'div';
             expect(element.target).to.be.eql('div');
@@ -131,15 +116,6 @@ export default function () {
             element.setAttribute('stroke', '85');
             expect(element.stroke).to.be.eql(85);
 
-            element.setAttribute('scale', '85');
-            expect(element.scale).to.be.eql(85);
-
-            element.setAttribute('axis-x', '85');
-            expect(element.axisX).to.be.eql(85);
-
-            element.setAttribute('axis-y', '45');
-            expect(element.axisY).to.be.eql(45);
-
             element.setAttribute('colors', 'primary:red');
             expect(element.colors).to.be.eql('primary:red');
 
@@ -153,13 +129,6 @@ export default function () {
 
             element.stroke = 80;
             expect(element.player.stroke).to.be.eql(80);
-
-            element.scale = 70;
-            expect(element.player.scale).to.be.eql(70);
-
-            element.axisX = 60;
-            element.axisY = 40;
-            expect(element.player.axis).to.be.eql({ x: 60, y: 40 });
         });
 
         it('trigger', () => {
