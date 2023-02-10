@@ -198,6 +198,7 @@ export class Element<P extends IPlayer = IPlayer> extends HTMLElement {
     protected _player?: IPlayer;
     protected _intersectionObserver?: IntersectionObserver;
     protected _interactionEvent: string | undefined;
+    protected _delayCreatePlayer: boolean = false;
 
     /**
      * Handle attribute update.
@@ -223,11 +224,14 @@ export class Element<P extends IPlayer = IPlayer> extends HTMLElement {
         }
 
         if (this.loading === 'lazy') {
+            this._delayCreatePlayer = true;
+
             const callback: IntersectionObserverCallback = (entries, observer) => {
                 entries.forEach(entry => {
                     if (entry.isIntersecting && this._intersectionObserver) {
                         this._intersectionObserver!.unobserve(this);
                         this._intersectionObserver = undefined;
+                        this._delayCreatePlayer = false;
                         this.createPlayer();
                     }
                 });
@@ -235,9 +239,11 @@ export class Element<P extends IPlayer = IPlayer> extends HTMLElement {
             this._intersectionObserver = new IntersectionObserver(callback);
             this._intersectionObserver.observe(this);
         } else if (this.loading === 'interaction') {
+            this._delayCreatePlayer = true;
             const targetElement = this.target ? this.closest<HTMLElement>(this.target) : null;
 
             let intersectionCallback: (this: Element) => void = () => {
+                this._delayCreatePlayer = false;
                 this.createPlayer().then(() => {
                     (targetElement || this).dispatchEvent(new Event(this._interactionEvent!));
                 });
@@ -265,7 +271,7 @@ export class Element<P extends IPlayer = IPlayer> extends HTMLElement {
      */
     protected disconnectedCallback() {
         if (this._intersectionObserver) {
-            this._intersectionObserver!.unobserve(this);
+            this._intersectionObserver.unobserve(this);
             this._intersectionObserver = undefined;
         }
 
@@ -317,8 +323,8 @@ export class Element<P extends IPlayer = IPlayer> extends HTMLElement {
             throw new Error('Missing player loader!');
         }
 
-        // already on awaiting state
-        if (this._intersectionObserver) {
+        // we are on lazy loading process
+        if (this._delayCreatePlayer) {
             return;
         }
 
