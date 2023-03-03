@@ -1,7 +1,7 @@
 import { AnimationItem } from 'lottie-web';
-import { IconData } from '../interfaces.js';
+import { IconData, IProperties } from '../interfaces.js';
 import { parseColor } from './colors.js';
-import { set } from './helpers.js';
+import { set, deepClone, isObjectLike } from './helpers.js';
 
 /**
  * Lottie color type.
@@ -126,6 +126,8 @@ export function properties(
     data: IconData,
     options: { lottieInstance?: boolean } = {},
 ): ILottieProperty[] {
+    console.log('---properties', data, options);
+
     const result: any[] = [];
     const { lottieInstance } = options;
 
@@ -134,7 +136,7 @@ export function properties(
     }
 
     data.layers.forEach((layer: any, layerIndex: number) => {
-        if (!layer.nm || !layer.ef || !layer.nm.toLowerCase().includes('change')) {
+        if (!layer.nm || !layer.ef) {
             return;
         }
 
@@ -229,4 +231,55 @@ export function updateProperties(data: IconData | AnimationItem, properties: ILo
             set(data, property.path, value * ratio);
         }
     }
+}
+
+export function modifiedIconData(data: IconData, properties: IProperties) {
+    const newData = deepClone(data);
+
+    if (properties.state) {
+        for (const marker of data.markers || []) {
+            if (marker.cm !== properties.state) {
+                continue;
+            }
+
+            newData.ip = marker.tm;
+            newData.op = marker.tm + marker.dr;
+        }
+    }
+
+    const findObject: (currentData: any, key: string) => any[] = (currentData: any, key: string) => {
+        const result: any[] = [];
+
+        for (const k of Object.keys(currentData)) {
+            const v = currentData[k];
+
+            if (isObjectLike(v)) {
+                result.push(...findObject(v, key));
+            }
+        }
+
+        if (currentData.x && typeof currentData.x === 'string' && currentData.x.includes(key)) {
+            result.push(currentData);
+        }
+
+        return result;
+    }
+
+    if (properties.stroke) {
+        const strokeObjects = findObject(newData, `effect('Stroke')('Slider')`);
+        for (const s of strokeObjects) {
+            if (!s.__k) {
+                s.__k = s.k;
+            }
+
+            const scale = properties.stroke / 50;
+            s.k = s.__k * scale;
+        }
+
+        console.log('---strokeObjects', strokeObjects);
+    }
+
+
+
+    return newData;
 }

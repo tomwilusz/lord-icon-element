@@ -125,6 +125,9 @@ export class Player implements IPlayer {
     protected _rawProperties?: ILottieProperty[];
     protected _eventCallbacks: any = {};
 
+    protected _state?: { time: number, duration: number, name: string };
+    protected _states?: { time: number, duration: number, name: string }[];
+
     /**
      * 
      * @param animationLoader Provide `loadAnimation` here from `lottie-web`.
@@ -137,6 +140,25 @@ export class Player implements IPlayer {
         this._container = container;
         this._iconData = iconData;
         this._options = options || DEFAULT_LOTTIE_WEB_OPTIONS;
+
+        if (iconData.markers && iconData.markers.length) {
+            this._states = iconData.markers.map((c: any) => {
+                return {
+                    time: c.tm,
+                    duration: c.dr,
+                    name: c.cm,
+                };
+            });
+
+            const firstState = this._states?.[0]!;
+            const lastState = this._states?.[this._states!.length - 1]!;
+
+            this._state = firstState;
+
+            // fix animation states
+            iconData.ip = 0;
+            iconData.op = lastState.time + lastState.duration + 1;
+        }
     }
 
     connect() {
@@ -246,11 +268,21 @@ export class Player implements IPlayer {
     }
 
     play() {
-        this._lottie!.play();
+        console.log('---play', this._state);
+
+        if (this._state) {
+            this._lottie!.playSegments([this.frame, this._state.time + this._state.duration], true);
+        } else {
+            this._lottie!.play();
+        }
     }
 
     playFromBegining() {
-        this._lottie!.goToAndPlay(0);
+        if (this._state) {
+            this._lottie!.playSegments([this._state.time, this._state.time + this._state.duration], true);
+        } else {
+            this._lottie!.goToAndPlay(0);
+        }
     }
 
     pause() {
@@ -278,6 +310,8 @@ export class Player implements IPlayer {
             return;
         }
 
+        console.log('---resetProperties', properties, this._state, this._states);
+
         // allows to optimize initial assign properties without redundant reset to default
         const alreadyCustomized = this._rawProperties ? true : false;
 
@@ -299,24 +333,32 @@ export class Player implements IPlayer {
         }
 
         // state
-        if (alreadyCustomized) {
-            resetProperties(
-                this._lottie,
-                this.rawProperties.filter(c => c.name.startsWith(STATE_PREFIX)),
-            );
-        }
-        if (!isNil(properties.state) && properties.state) {
-            const name = `${STATE_PREFIX}${properties.state.toLowerCase()}`;
-            updateProperties(
-                this._lottie,
-                this.rawProperties.filter(c => c.name.startsWith(STATE_PREFIX)),
-                0,
-            );
-            updateProperties(
-                this._lottie,
-                this.rawProperties.filter(c => c.name === name),
-                1,
-            );
+        if (this._states) {
+            const currentState = properties.state ? this._states.filter(c => c.name === properties.state)[0] : this._states[0];
+            if (currentState) {
+                this._state = currentState;
+                this.frame = currentState.time;
+            }
+        } else {
+            if (alreadyCustomized) {
+                resetProperties(
+                    this._lottie,
+                    this.rawProperties.filter(c => c.name.startsWith(STATE_PREFIX)),
+                );
+            }
+            if (!isNil(properties.state) && properties.state) {
+                const name = `${STATE_PREFIX}${properties.state.toLowerCase()}`;
+                updateProperties(
+                    this._lottie,
+                    this.rawProperties.filter(c => c.name.startsWith(STATE_PREFIX)),
+                    0,
+                );
+                updateProperties(
+                    this._lottie,
+                    this.rawProperties.filter(c => c.name === name),
+                    1,
+                );
+            }
         }
 
         // stroke
@@ -385,35 +427,54 @@ export class Player implements IPlayer {
     get stroke(): number | null {
         const property = this.rawProperties.filter(c => c.name === 'stroke')[0];
         if (property) {
-            return get(this._lottie, property.path) * (PROPERTY_SCALE / property.value);
+            const value = get(this._lottie, property.path) * (PROPERTY_SCALE / property.value);
+            return isNaN(value) ? null : value;
         }
         return null;
     }
 
     set state(state: string | null) {
-        if (isNil(state)) {
-            resetProperties(
-                this._lottie,
-                this.rawProperties.filter(c => c.name.startsWith(STATE_PREFIX)),
-            );
-        } else {
-            const name = `${STATE_PREFIX}${state!.toLowerCase()}`;
-            updateProperties(
-                this._lottie,
-                this.rawProperties.filter(c => c.name.startsWith(STATE_PREFIX)),
-                0,
-            );
-            updateProperties(
-                this._lottie,
-                this.rawProperties.filter(c => c.name === name),
-                1,
-            );
-        }
+        console.log('---set state', state);
+        if (this._states) {
+            const isPlaying = this.isPlaying;
+            const newState = this._states.filter(c => c.name === state)[0];
+            if (newState) {
+                this._state = newState;
+                this.frame = newState.time;
 
-        this.refresh();
+                if (isPlaying) {
+                    this.play();
+                }
+            }
+        } else {
+            if (isNil(state)) {
+                resetProperties(
+                    this._lottie,
+                    this.rawProperties.filter(c => c.name.startsWith(STATE_PREFIX)),
+                );
+            } else {
+                const name = `${STATE_PREFIX}${state!.toLowerCase()}`;
+                updateProperties(
+                    this._lottie,
+                    this.rawProperties.filter(c => c.name.startsWith(STATE_PREFIX)),
+                    0,
+                );
+                updateProperties(
+                    this._lottie,
+                    this.rawProperties.filter(c => c.name === name),
+                    1,
+                );
+            }
+
+            this.refresh();
+        }
     }
 
     get state(): string | null {
+        if (this._state) {
+            return this._state.name;
+        }
+
         for (const property of this.rawProperties.filter(c => c.name.startsWith(STATE_PREFIX))) {
             const value = get(this._lottie, property.path);
             if (value) {
@@ -450,6 +511,14 @@ export class Player implements IPlayer {
         return this._lottie!.loop ? true : false;
     }
 
+    get properties(): IProperties {
+        return {
+            state: this.state,
+            colors: { ...this.colors },
+            stroke: this.stroke,
+        };
+    }
+
     set frame(frame: number) {
         this.goToFrame(Math.max(0, Math.min(this.frames, frame)));
     }
@@ -459,6 +528,10 @@ export class Player implements IPlayer {
     }
 
     get states(): string[] {
+        if (this._states) {
+            return this._states.map(c => c.name);
+        }
+
         return this.rawProperties.filter(c => c.name.startsWith(STATE_PREFIX)).map(c => {
             return c.name.substr(STATE_PREFIX.length);
         });
