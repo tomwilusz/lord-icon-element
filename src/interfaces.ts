@@ -186,8 +186,14 @@ export interface IPlayer {
 
     /**
      * Play animation from beginning.
+     * @deprecated use playFromBeginning instead
      */
     playFromBegining(): void;
+
+    /**
+     * Play animation from beginning.
+     */
+    playFromBeginning(): void;
 
     /**
      * Pause animation.
@@ -200,7 +206,7 @@ export interface IPlayer {
     stop(): void;
 
     /**
-     * Go to the extact frame.
+     * Go to the exact frame.
      * @param frame Frame number.
      */
     goToFrame(frame: number): void;

@@ -33,7 +33,7 @@ class Trash {
 
     onReady() {
         this.player.state = 'intro-empty';
-        this.player.playFromBegining();
+        this.player.playFromBeginning();
     }
 
     onClick() {
@@ -45,7 +45,7 @@ class Trash {
             this.empty = true;
         }
 
-        this.player.playFromBegining();
+        this.player.playFromBeginning();
     }
 
     onMouseEnter() {
@@ -55,7 +55,7 @@ class Trash {
             this.player.state = 'hover-full';
         }
 
-        this.player.playFromBegining();
+        this.player.playFromBeginning();
     }
 
     onMouseLeave() {
@@ -64,19 +64,19 @@ class Trash {
     trashIntro() {
         this.player.state = 'intro-empty';
         this.empty = true;
-        this.player.playFromBegining();
+        this.player.playFromBeginning();
     }
 
     trashFill() {
         this.player.state = 'morph-fill';
         this.empty = false;
-        this.player.playFromBegining();
+        this.player.playFromBeginning();
     }
 
     trashErase() {
         this.player.state = 'morph-erase';
         this.empty = true;
-        this.player.playFromBegining();
+        this.player.playFromBeginning();
     }
 }
 

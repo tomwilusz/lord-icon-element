@@ -15,7 +15,7 @@ class InScreen {
         const intersectionCallback = (entries, observer) => {
             entries.forEach((entry) => {
                 if (!this.player.isPlaying) {
-                    this.player.playFromBegining();
+                    this.player.playFromBeginning();
                 }
             });
         };

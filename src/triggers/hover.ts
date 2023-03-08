@@ -25,6 +25,6 @@ export class Hover implements ITrigger {
             return;
         }
 
-        this.player.playFromBegining();
+        this.player.playFromBeginning();
     }
 }

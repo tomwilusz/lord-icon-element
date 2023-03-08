@@ -7,7 +7,7 @@ const iconElement = document.getElementById('main-icon');
 iconElement.addEventListener('ready', () => {
     // initial play intro
     iconElement.state = 'intro';
-    iconElement.player.playFromBegining();
+    iconElement.player.playFromBeginning();
 
     // store next state
     let nextState = null;
@@ -17,8 +17,8 @@ iconElement.addEventListener('ready', () => {
         // change to assigned state
         iconElement.state = nextState ?? 'loop';
 
-        // play from begining
-        iconElement.player.playFromBegining();
+        // play from beginning
+        iconElement.player.playFromBeginning();
 
         // clear next state
         nextState = null;

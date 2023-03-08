@@ -34,6 +34,6 @@ export class Click implements ITrigger {
             return;
         }
 
-        this.player.playFromBegining();
+        this.player.playFromBeginning();
     }
 }
