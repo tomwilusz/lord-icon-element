@@ -44,22 +44,6 @@ const ELEMENT_STYLE = `
         stroke: currentColor;
     }
 
-    :host(:not(.current-color)) svg .primary path[fill] {
-        fill: var(--lord-icon-primary, var(--lord-icon-primary-base));
-    }
-
-    :host(:not(.current-color)) svg .primary path[stroke] {
-        stroke: var(--lord-icon-primary, var(--lord-icon-primary-base));
-    }
-
-    :host(:not(.current-color)) svg .secondary path[fill] {
-        fill: var(--lord-icon-secondary, var(--lord-icon-secondary-base));
-    }
-
-    :host(:not(.current-color)) svg .secondary path[stroke] {
-        stroke: var(--lord-icon-secondary, var(--lord-icon-secondary-base));
-    }
-
     svg {
         position: absolute;
         pointer-events: none;
@@ -367,6 +351,46 @@ export class Element<P extends IPlayer = IPlayer> extends HTMLElement {
         }
 
         this._player = Element._playerFactory(this.animationContainer!, iconData);
+
+        // dynamic style for colors
+        const colors = Object.entries(this.player!.colors || {});
+        if (colors.length) {
+            let styleContent = '';
+
+            // :host(:not(.current-color)) svg .primary[fill] {
+            //     fill: var(--lord-icon-primary, var(--lord-icon-primary-base));
+            // }
+
+            // :host(:not(.current-color)) svg .primary[stroke] {
+            //     stroke: var(--lord-icon-primary, var(--lord-icon-primary-base));
+            // }
+
+            // :host(:not(.current-color)) svg .secondary[fill] {
+            //     fill: var(--lord-icon-secondary, var(--lord-icon-secondary-base));
+            // }
+
+            // :host(:not(.current-color)) svg .secondary[stroke] {
+            //     stroke: var(--lord-icon-secondary, var(--lord-icon-secondary-base));
+            // }
+
+            for (const [key, value] of colors) {
+                styleContent += `
+                    :host(:not(.current-color)) svg .${key}[fill] {
+                        fill: var(--lord-icon-${key}, var(--lord-icon-${key}-base));
+                    }
+        
+                    :host(:not(.current-color)) svg .${key}[stroke] {
+                        stroke: var(--lord-icon-${key}, var(--lord-icon-${key}-base));
+                    }
+                `
+            }
+
+            const style = document.createElement("style");
+            style.innerHTML = styleContent;
+            this.animationContainer!.appendChild(style);
+        }
+
+        // connect after style
         this._player.connect();
 
         // assign initial properties for icon

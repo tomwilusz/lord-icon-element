@@ -1,6 +1,7 @@
 import { Element } from '/dist/element.js';
 import { defineElement } from '/dist/index.js';
 import { modifiedIconData } from '/dist/utils/lottie.js';
+import { set } from '/dist/utils/helpers.js';
 
 // List of supported icons by our icon loader.
 const ICONS = {
@@ -9,6 +10,14 @@ const ICONS = {
     book: '/icons/112-book-morph-lineal.json',
     book2: '/icons/book.json',
     xxx: '/icons/xxx.json',
+    yyy: '/icons/yyy.json',
+    zzz: '/icons/zzz.json',
+    woman: '/icons/woman.json',
+    man: '/icons/man.json',
+    newhour: '/icons/newhour.json',
+    fiu: '/icons/fiu.json',
+    gru: '/icons/gru.json',
+    gra: '/icons/gra.json',
 }
 
 // Custom icon loader which can provide icon data from any place you want.
@@ -22,12 +31,13 @@ Element.setIconLoader(async (iconName) => {
 // Register element.
 defineElement(lottie.loadAnimation);
 
+const element = document.querySelector('lord-icon');
+
 document.querySelector('a').addEventListener('click', e => {
     e.preventDefault();
 
-    const element = document.querySelector('lord-icon');
 
-    const data = modifiedIconData(element.iconData, element.player.properties);
+    const data = modifiedIconData(element.iconData, element.player.properties, true);
 
     console.log('---export', data);
 
@@ -41,4 +51,5 @@ document.querySelector('a').addEventListener('click', e => {
     link.click();
 
     document.body.removeChild(link);
+
 })

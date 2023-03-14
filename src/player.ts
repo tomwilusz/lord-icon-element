@@ -270,6 +270,8 @@ export class Player implements IPlayer {
     play() {
         console.log('---play', this._state);
 
+        console.log('---raw properties', this._rawProperties);
+
         if (this._state) {
             this._lottie!.playSegments([this.frame, this._state.time + this._state.duration], true);
         } else {
@@ -377,6 +379,14 @@ export class Player implements IPlayer {
         }
 
         this.refresh();
+    }
+
+    xxx(name: string, value: any) {
+        updateProperties(
+            this._lottie,
+            this.rawProperties.filter(c => c.type === 'pseudo' && c.name === name),
+            value,
+        );
     }
 
     set colors(colors: IColors | null) {
