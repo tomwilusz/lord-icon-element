@@ -32,15 +32,21 @@ export class LoopOnHover implements ITrigger {
         this.mouseIn = true;
 
         if (!this.player.isPlaying) {
-            this.player.playFromBegining();
+            this.play();
         }
     }
 
     onMouseLeave() {
         this.mouseIn = false;
+
+        this.resetPlayDelayTimer();
     }
 
     onComplete() {
+        this.play();
+    }
+
+    play() {
         this.resetPlayDelayTimer();
 
         if (!this.mouseIn) {

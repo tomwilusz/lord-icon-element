@@ -14,14 +14,18 @@ export class Loop implements ITrigger {
     }
 
     onReady() {
-        this.player.play();
+        this.play();
+    }
+
+    onComplete() {
+        this.play();
     }
 
     onDisconnected() {
         this.resetPlayDelayTimer();
     }
 
-    onComplete() {
+    play() {
         this.resetPlayDelayTimer();
 
         if (this.delay > 0) {

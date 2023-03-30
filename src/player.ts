@@ -253,6 +253,10 @@ export class Player implements IPlayer {
         this._lottie!.goToAndPlay(0);
     }
 
+    playSegment(from: number, to: number) {
+        this._lottie!.playSegments([from, to], true);
+    }
+
     pause() {
         this._lottie!.pause();
     }

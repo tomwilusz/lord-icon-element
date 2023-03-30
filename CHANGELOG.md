@@ -1,3 +1,8 @@
+## v4.1.0 (2023-03-30)
+
+- Access to lottie play segments inside player.
+- Move delay to begining inside loop and loop-on-hover triggers.
+
 ## v4.0.8 (2023-02-10)
 
 - Better handle lazy loading process.
