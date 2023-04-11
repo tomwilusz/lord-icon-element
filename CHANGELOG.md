@@ -1,4 +1,4 @@
-## v4.1.1 (2023-03-30)
+## v4.1.1 (2023-04-11)
 
 - Pause animation with trigger disconnection.
 - Fix typo inside "playFromBegining".
