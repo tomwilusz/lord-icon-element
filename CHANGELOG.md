@@ -2,6 +2,7 @@
 
 - Pause animation with trigger disconnection.
 - Fix typo inside "playFromBegining".
+- Update sequence trigger. 
 
 ## v4.1.0 (2023-03-30)
 
