@@ -1,7 +1,12 @@
+## v4.1.1 (2023-03-30)
+
+- Pause animation with trigger disconnection.
+- Fix typo inside "playFromBegining".
+
 ## v4.1.0 (2023-03-30)
 
 - Access to lottie play segments inside player.
-- Move delay to begining inside loop and loop-on-hover triggers.
+- Move delay to beginning inside loop and loop-on-hover triggers.
 
 ## v4.0.8 (2023-02-10)
 

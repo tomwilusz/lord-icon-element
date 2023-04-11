@@ -45,8 +45,7 @@ export class Sequence implements ITrigger {
         }
     }
 
-    step() {
-        const numberRegex = /^\d*(\.\d+)?$/
+    takeNextStep() {
         const steps = this.sequence.split(',');
 
         const step = steps[this.sequenceIndex];
@@ -55,6 +54,14 @@ export class Sequence implements ITrigger {
         if (this.sequenceIndex >= steps.length) {
             this.sequenceIndex = 0;
         }
+
+        return step;
+    }
+
+    step() {
+        const numberRegex = /^\d*(\.\d+)?$/
+
+        const step = this.takeNextStep();
 
         const [action, ...params] = step.split(':');
 

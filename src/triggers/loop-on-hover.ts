@@ -55,10 +55,10 @@ export class LoopOnHover implements ITrigger {
 
         if (this.delay > 0) {
             this.playTimeout = setTimeout(() => {
-                this.player.playFromBegining();
+                this.player.playFromBeginning();
             }, this.delay)
         } else {
-            this.player.playFromBegining();
+            this.player.playFromBeginning();
         }
     }
 

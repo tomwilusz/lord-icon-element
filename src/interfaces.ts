@@ -154,7 +154,7 @@ export interface IPlayer {
     /**
      * Play animation from beginning.
      */
-    playFromBegining(): void;
+    playFromBeginning(): void;
 
     /**
      * Pause animation.

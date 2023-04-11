@@ -249,7 +249,7 @@ export class Player implements IPlayer {
         this._lottie!.play();
     }
 
-    playFromBegining() {
+    playFromBeginning() {
         this._lottie!.goToAndPlay(0);
     }
 

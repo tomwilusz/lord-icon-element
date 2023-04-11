@@ -514,6 +514,8 @@ export class Element<P extends IPlayer = IPlayer> extends HTMLElement {
                 this._triggerInstance.onDisconnected();
             }
             this._triggerInstance = undefined;
+
+            this.player?.pause();
         }
 
         if (!this.trigger || !this._player) {
