@@ -18,6 +18,12 @@ const ICONS = {
     fiu: '/icons/fiu.json',
     gru: '/icons/gru.json',
     gra: '/icons/gra.json',
+    nowa: '/icons/nowa.json',
+    nowa2: '/icons/nowa2.json',
+    nowa3: '/icons/nowa3.json',
+    newfile: '/icons/new-file.json',
+    pingradient: '/icons/18-location-pin-gradient.json',
+    love: '/icons/20-love-heart-outline.json',
 }
 
 // Custom icon loader which can provide icon data from any place you want.
