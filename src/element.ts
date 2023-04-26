@@ -357,29 +357,13 @@ export class Element<P extends IPlayer = IPlayer> extends HTMLElement {
         if (colors.length) {
             let styleContent = '';
 
-            // :host(:not(.current-color)) svg .primary[fill] {
-            //     fill: var(--lord-icon-primary, var(--lord-icon-primary-base));
-            // }
-
-            // :host(:not(.current-color)) svg .primary[stroke] {
-            //     stroke: var(--lord-icon-primary, var(--lord-icon-primary-base));
-            // }
-
-            // :host(:not(.current-color)) svg .secondary[fill] {
-            //     fill: var(--lord-icon-secondary, var(--lord-icon-secondary-base));
-            // }
-
-            // :host(:not(.current-color)) svg .secondary[stroke] {
-            //     stroke: var(--lord-icon-secondary, var(--lord-icon-secondary-base));
-            // }
-
             for (const [key, value] of colors) {
                 styleContent += `
-                    :host(:not(.current-color)) svg .${key}[fill] {
+                    :host(:not(.current-color)) svg .${key} path[fill] {
                         fill: var(--lord-icon-${key}, var(--lord-icon-${key}-base));
                     }
         
-                    :host(:not(.current-color)) svg .${key}[stroke] {
+                    :host(:not(.current-color)) svg .${key} path[stroke] {
                         stroke: var(--lord-icon-${key}, var(--lord-icon-${key}-base));
                     }
                 `
@@ -512,6 +496,11 @@ export class Element<P extends IPlayer = IPlayer> extends HTMLElement {
      */
     protected movePaletteToCssVariables() {
         for (const [key, value] of Object.entries(this.player!.colors || {})) {
+            if (!value) {
+                console.log('---move css color', key, value);
+                continue;
+            }
+
             this.animationContainer!.style.setProperty(`--lord-icon-${key}-base`, value);
         }
     }

@@ -1,7 +1,7 @@
 import { AnimationConfig, AnimationConfigWithData, AnimationConfigWithPath, AnimationDirection, AnimationItem } from 'lottie-web';
 import { IColors, IconData, IPlayer, IProperties, PlayerEventCallback, PlayerEventName } from './interfaces.js';
 import { deepClone, get, isNil } from './utils/helpers.js';
-import { ILottieProperty, lottieColorToHex, properties, resetProperties, updateProperties } from './utils/lottie.js';
+import { ILottieProperty, SCALE_STROKE, lottieColorToHex, properties, resetProperties, updateProperties } from './utils/lottie.js';
 
 /**
  * Type for options supported by {@link player.Player | Player}.
@@ -12,11 +12,6 @@ export type LottieOptions = Omit<AnimationConfig, 'container'>;
  * Type for `loadAnimation` method from `lottie-web` package.
  */
 export type AnimationLoader = (params: AnimationConfigWithPath | AnimationConfigWithData) => AnimationItem;
-
-/**
- * Scale factor for supported customizable properties.
- */
-export const PROPERTY_SCALE = 50;
 
 /**
  * Prefix for icon states. Properties with this prefix are handled as icon states.
@@ -64,6 +59,7 @@ function createColorsProxy(this: Player) {
             for (const current of target.rawProperties) {
                 if (current.type == 'color' && typeof property === 'string' && property.toLowerCase() == current.name) {
                     const data = get(this.lottie, current.path);
+                    // console.log('---color data', this.lottie, current.name, data);
                     if (data) {
                         return lottieColorToHex(data);
                     }
@@ -101,6 +97,13 @@ function createColorsProxy(this: Player) {
     });
 }
 
+interface IState {
+    time: number;
+    duration: number;
+    name: string;
+    default?: boolean;
+}
+
 /**
  * The player implementation as a wrapper around `lottie-web`.
  * 
@@ -125,8 +128,8 @@ export class Player implements IPlayer {
     protected _rawProperties?: ILottieProperty[];
     protected _eventCallbacks: any = {};
 
-    protected _state?: { time: number, duration: number, name: string };
-    protected _states?: { time: number, duration: number, name: string }[];
+    protected _state?: IState;
+    protected _states?: IState[];
 
     /**
      * 
@@ -143,20 +146,33 @@ export class Player implements IPlayer {
 
         if (iconData.markers && iconData.markers.length) {
             this._states = iconData.markers.map((c: any) => {
-                return {
+                const [partA, partB] = c.cm.split(':');
+                const newState: IState = {
                     time: c.tm,
                     duration: c.dr,
-                    name: c.cm,
+                    name: partB || partA,
+                    default: partB && partA.includes('default') ? true : false,
                 };
+
+                return newState;
             });
 
+            // select default state
+            for (const state of this._states || []) {
+                if (state.default) {
+                    this._state = state;
+                }
+            }
+
+            // select first and last state
             const firstState = this._states?.[0]!;
             const lastState = this._states?.[this._states!.length - 1]!;
 
-            this._state = firstState;
+            console.log('---states', this._states);
+            console.log('---state', this._state);
 
             // fix animation states
-            iconData.ip = 0;
+            iconData.ip = firstState.time;
             iconData.op = lastState.time + lastState.duration + 1;
         }
     }
@@ -273,7 +289,7 @@ export class Player implements IPlayer {
         console.log('---raw properties', this._rawProperties);
 
         if (this._state) {
-            this._lottie!.playSegments([this.frame, this._state.time + this._state.duration], true);
+            this._lottie!.playSegments([this._state.time, this._state.time + this._state.duration], true);
         } else {
             this._lottie!.play();
         }
@@ -369,7 +385,6 @@ export class Player implements IPlayer {
                 this._lottie,
                 this.rawProperties.filter(c => c.name === 'stroke'),
                 properties.stroke,
-                { scale: PROPERTY_SCALE },
             );
         } else if (alreadyCustomized) {
             resetProperties(
@@ -420,14 +435,13 @@ export class Player implements IPlayer {
         if (isNil(stroke)) {
             resetProperties(
                 this._lottie,
-                this.rawProperties.filter(c => c.name === 'stroke'),
+                this.rawProperties.filter(c => c.name === 'stroke' || c.name === 'stroke-layers'),
             );
         } else {
             updateProperties(
                 this._lottie,
-                this.rawProperties.filter(c => c.name === 'stroke'),
+                this.rawProperties.filter(c => c.name === 'stroke' || c.name === 'stroke-layers'),
                 stroke,
-                { scale: PROPERTY_SCALE },
             );
         }
 
@@ -435,11 +449,18 @@ export class Player implements IPlayer {
     }
 
     get stroke(): number | null {
-        const property = this.rawProperties.filter(c => c.name === 'stroke')[0];
-        if (property) {
-            const value = get(this._lottie, property.path) * (PROPERTY_SCALE / property.value);
+        const keys = this.rawProperties.map(c => c.name);
+
+        if (keys.includes('stroke-layers')) {
+            const property = this.rawProperties.filter(c => c.name === 'stroke' || c.name === 'stroke-layers')[0];
+            const value = get(this._lottie, property.path);
+            return isNaN(value) ? null : value;
+        } else if (keys.includes('stroke')) {
+            const property = this.rawProperties.filter(c => c.name === 'stroke')[0];
+            const value = get(this._lottie, property.path) * property.value / SCALE_STROKE;
             return isNaN(value) ? null : value;
         }
+
         return null;
     }
 
@@ -453,6 +474,7 @@ export class Player implements IPlayer {
                 this.frame = newState.time;
 
                 if (isPlaying) {
+                    this.pause();
                     this.play();
                 }
             }
@@ -523,8 +545,8 @@ export class Player implements IPlayer {
 
     get properties(): IProperties {
         return {
-            state: this.state,
             colors: { ...this.colors },
+            state: this.state,
             stroke: this.stroke,
         };
     }

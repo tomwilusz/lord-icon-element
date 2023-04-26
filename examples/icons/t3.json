@@ -668,7 +668,8 @@
                                             0.192156866193,
                                             1
                                         ],
-                                        "ix": 4
+                                        "ix": 4,
+                                        "x": "var $bm_rt;\n$bm_rt = comp('87-hourglass-outline').layer('control').effect('primary')('Color');"
                                     },
                                     "o": {
                                         "a": 0,
@@ -1469,7 +1470,8 @@
                                             0.192156866193,
                                             1
                                         ],
-                                        "ix": 3
+                                        "ix": 3,
+                                        "x": "var $bm_rt;\n$bm_rt = comp('87-hourglass-outline').layer('control').effect('primary')('Color');"
                                     },
                                     "o": {
                                         "a": 0,
@@ -2213,7 +2215,8 @@
                                             0.192156866193,
                                             1
                                         ],
-                                        "ix": 4
+                                        "ix": 4,
+                                        "x": "var $bm_rt;\n$bm_rt = comp('87-hourglass-outline').layer('control').effect('primary')('Color');"
                                     },
                                     "o": {
                                         "a": 0,
@@ -3014,7 +3017,8 @@
                                             0.192156866193,
                                             1
                                         ],
-                                        "ix": 3
+                                        "ix": 3,
+                                        "x": "var $bm_rt;\n$bm_rt = comp('87-hourglass-outline').layer('control').effect('primary')('Color');"
                                     },
                                     "o": {
                                         "a": 0,
@@ -3828,7 +3832,8 @@
                                             0.192156866193,
                                             1
                                         ],
-                                        "ix": 3
+                                        "ix": 3,
+                                        "x": "var $bm_rt;\n$bm_rt = comp('87-hourglass-outline').layer('control').effect('primary')('Color');"
                                     },
                                     "o": {
                                         "a": 0,
@@ -3914,7 +3919,7 @@
         },
         {
             "id": "comp_3",
-            "nm": "light:default-hover-dynamic",
+            "nm": "light:hover-dynamic",
             "fr": 60,
             "layers": [
                 {
@@ -4830,7 +4835,8 @@
                                             0.192156866193,
                                             1
                                         ],
-                                        "ix": 4
+                                        "ix": 4,
+                                        "x": "var $bm_rt;\n$bm_rt = comp('87-hourglass-outline').layer('control').effect('primary')('Color');"
                                     },
                                     "o": {
                                         "a": 0,
@@ -4910,7 +4916,7 @@
         },
         {
             "id": "comp_4",
-            "nm": "regular:default-hover-dynamic",
+            "nm": "regular:hover-dynamic",
             "fr": 60,
             "layers": [
                 {
@@ -5826,7 +5832,8 @@
                                             0.192156866193,
                                             1
                                         ],
-                                        "ix": 4
+                                        "ix": 4,
+                                        "x": "var $bm_rt;\n$bm_rt = comp('87-hourglass-outline').layer('control').effect('primary')('Color');"
                                     },
                                     "o": {
                                         "a": 0,
@@ -5906,7 +5913,7 @@
         },
         {
             "id": "comp_5",
-            "nm": "bold:default-hover-dynamic",
+            "nm": "bold:hover-dynamic",
             "fr": 60,
             "layers": [
                 {
@@ -6822,7 +6829,8 @@
                                             0.192156866193,
                                             1
                                         ],
-                                        "ix": 4
+                                        "ix": 4,
+                                        "x": "var $bm_rt;\n$bm_rt = comp('87-hourglass-outline').layer('control').effect('primary')('Color');"
                                     },
                                     "o": {
                                         "a": 0,
@@ -6902,7 +6910,8 @@
                                     0.192156881094,
                                     1
                                 ],
-                                "ix": 3
+                                "ix": 3,
+                                "x": "var $bm_rt;\n$bm_rt = comp('87-hourglass-outline').layer('control').effect('primary')('Color');"
                             },
                             "o": {
                                 "a": 0,
@@ -7619,7 +7628,8 @@
                                             0.192156866193,
                                             1
                                         ],
-                                        "ix": 4
+                                        "ix": 4,
+                                        "x": "var $bm_rt;\n$bm_rt = comp('87-hourglass-outline').layer('control').effect('primary')('Color');"
                                     },
                                     "o": {
                                         "a": 0,
@@ -8386,7 +8396,8 @@
                                             0.192156866193,
                                             1
                                         ],
-                                        "ix": 4
+                                        "ix": 4,
+                                        "x": "var $bm_rt;\n$bm_rt = comp('87-hourglass-outline').layer('control').effect('primary')('Color');"
                                     },
                                     "o": {
                                         "a": 0,
@@ -9153,7 +9164,8 @@
                                             0.192156866193,
                                             1
                                         ],
-                                        "ix": 4
+                                        "ix": 4,
+                                        "x": "var $bm_rt;\n$bm_rt = comp('87-hourglass-outline').layer('control').effect('primary')('Color');"
                                     },
                                     "o": {
                                         "a": 0,
@@ -9233,7 +9245,8 @@
                                     0.192156881094,
                                     1
                                 ],
-                                "ix": 3
+                                "ix": 3,
+                                "x": "var $bm_rt;\n$bm_rt = comp('87-hourglass-outline').layer('control').effect('primary')('Color');"
                             },
                             "o": {
                                 "a": 0,
@@ -9422,7 +9435,8 @@
                                             0.192156866193,
                                             1
                                         ],
-                                        "ix": 4
+                                        "ix": 4,
+                                        "x": "var $bm_rt;\n$bm_rt = comp('87-hourglass-outline').layer('control').effect('primary')('Color');"
                                     },
                                     "o": {
                                         "a": 0,
@@ -9896,7 +9910,8 @@
                                             0.192156866193,
                                             1
                                         ],
-                                        "ix": 4
+                                        "ix": 4,
+                                        "x": "var $bm_rt;\n$bm_rt = comp('87-hourglass-outline').layer('control').effect('primary')('Color');"
                                     },
                                     "o": {
                                         "a": 0,
@@ -10230,7 +10245,8 @@
                                             0.192156866193,
                                             1
                                         ],
-                                        "ix": 4
+                                        "ix": 4,
+                                        "x": "var $bm_rt;\n$bm_rt = comp('87-hourglass-outline').layer('control').effect('primary')('Color');"
                                     },
                                     "o": {
                                         "a": 0,
@@ -10990,7 +11006,8 @@
                                             0.192156866193,
                                             1
                                         ],
-                                        "ix": 4
+                                        "ix": 4,
+                                        "x": "var $bm_rt;\n$bm_rt = comp('87-hourglass-outline').layer('control').effect('primary')('Color');"
                                     },
                                     "o": {
                                         "a": 0,
@@ -11229,7 +11246,8 @@
                                             0.192156866193,
                                             1
                                         ],
-                                        "ix": 4
+                                        "ix": 4,
+                                        "x": "var $bm_rt;\n$bm_rt = comp('87-hourglass-outline').layer('control').effect('primary')('Color');"
                                     },
                                     "o": {
                                         "a": 0,
@@ -11703,7 +11721,8 @@
                                             0.192156866193,
                                             1
                                         ],
-                                        "ix": 4
+                                        "ix": 4,
+                                        "x": "var $bm_rt;\n$bm_rt = comp('87-hourglass-outline').layer('control').effect('primary')('Color');"
                                     },
                                     "o": {
                                         "a": 0,
@@ -12037,7 +12056,8 @@
                                             0.192156866193,
                                             1
                                         ],
-                                        "ix": 4
+                                        "ix": 4,
+                                        "x": "var $bm_rt;\n$bm_rt = comp('87-hourglass-outline').layer('control').effect('primary')('Color');"
                                     },
                                     "o": {
                                         "a": 0,
@@ -12797,7 +12817,8 @@
                                             0.192156866193,
                                             1
                                         ],
-                                        "ix": 4
+                                        "ix": 4,
+                                        "x": "var $bm_rt;\n$bm_rt = comp('87-hourglass-outline').layer('control').effect('primary')('Color');"
                                     },
                                     "o": {
                                         "a": 0,
@@ -13036,7 +13057,8 @@
                                             0.192156866193,
                                             1
                                         ],
-                                        "ix": 4
+                                        "ix": 4,
+                                        "x": "var $bm_rt;\n$bm_rt = comp('87-hourglass-outline').layer('control').effect('primary')('Color');"
                                     },
                                     "o": {
                                         "a": 0,
@@ -13510,7 +13532,8 @@
                                             0.192156866193,
                                             1
                                         ],
-                                        "ix": 4
+                                        "ix": 4,
+                                        "x": "var $bm_rt;\n$bm_rt = comp('87-hourglass-outline').layer('control').effect('primary')('Color');"
                                     },
                                     "o": {
                                         "a": 0,
@@ -13844,7 +13867,8 @@
                                             0.192156866193,
                                             1
                                         ],
-                                        "ix": 4
+                                        "ix": 4,
+                                        "x": "var $bm_rt;\n$bm_rt = comp('87-hourglass-outline').layer('control').effect('primary')('Color');"
                                     },
                                     "o": {
                                         "a": 0,
@@ -14604,7 +14628,8 @@
                                             0.192156866193,
                                             1
                                         ],
-                                        "ix": 4
+                                        "ix": 4,
+                                        "x": "var $bm_rt;\n$bm_rt = comp('87-hourglass-outline').layer('control').effect('primary')('Color');"
                                     },
                                     "o": {
                                         "a": 0,
@@ -14684,7 +14709,8 @@
                                     0.192156881094,
                                     1
                                 ],
-                                "ix": 3
+                                "ix": 3,
+                                "x": "var $bm_rt;\n$bm_rt = comp('87-hourglass-outline').layer('control').effect('primary')('Color');"
                             },
                             "o": {
                                 "a": 0,
@@ -15401,7 +15427,8 @@
                                             0.192156866193,
                                             1
                                         ],
-                                        "ix": 4
+                                        "ix": 4,
+                                        "x": "var $bm_rt;\n$bm_rt = comp('87-hourglass-outline').layer('control').effect('primary')('Color');"
                                     },
                                     "o": {
                                         "a": 0,
@@ -16168,7 +16195,8 @@
                                             0.192156866193,
                                             1
                                         ],
-                                        "ix": 4
+                                        "ix": 4,
+                                        "x": "var $bm_rt;\n$bm_rt = comp('87-hourglass-outline').layer('control').effect('primary')('Color');"
                                     },
                                     "o": {
                                         "a": 0,
@@ -16935,7 +16963,8 @@
                                             0.192156866193,
                                             1
                                         ],
-                                        "ix": 4
+                                        "ix": 4,
+                                        "x": "var $bm_rt;\n$bm_rt = comp('87-hourglass-outline').layer('control').effect('primary')('Color');"
                                     },
                                     "o": {
                                         "a": 0,
@@ -17015,7 +17044,8 @@
                                     0.192156881094,
                                     1
                                 ],
-                                "ix": 3
+                                "ix": 3,
+                                "x": "var $bm_rt;\n$bm_rt = comp('87-hourglass-outline').layer('control').effect('primary')('Color');"
                             },
                             "o": {
                                 "a": 0,
@@ -17065,7 +17095,8 @@
                 "p": {
                     "a": 0,
                     "k": [
-                        0,
+                        250,
+                        250,
                         0
                     ],
                     "ix": 2,
@@ -17096,31 +17127,10 @@
             "ef": [
                 {
                     "ty": 5,
-                    "nm": "stroke",
-                    "np": 3,
-                    "mn": "Pseudo/@@TTA9UzF7QdmOE/LTBiQ7eg",
-                    "ix": 1,
-                    "en": 1,
-                    "ef": [
-                        {
-                            "ty": 7,
-                            "nm": "Menu",
-                            "mn": "Pseudo/@@TTA9UzF7QdmOE/LTBiQ7eg-0001",
-                            "ix": 1,
-                            "v": {
-                                "a": 0,
-                                "k": 1,
-                                "ix": 1
-                            }
-                        }
-                    ]
-                },
-                {
-                    "ty": 5,
                     "nm": "primary",
                     "np": 3,
                     "mn": "ADBE Color Control",
-                    "ix": 2,
+                    "ix": 1,
                     "en": 1,
                     "ef": [
                         {
@@ -17136,6 +17146,27 @@
                                     0.192156866193,
                                     1
                                 ],
+                                "ix": 1
+                            }
+                        }
+                    ]
+                },
+                {
+                    "ty": 5,
+                    "nm": "stroke-layers",
+                    "np": 3,
+                    "mn": "Pseudo/@@zv+LrQKQQyaBRrgLyP0MbA",
+                    "ix": 2,
+                    "en": 1,
+                    "ef": [
+                        {
+                            "ty": 7,
+                            "nm": "Menu",
+                            "mn": "Pseudo/@@zv+LrQKQQyaBRrgLyP0MbA-0001",
+                            "ix": 1,
+                            "v": {
+                                "a": 0,
+                                "k": 2,
                                 "ix": 1
                             }
                         }
@@ -17159,7 +17190,7 @@
                     "a": 0,
                     "k": 100,
                     "ix": 11,
-                    "x": "var $bm_rt;\nif (thisComp.layer('control').effect('stroke')('Menu') == 1) {\n    $bm_rt = 100;\n} else {\n    $bm_rt = 0;\n}"
+                    "x": "var $bm_rt;\nif (thisComp.layer('control').effect('stroke-layers')('Menu') == 1) {\n    $bm_rt = 100;\n} else {\n    $bm_rt = 0;\n}\n;"
                 },
                 "r": {
                     "a": 0,
@@ -17217,7 +17248,7 @@
                     "a": 0,
                     "k": 100,
                     "ix": 11,
-                    "x": "var $bm_rt;\nif (thisComp.layer('control').effect('stroke')('Menu') == 2) {\n    $bm_rt = 100;\n} else {\n    $bm_rt = 0;\n}"
+                    "x": "var $bm_rt;\nif (thisComp.layer('control').effect('stroke-layers')('Menu') == 2) {\n    $bm_rt = 100;\n} else {\n    $bm_rt = 0;\n}\n;"
                 },
                 "r": {
                     "a": 0,
@@ -17275,7 +17306,7 @@
                     "a": 0,
                     "k": 100,
                     "ix": 11,
-                    "x": "var $bm_rt;\nif (thisComp.layer('control').effect('stroke')('Menu') == 3) {\n    $bm_rt = 100;\n} else {\n    $bm_rt = 0;\n}"
+                    "x": "var $bm_rt;\nif (thisComp.layer('control').effect('stroke-layers')('Menu') == 3) {\n    $bm_rt = 100;\n} else {\n    $bm_rt = 0;\n}\n;"
                 },
                 "r": {
                     "a": 0,
@@ -17325,7 +17356,7 @@
             "ddd": 0,
             "ind": 5,
             "ty": 0,
-            "nm": "light:default-hover-dynamic",
+            "nm": "light:hover-dynamic",
             "refId": "comp_3",
             "sr": 1,
             "ks": {
@@ -17333,7 +17364,7 @@
                     "a": 0,
                     "k": 100,
                     "ix": 11,
-                    "x": "var $bm_rt;\nif (thisComp.layer('control').effect('stroke')('Menu') == 1) {\n    $bm_rt = 100;\n} else {\n    $bm_rt = 0;\n}"
+                    "x": "var $bm_rt;\nif (thisComp.layer('control').effect('stroke-layers')('Menu') == 1) {\n    $bm_rt = 100;\n} else {\n    $bm_rt = 0;\n}\n;"
                 },
                 "r": {
                     "a": 0,
@@ -17383,7 +17414,7 @@
             "ddd": 0,
             "ind": 6,
             "ty": 0,
-            "nm": "regular:default-hover-dynamic",
+            "nm": "regular:hover-dynamic",
             "refId": "comp_4",
             "sr": 1,
             "ks": {
@@ -17391,7 +17422,7 @@
                     "a": 0,
                     "k": 100,
                     "ix": 11,
-                    "x": "var $bm_rt;\nif (thisComp.layer('control').effect('stroke')('Menu') == 2) {\n    $bm_rt = 100;\n} else {\n    $bm_rt = 0;\n}"
+                    "x": "var $bm_rt;\nif (thisComp.layer('control').effect('stroke-layers')('Menu') == 2) {\n    $bm_rt = 100;\n} else {\n    $bm_rt = 0;\n}\n;"
                 },
                 "r": {
                     "a": 0,
@@ -17441,7 +17472,7 @@
             "ddd": 0,
             "ind": 7,
             "ty": 0,
-            "nm": "bold:default-hover-dynamic",
+            "nm": "bold:hover-dynamic",
             "refId": "comp_5",
             "sr": 1,
             "ks": {
@@ -17449,7 +17480,7 @@
                     "a": 0,
                     "k": 100,
                     "ix": 11,
-                    "x": "var $bm_rt;\nif (thisComp.layer('control').effect('stroke')('Menu') == 3) {\n    $bm_rt = 100;\n} else {\n    $bm_rt = 0;\n}"
+                    "x": "var $bm_rt;\nif (thisComp.layer('control').effect('stroke-layers')('Menu') == 3) {\n    $bm_rt = 100;\n} else {\n    $bm_rt = 0;\n}\n;"
                 },
                 "r": {
                     "a": 0,
@@ -17507,7 +17538,7 @@
                     "a": 0,
                     "k": 100,
                     "ix": 11,
-                    "x": "var $bm_rt;\nif (thisComp.layer('control').effect('stroke')('Menu') == 1) {\n    $bm_rt = 100;\n} else {\n    $bm_rt = 0;\n}"
+                    "x": "var $bm_rt;\nif (thisComp.layer('control').effect('stroke-layers')('Menu') == 1) {\n    $bm_rt = 100;\n} else {\n    $bm_rt = 0;\n}\n;"
                 },
                 "r": {
                     "a": 0,
@@ -17565,7 +17596,7 @@
                     "a": 0,
                     "k": 100,
                     "ix": 11,
-                    "x": "var $bm_rt;\nif (thisComp.layer('control').effect('stroke')('Menu') == 2) {\n    $bm_rt = 100;\n} else {\n    $bm_rt = 0;\n}"
+                    "x": "var $bm_rt;\nif (thisComp.layer('control').effect('stroke-layers')('Menu') == 2) {\n    $bm_rt = 100;\n} else {\n    $bm_rt = 0;\n}\n;"
                 },
                 "r": {
                     "a": 0,
@@ -17623,7 +17654,7 @@
                     "a": 0,
                     "k": 100,
                     "ix": 11,
-                    "x": "var $bm_rt;\nif (thisComp.layer('control').effect('stroke')('Menu') == 3) {\n    $bm_rt = 100;\n} else {\n    $bm_rt = 0;\n}"
+                    "x": "var $bm_rt;\nif (thisComp.layer('control').effect('stroke-layers')('Menu') == 3) {\n    $bm_rt = 100;\n} else {\n    $bm_rt = 0;\n}\n;"
                 },
                 "r": {
                     "a": 0,
@@ -17681,7 +17712,7 @@
                     "a": 0,
                     "k": 100,
                     "ix": 11,
-                    "x": "var $bm_rt;\nif (thisComp.layer('control').effect('stroke')('Menu') == 1) {\n    $bm_rt = 100;\n} else {\n    $bm_rt = 0;\n}"
+                    "x": "var $bm_rt;\nif (thisComp.layer('control').effect('stroke-layers')('Menu') == 1) {\n    $bm_rt = 100;\n} else {\n    $bm_rt = 0;\n}\n;"
                 },
                 "r": {
                     "a": 0,
@@ -17739,7 +17770,7 @@
                     "a": 0,
                     "k": 100,
                     "ix": 11,
-                    "x": "var $bm_rt;\nif (thisComp.layer('control').effect('stroke')('Menu') == 2) {\n    $bm_rt = 100;\n} else {\n    $bm_rt = 0;\n}"
+                    "x": "var $bm_rt;\nif (thisComp.layer('control').effect('stroke-layers')('Menu') == 2) {\n    $bm_rt = 100;\n} else {\n    $bm_rt = 0;\n}\n;"
                 },
                 "r": {
                     "a": 0,
@@ -17797,7 +17828,7 @@
                     "a": 0,
                     "k": 100,
                     "ix": 11,
-                    "x": "var $bm_rt;\nif (thisComp.layer('control').effect('stroke')('Menu') == 3) {\n    $bm_rt = 100;\n} else {\n    $bm_rt = 0;\n}"
+                    "x": "var $bm_rt;\nif (thisComp.layer('control').effect('stroke-layers')('Menu') == 3) {\n    $bm_rt = 100;\n} else {\n    $bm_rt = 0;\n}\n;"
                 },
                 "r": {
                     "a": 0,
@@ -17855,7 +17886,7 @@
                     "a": 0,
                     "k": 100,
                     "ix": 11,
-                    "x": "var $bm_rt;\nif (thisComp.layer('control').effect('stroke')('Menu') == 1) {\n    $bm_rt = 100;\n} else {\n    $bm_rt = 0;\n}"
+                    "x": "var $bm_rt;\nif (thisComp.layer('control').effect('stroke-layers')('Menu') == 1) {\n    $bm_rt = 100;\n} else {\n    $bm_rt = 0;\n}\n;"
                 },
                 "r": {
                     "a": 0,
@@ -17913,7 +17944,7 @@
                     "a": 0,
                     "k": 100,
                     "ix": 11,
-                    "x": "var $bm_rt;\nif (thisComp.layer('control').effect('stroke')('Menu') == 2) {\n    $bm_rt = 100;\n} else {\n    $bm_rt = 0;\n}"
+                    "x": "var $bm_rt;\nif (thisComp.layer('control').effect('stroke-layers')('Menu') == 2) {\n    $bm_rt = 100;\n} else {\n    $bm_rt = 0;\n}\n;"
                 },
                 "r": {
                     "a": 0,
@@ -17971,7 +18002,7 @@
                     "a": 0,
                     "k": 100,
                     "ix": 11,
-                    "x": "var $bm_rt;\nif (thisComp.layer('control').effect('stroke')('Menu') == 3) {\n    $bm_rt = 100;\n} else {\n    $bm_rt = 0;\n}"
+                    "x": "var $bm_rt;\nif (thisComp.layer('control').effect('stroke-layers')('Menu') == 3) {\n    $bm_rt = 100;\n} else {\n    $bm_rt = 0;\n}\n;"
                 },
                 "r": {
                     "a": 0,
@@ -18026,7 +18057,7 @@
         },
         {
             "tm": 70,
-            "cm": "default-hover-dynamic",
+            "cm": "default:hover-dynamic",
             "dr": 60
         },
         {

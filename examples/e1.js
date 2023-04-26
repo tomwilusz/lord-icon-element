@@ -5,25 +5,10 @@ import { set } from '/dist/utils/helpers.js';
 
 // List of supported icons by our icon loader.
 const ICONS = {
-    hourglass: '/icons/87-hourglass-outline.json',
-    question: '/icons/424-question-bubble-outline.json',
-    book: '/icons/112-book-morph-lineal.json',
-    book2: '/icons/book.json',
-    xxx: '/icons/xxx.json',
-    yyy: '/icons/yyy.json',
-    zzz: '/icons/zzz.json',
-    woman: '/icons/woman.json',
-    man: '/icons/man.json',
-    newhour: '/icons/newhour.json',
-    fiu: '/icons/fiu.json',
-    gru: '/icons/gru.json',
-    gra: '/icons/gra.json',
-    nowa: '/icons/nowa.json',
-    nowa2: '/icons/nowa2.json',
-    nowa3: '/icons/nowa3.json',
-    newfile: '/icons/new-file.json',
-    pingradient: '/icons/18-location-pin-gradient.json',
-    love: '/icons/20-love-heart-outline.json',
+    t1hourglass: '/icons/t1hourglass.json',
+    t2location: '/icons/t2location.json',
+    t3: '/icons/t3.json',
+    t4: '/icons/t4.json',
 }
 
 // Custom icon loader which can provide icon data from any place you want.
@@ -42,8 +27,14 @@ const element = document.querySelector('lord-icon');
 document.querySelector('a').addEventListener('click', e => {
     e.preventDefault();
 
-
-    const data = modifiedIconData(element.iconData, element.player.properties, true);
+    const data = modifiedIconData(
+        element.iconData,
+        element.player.properties,
+        {
+            layer: false,
+            optimize: true,
+        },
+    );
 
     console.log('---export', data);
 
