@@ -1,8 +1,12 @@
+## v4.1.2 (2023-06-06)
+
+- ...
+
 ## v4.1.1 (2023-04-11)
 
 - Pause animation with trigger disconnection.
 - Fix typo inside "playFromBegining".
-- Update sequence trigger. 
+- Update sequence trigger.
 
 ## v4.1.0 (2023-03-30)
 
@@ -42,7 +46,8 @@
 
 ## v4.0.0 (2022-10-21)
 
-- Huge refactoring. Separating integration with _lottie-web_ by creating wrapper around it (player).
+- Huge refactoring. Separating integration with _lottie-web_ by creating wrapper
+  around it (player).
 - Added documentation.
 - Added tests.
 - Simplified usage.

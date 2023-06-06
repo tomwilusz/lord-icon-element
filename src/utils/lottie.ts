@@ -11,7 +11,7 @@ export type LottieColor = [number, number, number];
 /**
  * Supported field types.
  */
-export type LottieFieldType = 'color' | 'slider' | 'point' | 'checkbox';
+export type LottieFieldType = 'color' | 'slider' | 'point' | 'checkbox' | 'feature';
 
 /**
  * Interface for colors parameters.
@@ -122,19 +122,18 @@ export function lottieColorToHex(value: LottieColor): string {
  * @param options Options.
  * @returns 
  */
-export function properties(
+export function rawProperties(
     data: IconData,
-    options: { lottieInstance?: boolean } = {},
+    { lottieInstance }: { lottieInstance?: boolean } = {},
 ): ILottieProperty[] {
     const result: any[] = [];
-    const { lottieInstance } = options;
 
     if (!data || !data.layers) {
         return result;
     }
 
     data.layers.forEach((layer: any, layerIndex: number) => {
-        if (!layer.nm || !layer.ef || !layer.nm.toLowerCase().includes('change')) {
+        if (!layer.nm || !layer.ef) {
             return;
         }
 
@@ -145,6 +144,7 @@ export function properties(
             }
 
             let path: string | undefined;
+
             if (lottieInstance) {
                 path = `renderer.elements.${layerIndex}.effectsManager.effectElements.${fieldIndex}.effectElements.0.p.v`;
             } else {
@@ -161,6 +161,8 @@ export function properties(
                 type = 'point';
             } else if (field.mn === 'ADBE Checkbox Control') {
                 type = 'checkbox';
+            } else if (field.mn.startsWith('Pseudo/')) {
+                type = 'feature';
             }
 
             if (!type) {
@@ -197,9 +199,8 @@ export function resetProperties(data: IconData | AnimationItem, properties: ILot
  * @param data 
  * @param properties 
  * @param value 
- * @param param3 
  */
-export function updateProperties(data: IconData | AnimationItem, properties: ILottieProperty[], value: any, { scale }: { scale?: number } = {}): any {
+export function updateProperties(data: IconData | AnimationItem, properties: ILottieProperty[], value: any): any {
     for (const property of properties) {
         if (property.type === 'color') {
             if (typeof value === 'object' && 'r' in value && 'g' in value && 'b' in value) {
@@ -210,23 +211,15 @@ export function updateProperties(data: IconData | AnimationItem, properties: ILo
                 set(data, property.path, hexToLottieColor(parseColor(value)));
             }
         } else if (property.type === 'point') {
-            let ratio = 1;
-            if (scale) {
-                ratio = ((property.value[0] + property.value[1]) / 2) / scale
-            }
             if (typeof value === 'object' && 'x' in value && 'y' in value) {
-                set(data, property.path + '.0', value.x * ratio);
-                set(data, property.path + '.1', value.y * ratio);
+                set(data, property.path + '.0', value.x);
+                set(data, property.path + '.1', value.y);
             } else if (Array.isArray(value)) {
-                set(data, property.path + '.0', value[0] * ratio);
-                set(data, property.path + '.1', value[1] * ratio);
+                set(data, property.path + '.0', value[0]);
+                set(data, property.path + '.1', value[1]);
             }
         } else {
-            let ratio = 1;
-            if (scale) {
-                ratio = property.value / scale;
-            }
-            set(data, property.path, value * ratio);
+            set(data, property.path, value);
         }
     }
 }

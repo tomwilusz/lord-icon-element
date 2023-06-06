@@ -1,7 +1,8 @@
 import { AnimationConfig, AnimationConfigWithData, AnimationConfigWithPath, AnimationDirection, AnimationItem } from 'lottie-web';
-import { IColors, IconData, IPlayer, IProperties, PlayerEventCallback, PlayerEventName } from './interfaces.js';
+import { IColors, IconData, IPlayer, IProperties, IState, PlayerEventCallback, PlayerEventName } from './interfaces.js';
 import { deepClone, get, isNil } from './utils/helpers.js';
-import { ILottieProperty, lottieColorToHex, properties, resetProperties, updateProperties } from './utils/lottie.js';
+import { ILottieProperty, lottieColorToHex, rawProperties, resetProperties, updateProperties } from './utils/lottie.js';
+import { DEFAULT_STROKE } from './utils/update.js';
 
 /**
  * Type for options supported by {@link player.Player | Player}.
@@ -12,11 +13,6 @@ export type LottieOptions = Omit<AnimationConfig, 'container'>;
  * Type for `loadAnimation` method from `lottie-web` package.
  */
 export type AnimationLoader = (params: AnimationConfigWithPath | AnimationConfigWithData) => AnimationItem;
-
-/**
- * Scale factor for supported customizable properties.
- */
-export const PROPERTY_SCALE = 50;
 
 /**
  * Prefix for icon states. Properties with this prefix are handled as icon states.
@@ -125,6 +121,9 @@ export class Player implements IPlayer {
     protected _rawProperties?: ILottieProperty[];
     protected _eventCallbacks: any = {};
 
+    protected _state?: IState;
+    protected _states: IState[];
+    
     /**
      * 
      * @param animationLoader Provide `loadAnimation` here from `lottie-web`.
@@ -137,6 +136,23 @@ export class Player implements IPlayer {
         this._container = container;
         this._iconData = iconData;
         this._options = options || DEFAULT_LOTTIE_WEB_OPTIONS;
+
+        // parse states
+        this._states = (iconData.markers || []).map((c: any) => {
+            const [partA, partB] = c.cm.split(':');
+            const newState: IState = {
+                time: c.tm,
+                duration: c.dr,
+                name: partB || partA,
+                default: partB && partA.includes('default') ? true : false,
+            };
+
+            if (newState.default) {
+                this._state = newState;
+            }
+
+            return newState;
+        });
     }
 
     connect() {
@@ -246,15 +262,20 @@ export class Player implements IPlayer {
     }
 
     play() {
-        this._lottie!.play();
+        // if (this._state) {
+        //     this._lottie!.playSegments([this._state.time, this._state.time + this._state.duration], true);
+        // } else {
+        //     this._lottie!.play();
+        // }
+        this._lottie!.play(this._state?.name);
     }
 
     playFromBeginning() {
-        this._lottie!.goToAndPlay(0);
-    }
-
-    playSegment(from: number, to: number) {
-        this._lottie!.playSegments([from, to], true);
+        if (this._state) {
+            this._lottie!.playSegments([this._state.time, this._state.time + this._state.duration], true);
+        } else {
+            this._lottie!.goToAndPlay(0);
+        }
     }
 
     pause() {
@@ -270,11 +291,19 @@ export class Player implements IPlayer {
     }
 
     goToFirstFrame() {
-        this.goToFrame(0);
+        if (this._state) {
+            // todo
+        } else {
+            this.goToFrame(0);
+        }
     }
 
     goToLastFrame() {
-        this.goToFrame(Math.max(0, this._lottie!.getDuration(true) - 1));
+        if (this._state) {
+            // todo
+        } else {
+            this.goToFrame(Math.max(0, this._lottie!.getDuration(true) - 1));
+        }
     }
 
     resetProperties(properties: IProperties = {}) {
@@ -329,7 +358,6 @@ export class Player implements IPlayer {
                 this._lottie,
                 this.rawProperties.filter(c => c.name === 'stroke'),
                 properties.stroke,
-                { scale: PROPERTY_SCALE },
             );
         } else if (alreadyCustomized) {
             resetProperties(
@@ -372,14 +400,13 @@ export class Player implements IPlayer {
         if (isNil(stroke)) {
             resetProperties(
                 this._lottie,
-                this.rawProperties.filter(c => c.name === 'stroke'),
+                this.rawProperties.filter(c => c.name === 'stroke' || c.name === 'stroke-layers'),
             );
         } else {
             updateProperties(
                 this._lottie,
-                this.rawProperties.filter(c => c.name === 'stroke'),
+                this.rawProperties.filter(c => c.name === 'stroke' || c.name === 'stroke-layers'),
                 stroke,
-                { scale: PROPERTY_SCALE },
             );
         }
 
@@ -387,45 +414,36 @@ export class Player implements IPlayer {
     }
 
     get stroke(): number | null {
-        const property = this.rawProperties.filter(c => c.name === 'stroke')[0];
+        const property = this.rawProperties.filter(c => c.name === 'stroke' || c.name === 'stroke-layers')[0];
+
         if (property) {
-            return get(this._lottie, property.path) * (PROPERTY_SCALE / property.value);
+            let value = get(this._lottie, property.path);
+
+            if (property.name === 'stroke') {
+                value *= property.value / DEFAULT_STROKE;
+            }
+            
+            return isNaN(value) ? null : value;
         }
+
         return null;
     }
 
     set state(state: string | null) {
-        if (isNil(state)) {
-            resetProperties(
-                this._lottie,
-                this.rawProperties.filter(c => c.name.startsWith(STATE_PREFIX)),
-            );
-        } else {
-            const name = `${STATE_PREFIX}${state!.toLowerCase()}`;
-            updateProperties(
-                this._lottie,
-                this.rawProperties.filter(c => c.name.startsWith(STATE_PREFIX)),
-                0,
-            );
-            updateProperties(
-                this._lottie,
-                this.rawProperties.filter(c => c.name === name),
-                1,
-            );
-        }
+        const isPlaying = this.isPlaying;
 
-        this.refresh();
+        const newState = state ? this._states.filter(c => c.name === state)[0] : undefined;
+        this._state = newState;
+        this.frame = newState?.time || 0;
+
+        if (isPlaying) {
+            this.pause();
+            this.play();
+        }
     }
 
     get state(): string | null {
-        for (const property of this.rawProperties.filter(c => c.name.startsWith(STATE_PREFIX))) {
-            const value = get(this._lottie, property.path);
-            if (value) {
-                return property.name.substr(STATE_PREFIX.length);
-            }
-        }
-
-        return null;
+        return this._state?.name || null;
     }
 
     set speed(speed: number) {
@@ -462,10 +480,8 @@ export class Player implements IPlayer {
         return this._lottie!.currentFrame;
     }
 
-    get states(): string[] {
-        return this.rawProperties.filter(c => c.name.startsWith(STATE_PREFIX)).map(c => {
-            return c.name.substr(STATE_PREFIX.length);
-        });
+    get states() {
+        return this._states;
     }
 
     get isPlaying() {
@@ -492,11 +508,11 @@ export class Player implements IPlayer {
     }
 
     /**
-     * Supported customizable properties by loaded icon.
+     * Access all customizable properties.
      */
     get rawProperties(): ILottieProperty[] {
-        if (!this._rawProperties && this._iconData) {
-            this._rawProperties = properties(this._iconData, { lottieInstance: true });
+        if (!this._rawProperties) {
+            this._rawProperties = rawProperties(this._iconData, { lottieInstance: true });
         }
 
         return this._rawProperties || [];

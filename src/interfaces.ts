@@ -116,6 +116,16 @@ export interface IProperties {
 }
 
 /**
+ * State details.
+ */
+export interface IState {
+    name: string;
+    time: number;
+    duration: number;
+    default?: boolean;
+}
+
+/**
  * Interface for animation player. 
  * Provides simple API to control animation and customize icon properties on the fly.
  */
@@ -258,7 +268,7 @@ export interface IPlayer {
     /**
      * States give you the list of supported states by a processed icon.
      */
-    readonly states: string[];
+    readonly states: IState[];
 
     /**
      * Frames give you the value of animation length in a number of frames.
