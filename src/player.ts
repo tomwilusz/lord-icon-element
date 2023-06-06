@@ -292,7 +292,7 @@ export class Player implements IPlayer {
 
     goToFirstFrame() {
         if (this._state) {
-            // todo
+            this.goToFrame(this._state.time);
         } else {
             this.goToFrame(0);
         }
@@ -300,7 +300,7 @@ export class Player implements IPlayer {
 
     goToLastFrame() {
         if (this._state) {
-            // todo
+            this.goToFrame(this._state.time + this._state.duration);
         } else {
             this.goToFrame(Math.max(0, this._lottie!.getDuration(true) - 1));
         }

@@ -14,12 +14,6 @@ type LoadingType = 'lazy' | 'interaction';
 const SUPPORTS_ADOPTING_STYLE_SHEETS = 'adoptedStyleSheets' in Document.prototype && 'replace' in CSSStyleSheet.prototype;
 
 /**
- * Default value for many of supported properties.
- * For example stroke can be changed in 0-100 range.
- */
-const CENTER_VALUE = 50;
-
-/**
  * List of events support on intersection loading.
  */
 const INTERSECTION_LOADING_EVENTS = ['click', 'mouseenter', 'mouseleave'];
@@ -42,22 +36,6 @@ const ELEMENT_STYLE = `
 
     :host(.current-color) svg path[stroke] {
         stroke: currentColor;
-    }
-
-    :host(:not(.current-color)) svg .primary path[fill] {
-        fill: var(--lord-icon-primary, var(--lord-icon-primary-base));
-    }
-
-    :host(:not(.current-color)) svg .primary path[stroke] {
-        stroke: var(--lord-icon-primary, var(--lord-icon-primary-base));
-    }
-
-    :host(:not(.current-color)) svg .secondary path[fill] {
-        fill: var(--lord-icon-secondary, var(--lord-icon-secondary-base));
-    }
-
-    :host(:not(.current-color)) svg .secondary path[stroke] {
-        stroke: var(--lord-icon-secondary, var(--lord-icon-secondary-base));
     }
 
     svg {
@@ -204,7 +182,7 @@ export class Element<P extends IPlayer = IPlayer> extends HTMLElement {
 
     /**
      * Callback created by one of the lazy loading methods.
-     * Enables the process to continue immediately.
+     * Forces the process to continue immediately.
      */
     delayedLoading: ((cancel?: boolean) => void) | null = null;
 
@@ -367,6 +345,30 @@ export class Element<P extends IPlayer = IPlayer> extends HTMLElement {
         }
 
         this._player = Element._playerFactory(this.animationContainer!, iconData);
+
+        // dynamic style for colors
+        const colors = Object.entries(this.player!.colors || {});
+        if (colors.length) {
+            let styleContent = '';
+
+            for (const [key, value] of colors) {
+                styleContent += `
+                    :host(:not(.current-color)) svg .${key} path[fill] {
+                        fill: var(--lord-icon-${key}, var(--lord-icon-${key}-base));
+                    }
+        
+                    :host(:not(.current-color)) svg .${key} path[stroke] {
+                        stroke: var(--lord-icon-${key}, var(--lord-icon-${key}-base));
+                    }
+                `
+            }
+
+            const style = document.createElement("style");
+            style.innerHTML = styleContent;
+            this.animationContainer!.appendChild(style);
+        }
+
+        // connect after style
         this._player.connect();
 
         // assign initial properties for icon
@@ -488,7 +490,11 @@ export class Element<P extends IPlayer = IPlayer> extends HTMLElement {
      */
     protected movePaletteToCssVariables() {
         for (const [key, value] of Object.entries(this.player!.colors || {})) {
-            this.animationContainer!.style.setProperty(`--lord-icon-${key}-base`, value);
+            if (value) {
+                this.animationContainer!.style.setProperty(`--lord-icon-${key}-base`, value);
+            } else {
+                this.animationContainer!.style.removeProperty(`--lord-icon-${key}-base`);
+            }
         }
     }
 
@@ -604,7 +610,7 @@ export class Element<P extends IPlayer = IPlayer> extends HTMLElement {
     /**
      * Update current icon. We can assign here icon name handled by {@link interfaces.IconLoader | icon loader} or right away {@link interfaces.IconData | icon data}.
      */
-    set icon(value: any) {
+    set icon(value: IconData | string | undefined) {
         if (value && isObjectLike(value)) {
             if (this._assignedIconData !== value) {
                 this._assignedIconData = value;
@@ -634,7 +640,7 @@ export class Element<P extends IPlayer = IPlayer> extends HTMLElement {
     /**
      * Get icon (icon name or assiged directly {@link interfaces.IconData | icon data})
      */
-    get icon(): any {
+    get icon(): IconData | string | undefined {
         return this._assignedIconData || this.getAttribute('icon');
     }
 
@@ -786,13 +792,6 @@ export class Element<P extends IPlayer = IPlayer> extends HTMLElement {
     }
 
     /**
-     * Access animation {@link interfaces.IPlayer | player}.
-     */
-    get player(): P | undefined {
-        return this._player as any;
-    }
-
-    /**
      * Check whether the element is ready (instantiated player, trigger and loaded icon data).
      * 
      * You can listen for element ready with event listener:
@@ -802,6 +801,13 @@ export class Element<P extends IPlayer = IPlayer> extends HTMLElement {
      */
     get isReady() {
         return this._isReady;
+    }
+
+    /**
+     * Access animation {@link interfaces.IPlayer | player}.
+     */
+    get player(): P | undefined {
+        return this._player as any;
     }
 
     /**

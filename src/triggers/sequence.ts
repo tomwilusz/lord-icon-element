@@ -26,7 +26,7 @@ export class Sequence implements ITrigger {
     ) {
         this.observer = new MutationObserver((mutationList, observer) => {
             for (const mutation of mutationList) {
-                if (mutation.type === "attributes" && mutation.attributeName === 'sequence') {
+                if (mutation.type === 'attributes' && mutation.attributeName === 'sequence') {
                     this.reset();
                     this.step();
                 }
