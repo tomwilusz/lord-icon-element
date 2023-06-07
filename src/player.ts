@@ -78,11 +78,11 @@ function createColorsProxy(this: Player) {
             return true;
         },
         ownKeys: (target) => {
-            return target.rawProperties.filter(c => c.type == 'color' && get(this.lottie, c.path)).map(c => c.name);
+            return target.rawProperties.filter(c => c.type == 'color').map(c => c.name);
         },
         has: (target, property) => {
             for (const current of target.rawProperties) {
-                if (current.type == 'color' && typeof property === 'string' && property.toLowerCase() == current.name && get(this.lottie, current.path)) {
+                if (current.type == 'color' && typeof property === 'string' && property.toLowerCase() == current.name ) {
                     return true;
                 }
             }

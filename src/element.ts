@@ -362,11 +362,11 @@ export class Element<P extends IPlayer = IPlayer> extends HTMLElement {
             for (const [key, value] of colors) {
                 styleContent += `
                     :host(:not(.current-color)) svg path[fill].${key} {
-                        fill: var(--lord-icon-${key}, var(--lord-icon-${key}-base));
+                        fill: var(--lord-icon-${key}, var(--lord-icon-${key}-base, #000));
                     }
         
                     :host(:not(.current-color)) svg path[stroke].${key} {
-                        stroke: var(--lord-icon-${key}, var(--lord-icon-${key}-base));
+                        stroke: var(--lord-icon-${key}, var(--lord-icon-${key}-base, #000));
                     }
                 `
             }
