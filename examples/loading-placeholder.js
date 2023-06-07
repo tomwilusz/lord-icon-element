@@ -4,7 +4,7 @@ import { Element } from '/dist/element.js';
 const ICONS = {};
 
 async function loadIcons() {
-    for (const icon of ['confetti', 'book', 'heart']) {
+    for (const icon of ['lock', 'puzzle', 'coins']) {
         const response = await fetch(`/icons/${icon}.json`);
         const data = await response.json();
 

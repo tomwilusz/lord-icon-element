@@ -78,11 +78,11 @@ function createColorsProxy(this: Player) {
             return true;
         },
         ownKeys: (target) => {
-            return target.rawProperties.filter(c => c.type == 'color').map(c => c.name);
+            return target.rawProperties.filter(c => c.type == 'color' && get(this.lottie, c.path)).map(c => c.name);
         },
         has: (target, property) => {
             for (const current of target.rawProperties) {
-                if (current.type == 'color' && typeof property === 'string' && property.toLowerCase() == current.name) {
+                if (current.type == 'color' && typeof property === 'string' && property.toLowerCase() == current.name && get(this.lottie, current.path)) {
                     return true;
                 }
             }
@@ -147,7 +147,7 @@ export class Player implements IPlayer {
                 default: partB && partA.includes('default') ? true : false,
             };
 
-            if (newState.name === initial.state) {
+            if (newState.name === initial?.state) {
                 this._state = newState;
             } else if (newState.default && !this._state) {
                 this._state = newState;
@@ -350,10 +350,20 @@ export class Player implements IPlayer {
 
         // stroke
         if (!isNil(properties.stroke)) {
+            let stroke = properties.stroke;
+
+            if (stroke === 'light') {
+                stroke = 1;
+            } else if (stroke === 'regular') {
+                stroke = 2;
+            } else if (stroke === 'bold') {
+                stroke = 3;
+            }
+
             updateProperties(
                 this._lottie,
                 this.rawProperties.filter(c => c.name === 'stroke'),
-                properties.stroke,
+                stroke,
             );
         } else if (alreadyCustomized) {
             resetProperties(
@@ -392,13 +402,21 @@ export class Player implements IPlayer {
         return this._colorsProxy;
     }
 
-    set stroke(stroke: number | null) {
+    set stroke(stroke: number | 'light' | 'regular' | 'bold' | null) {
         if (isNil(stroke)) {
             resetProperties(
                 this._lottie,
                 this.rawProperties.filter(c => c.name === 'stroke' || c.name === 'stroke-layers'),
             );
         } else {
+            if (stroke === 'light') {
+                stroke = 1;
+            } else if (stroke === 'regular') {
+                stroke = 2;
+            } else if (stroke === 'bold') {
+                stroke = 3;
+            }
+
             updateProperties(
                 this._lottie,
                 this.rawProperties.filter(c => c.name === 'stroke' || c.name === 'stroke-layers'),
@@ -439,6 +457,7 @@ export class Player implements IPlayer {
         } else {
             this._lottie!.resetSegments(true);
         }
+        this.goToFirstFrame();
         
         if (isPlaying) {
             this.pause();

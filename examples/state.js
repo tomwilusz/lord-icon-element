@@ -6,7 +6,7 @@ const iconElement = document.getElementById('main-icon');
 
 iconElement.addEventListener('ready', () => {
     // initial play intro
-    iconElement.state = 'intro';
+    iconElement.state = 'in-reveal';
     iconElement.player.playFromBeginning();
 
     // store next state
@@ -15,7 +15,7 @@ iconElement.addEventListener('ready', () => {
     // react on animation complete
     iconElement.player.addEventListener('complete', e => {
         // change to assigned state
-        iconElement.state = nextState ?? 'loop';
+        iconElement.state = nextState ?? 'loop-spin';
 
         // play from beginning
         iconElement.player.playFromBeginning();
@@ -27,6 +27,6 @@ iconElement.addEventListener('ready', () => {
     // react to mouse enter
     iconElement.addEventListener('mouseenter', e => {
         // set next state to hover
-        nextState = 'hover';
+        nextState = 'hover-jump';
     });
 });

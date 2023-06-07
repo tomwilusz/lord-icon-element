@@ -10,7 +10,6 @@ export const DEFAULT_STROKE = 2;
 /**
  * Supported stroke variants.
  */
-
 export const STROKES = {
     1: 'light',
     2: 'regular',
@@ -83,7 +82,17 @@ export function update(data: IconData, assignProperties: IProperties, params: { 
         } else if (keys.includes('stroke')) {
             const strokeObjects = findObject(newData, `effect('stroke')('Menu')`);
             for (const s of strokeObjects) {
-                const scale = assignProperties.stroke / DEFAULT_STROKE;
+                let stroke = assignProperties.stroke;
+  
+                if (stroke === 'light') {
+                    stroke = 1;
+                } else if (stroke === 'regular') {
+                    stroke = 2;
+                } else if (stroke === 'bold') {
+                    stroke = 3;
+                }
+                
+                const scale = stroke / DEFAULT_STROKE;
                 if (isObjectLike(s.k) && Array.isArray(s.k)) {
                     for (const l of s.k) {
                         if (Array.isArray(l.s)) {

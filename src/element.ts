@@ -779,9 +779,9 @@ export class Element<P extends IPlayer = IPlayer> extends HTMLElement {
     }
 
     /**
-     * Set stroke value (in range 0-100).
+     * Set stroke value (1, 2, 3, light, regular, bold).
      */
-    set stroke(value: number | null) {
+    set stroke(value: number | 'light' | 'regular' | 'bold' | null) {
         if (isNil(value)) {
             this.removeAttribute('stroke');
         } else {
@@ -792,9 +792,9 @@ export class Element<P extends IPlayer = IPlayer> extends HTMLElement {
     /**
      * Get stroke value.
      */
-    get stroke(): number | null {
+    get stroke(): any | null {
         if (this.hasAttribute('stroke')) {
-            return parseFloat(this.getAttribute('stroke')!);
+            return this.getAttribute('stroke');
         }
         return null;
     }

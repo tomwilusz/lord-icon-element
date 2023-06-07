@@ -15,7 +15,7 @@ lordIconElement.addEventListener('ready', () => {
     let direction = 1;
 
     lordIconElement.player.speed = 0.25;
-    lordIconElement.player.stroke = 40;
+    lordIconElement.player.stroke = 'light';
     lordIconElement.player.colors.primary = 'red';
     lordIconElement.player.colors.secondary = 'pink';
 
@@ -46,4 +46,21 @@ document.getElementById('previous-frames').addEventListener('click', e => {
     e.preventDefault();
 
     lordIconElement.player.frame -= 5;
+});
+
+document.getElementById('switch-state').addEventListener('click', e => {
+    e.preventDefault();
+
+    const states = lordIconElement.player.states.map(c => c.name);
+
+    // lordIconElement.player.frame -= 5;
+    let index = states.indexOf(lordIconElement.player.state);
+    index++;
+
+    if (index >= states.length) {
+        index = 0;
+    }
+
+    lordIconElement.player.direction = 1;
+    lordIconElement.player.state = states[index];
 });

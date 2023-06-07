@@ -112,7 +112,7 @@ export interface IProperties {
     /**
      * Stroke width in the range: 0-100.
      */
-    stroke?: number | null;
+    stroke?: number | 'light' | 'regular' | 'bold' | null;
 
     /**
      * State (motion type) of the icon. States allow switching between multiple animations built into a single icon file.
@@ -237,7 +237,7 @@ export interface IPlayer {
     /**
      * Stroke gives you the value of icon stroke width.
      */
-    stroke: number | null;
+    stroke: number | 'light' | 'regular' | 'bold' | null;
 
     /**
      * This property allows to control state (motion type) of the icon.

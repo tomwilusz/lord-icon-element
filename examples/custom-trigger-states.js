@@ -32,16 +32,16 @@ class Trash {
     }
 
     onReady() {
-        this.player.state = 'intro-empty';
+        this.player.state = 'in-trash-empty';
         this.player.playFromBeginning();
     }
 
     onClick() {
         if (this.empty) {
-            this.player.state = 'morph-fill';
+            this.player.state = 'morph-trash-full';
             this.empty = false;
         } else {
-            this.player.state = 'morph-erase';
+            this.player.state = 'morph-trash-full-to-empty';
             this.empty = true;
         }
 
@@ -50,9 +50,9 @@ class Trash {
 
     onMouseEnter() {
         if (this.empty) {
-            this.player.state = 'hover-empty';
+            this.player.state = 'hover-trash-empty';
         } else {
-            this.player.state = 'hover-full';
+            this.player.state = 'hover-trash-full';
         }
 
         this.player.playFromBeginning();
@@ -62,19 +62,19 @@ class Trash {
     }
 
     trashIntro() {
-        this.player.state = 'intro-empty';
+        this.player.state = 'in-trash-empty';
         this.empty = true;
         this.player.playFromBeginning();
     }
 
     trashFill() {
-        this.player.state = 'morph-fill';
+        this.player.state = 'morph-trash-full';
         this.empty = false;
         this.player.playFromBeginning();
     }
 
     trashErase() {
-        this.player.state = 'morph-erase';
+        this.player.state = 'morph-trash-full-to-empty';
         this.empty = true;
         this.player.playFromBeginning();
     }

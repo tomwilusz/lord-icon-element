@@ -3,8 +3,8 @@ import { defineElement } from '/dist/index.js';
 
 // List of supported icons by our icon loader.
 const ICONS = {
-    first: '/icons/confetti.json',
-    second: '/icons/book.json',
+    first: '/icons/lock.json',
+    second: '/icons/puzzle.json',
 }
 
 // Custom icon loader which can provide icon data from any place you want.
