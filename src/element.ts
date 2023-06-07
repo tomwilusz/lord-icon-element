@@ -99,11 +99,12 @@ const OBSERVED_ATTRIBUTES: SUPPORTED_ATTRIBUTES[] = [
  * import { Element } from 'lord-icon-element/element';
  * import { Player } from 'lord-icon-element/player';
  * 
- * Element.setPlayerFactory((container, iconData) => {
+ * Element.setPlayerFactory((container, iconData, initial) => {
  *     return new Player(
  *         lottie.loadAnimation,
  *         container,
  *         iconData,
+ *         initial,
  *     );
  * });
  * 
@@ -344,7 +345,14 @@ export class Element<P extends IPlayer = IPlayer> extends HTMLElement {
             return;
         }
 
-        this._player = Element._playerFactory(this.animationContainer!, iconData);
+        // create player instance
+        this._player = Element._playerFactory(
+            this.animationContainer!,
+            iconData,
+            { 
+                state: (this.state || undefined),
+            },
+        );
 
         // dynamic style for colors
         const colors = Object.entries(this.player!.colors || {});
@@ -353,11 +361,11 @@ export class Element<P extends IPlayer = IPlayer> extends HTMLElement {
 
             for (const [key, value] of colors) {
                 styleContent += `
-                    :host(:not(.current-color)) svg .${key} path[fill] {
+                    :host(:not(.current-color)) svg path[fill].${key} {
                         fill: var(--lord-icon-${key}, var(--lord-icon-${key}-base));
                     }
         
-                    :host(:not(.current-color)) svg .${key} path[stroke] {
+                    :host(:not(.current-color)) svg path[stroke].${key} {
                         stroke: var(--lord-icon-${key}, var(--lord-icon-${key}-base));
                     }
                 `

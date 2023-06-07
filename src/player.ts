@@ -1,5 +1,5 @@
 import { AnimationConfig, AnimationConfigWithData, AnimationConfigWithPath, AnimationDirection, AnimationItem } from 'lottie-web';
-import { IColors, IconData, IPlayer, IProperties, IState, PlayerEventCallback, PlayerEventName } from './interfaces.js';
+import { IColors, IconData, IInitialPlayer, IPlayer, IProperties, IState, PlayerEventCallback, PlayerEventName } from './interfaces.js';
 import { deepClone, get, isNil } from './utils/helpers.js';
 import { ILottieProperty, lottieColorToHex, rawProperties, resetProperties, updateProperties } from './utils/lottie.js';
 import { DEFAULT_STROKE } from './utils/update.js';
@@ -131,7 +131,7 @@ export class Player implements IPlayer {
      * @param iconData Lottie icon data.
      * @param options Options for `lottie-web`. If not provided {@link DEFAULT_LOTTIE_WEB_OPTIONS | default} will be used.
      */
-    constructor(animationLoader: AnimationLoader, container: HTMLElement, iconData: IconData, options?: LottieOptions) {
+    constructor(animationLoader: AnimationLoader, container: HTMLElement, iconData: IconData, initial: IInitialPlayer, options?: LottieOptions) {
         this._animationLoader = animationLoader;
         this._container = container;
         this._iconData = iconData;
@@ -147,7 +147,9 @@ export class Player implements IPlayer {
                 default: partB && partA.includes('default') ? true : false,
             };
 
-            if (newState.default) {
+            if (newState.name === initial.state) {
+                this._state = newState;
+            } else if (newState.default && !this._state) {
                 this._state = newState;
             }
 
@@ -160,13 +162,20 @@ export class Player implements IPlayer {
             throw new Error('Already connected player!');
         }
 
+        const initialOptions: LottieOptions = {};
+
+        if (this._state) {
+            initialOptions.initialSegment = [this._state.time, this._state.time + this._state.duration];
+        }
+
         this._lottie = this._animationLoader({
             ...this._options,
+            ...initialOptions,
             container: this._container,
             animationData: deepClone(this._iconData),
         });
 
-        this._lottie.addEventListener('complete', () => {
+        this._lottie.addEventListener('complete', (e) => {
             this.triggerEvent('complete');
         });
 
@@ -262,12 +271,7 @@ export class Player implements IPlayer {
     }
 
     play() {
-        // if (this._state) {
-        //     this._lottie!.playSegments([this._state.time, this._state.time + this._state.duration], true);
-        // } else {
-        //     this._lottie!.play();
-        // }
-        this._lottie!.play(this._state?.name);
+        this._lottie!.play();
     }
 
     playFromBeginning() {
@@ -291,19 +295,11 @@ export class Player implements IPlayer {
     }
 
     goToFirstFrame() {
-        if (this._state) {
-            this.goToFrame(this._state.time);
-        } else {
-            this.goToFrame(0);
-        }
+        this.goToFrame(0);
     }
 
     goToLastFrame() {
-        if (this._state) {
-            this.goToFrame(this._state.time + this._state.duration);
-        } else {
-            this.goToFrame(Math.max(0, this._lottie!.getDuration(true) - 1));
-        }
+        this.goToFrame(Math.max(0, this._lottie!.getDuration(true) - 1));
     }
 
     resetProperties(properties: IProperties = {}) {
@@ -430,12 +426,20 @@ export class Player implements IPlayer {
     }
 
     set state(state: string | null) {
+        if (state === this.state) {
+            return;
+        }
+
         const isPlaying = this.isPlaying;
 
-        const newState = state ? this._states.filter(c => c.name === state)[0] : undefined;
-        this._state = newState;
-        this.frame = newState?.time || 0;
+        this._state = state ? this._states.filter(c => c.name === state)[0] : undefined;
 
+        if (this._state) {
+            this._lottie?.setSegment(this._state.time, this._state.time + this._state.duration);
+        } else {
+            this._lottie!.resetSegments(true);
+        }
+        
         if (isPlaying) {
             this.pause();
             this.play();

@@ -60,12 +60,22 @@ export type IconLoader = (name: string) => Promise<IconData>;
  * customElements.define("lord-icon", Element);
  * ```
  */
-export type PlayerFactory = (container: HTMLElement, iconData: IconData) => IPlayer;
+export type PlayerFactory = (container: HTMLElement, iconData: IconData, initial: IInitialPlayer) => IPlayer;
 
 /**
  * Animation direction supported by {@link IPlayer | player instance}. "1" plays animation forward and "-1" plays the animation in reverse.
  */
 export type AnimationDirection = 1 | -1;
+
+/**
+ * Initial player params.
+ */
+export interface IInitialPlayer {
+    /**
+     * Force default state.
+     */
+    state?: string;
+}
 
 /**
  * Interface for the object that stores multiple colors.

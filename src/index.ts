@@ -1,4 +1,5 @@
 import { Element } from './element.js';
+import { IInitialPlayer, IconData } from './interfaces.js';
 import { AnimationLoader, Player } from './player.js';
 import { Boomerang } from './triggers/boomerang.js';
 import { Click } from './triggers/click.js';
@@ -36,11 +37,12 @@ import { Sequence } from './triggers/sequence.js';
  * @param animationLoader Use `loadAnimation` from `lottie-web` package.
  */
 export function defineElement(animationLoader: AnimationLoader) {
-  Element.setPlayerFactory((container: HTMLElement, iconData: any) => {
+  Element.setPlayerFactory((container: HTMLElement, iconData: IconData, initial: IInitialPlayer) => {
     return new Player(
       animationLoader,
       container,
       iconData,
+      initial,
     );
   });
 
