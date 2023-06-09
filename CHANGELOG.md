@@ -1,16 +1,19 @@
 ## v4.1.2 (2023-06-06)
 
-- ...
+- Improved support for animation markers to ensure compatibility with mobile
+  devices and alternative players.
+- Enhanced stroke adjustments.
+- New trigger: "in".
 
 ## v4.1.1 (2023-04-11)
 
-- Pause animation with trigger disconnection.
-- Fix typo inside "playFromBegining".
-- Update sequence trigger.
+- Implement the ability to pause animation when the trigger is disconnected.
+- Correct the typo inside "playFromBeginning".
+- Update the sequence trigger.
 
 ## v4.1.0 (2023-03-30)
 
-- Access to lottie play segments inside player.
+- Enable access to lottie play segments within the player.
 - Move delay to beginning inside loop and loop-on-hover triggers.
 
 ## v4.0.8 (2023-02-10)
