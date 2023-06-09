@@ -9,7 +9,7 @@ const html = `
             <script type="module" src="/node_modules/lottie-web/build/player/lottie_svg.min.js"></script>
         </head>
         <body>
-            <lord-icon icon="confetti"></lord-icon>
+            <lord-icon icon="lock"></lord-icon>
             <script type="module">
                 import { defineElement } from '/dist/index.js';
                 import { Element } from '/dist/element.js';
@@ -69,19 +69,19 @@ export default function () {
         });
 
         it('iconData', async () => {
-            const iconData = await loadIcon('confetti');
+            const iconData = await loadIcon('lock');
             expect(element.iconData).to.be.eql(iconData);
         });
 
         it('change icon', async () => {
-            const confettiIconData = await loadIcon('confetti');
-            const stateIconData = await loadIcon('state');
+            const lockIconData = await loadIcon('lock');
+            const puzzleIconData = await loadIcon('puzzle');
 
-            expect(element.iconData).to.be.eql(confettiIconData);
+            expect(element.iconData).to.be.eql(lockIconData);
 
             expect(element.isReady).to.be.true;
             expect(element.player).not.be.undefined;
-            element.icon = 'state';
+            element.icon = 'puzzle';
             expect(element.isReady).to.be.false;
             expect(element.player).to.be.undefined;
 
@@ -94,7 +94,7 @@ export default function () {
 
             expect(element.isReady).to.be.true;
             expect(element.player).not.be.undefined;
-            expect(element.iconData).to.be.eql(stateIconData);
+            expect(element.iconData).to.be.eql(puzzleIconData);
         });
     });
 }

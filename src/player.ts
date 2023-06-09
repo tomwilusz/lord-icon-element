@@ -299,7 +299,7 @@ export class Player implements IPlayer {
     }
 
     goToLastFrame() {
-        this.goToFrame(Math.max(0, this._lottie!.getDuration(true) - 1));
+        this.goToFrame(Math.max(0, this.frames));
     }
 
     resetProperties(properties: IProperties = {}) {
@@ -516,7 +516,7 @@ export class Player implements IPlayer {
     }
 
     get frames() {
-        return this._lottie!.getDuration(true) - 1;
+        return this._lottie!.getDuration(true);
     }
 
     get duration() {

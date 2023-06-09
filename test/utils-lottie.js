@@ -1,7 +1,7 @@
 import {
     hexToLottieColor,
     lottieColorToHex,
-    properties,
+    rawProperties,
     resetProperties,
     updateProperties,
 } from './dist/utils/lottie.js'
@@ -17,12 +17,10 @@ async function loadIcon(name) {
     return await response.json();
 }
 
-const CONFETTI_PROPERTIES = [
-    { "name": "primary", "path": "layers.2.ef.0.ef.0.v.k", "value": [0.070588238537, 0.074509806931, 0.192156866193, 1], "type": "color" },
-    { "name": "secondary", "path": "layers.2.ef.1.ef.0.v.k", "value": [0.031372550875, 0.658823549747, 0.541176497936, 1], "type": "color" },
-    { "name": "stroke", "path": "layers.2.ef.2.ef.0.v.k", "value": 70, "type": "slider" },
-    { "name": "axis", "path": "layers.2.ef.3.ef.0.v.k", "value": [250, 250], "type": "point" },
-    { "name": "scale", "path": "layers.2.ef.4.ef.0.v.k", "value": 100, "type": "slider" },
+const LOCK_PROPERTIES = [
+    {"name":"stroke","path":"layers.0.ef.0.ef.0.v.k","value":2,"type":"feature"},
+    {"name":"primary","path":"layers.0.ef.1.ef.0.v.k","value":[0.031372550875,0.658823549747,0.541176497936,1],"type":"color"},
+    {"name":"secondary","path":"layers.0.ef.2.ef.0.v.k","value":[0.070588238537,0.074509806931,0.192156866193,1],"type":"color"},
 ];
 
 export default function () {
@@ -49,39 +47,31 @@ export default function () {
 
         describe('properties', () => {
             it('basic', async () => {
-                const icon = await loadIcon('confetti');
+                const icon = await loadIcon('lock');
 
-                expect(properties(icon)).to.be.eql(CONFETTI_PROPERTIES);
+                console.log('---xxx', rawProperties(icon));
+
+                expect(rawProperties(icon)).to.be.eql(LOCK_PROPERTIES);
             });
         });
 
         describe('updateProperties', () => {
             it('basic', async () => {
-                const icon = await loadIcon('confetti');
-                const confettiProperties = properties(icon);
-                const scaleProperty = confettiProperties.filter(c => c.name === 'scale');
+                const icon = await loadIcon('lock');
+                const confettiProperties = rawProperties(icon);
+                const strokeProperty = confettiProperties.filter(c => c.name === 'stroke');
 
-                expect(get(icon, scaleProperty[0].path)).to.be.eql(100);
-                updateProperties(icon, scaleProperty, 50);
-                expect(get(icon, scaleProperty[0].path)).to.be.eql(50);
-            });
-
-            it('scale', async () => {
-                const icon = await loadIcon('confetti');
-                const confettiProperties = properties(icon);
-                const scaleProperty = confettiProperties.filter(c => c.name === 'scale');
-
-                expect(get(icon, scaleProperty[0].path)).to.be.eql(100);
-                updateProperties(icon, scaleProperty, 50, { scale: 50 });
-                expect(get(icon, scaleProperty[0].path)).to.be.eql(100);
+                expect(get(icon, strokeProperty[0].path)).to.be.eql(2);
+                updateProperties(icon, strokeProperty, 1);
+                expect(get(icon, strokeProperty[0].path)).to.be.eql(1);
             });
 
             it('color', async () => {
-                const icon = await loadIcon('confetti');
-                const confettiProperties = properties(icon);
+                const icon = await loadIcon('lock');
+                const confettiProperties = rawProperties(icon);
                 const primaryProperty = confettiProperties.filter(c => c.name === 'primary');
 
-                expect(lottieColorToHex(get(icon, primaryProperty[0].path))).to.be.eql('#121331');
+                expect(lottieColorToHex(get(icon, primaryProperty[0].path))).to.be.eql('#08a88a');
                 updateProperties(icon, primaryProperty, 'red');
                 expect(lottieColorToHex(get(icon, primaryProperty[0].path))).to.be.eql('#ff0000');
             });
@@ -89,14 +79,22 @@ export default function () {
 
         describe('resetProperties', () => {
             it('basic', async () => {
-                const icon = await loadIcon('confetti');
-                const confettiProperties = properties(icon);
-                const primaryProperty = confettiProperties.filter(c => c.name === 'primary');
+                const icon = await loadIcon('lock');
+                const confettiProperties = rawProperties(icon);
 
-                expect(lottieColorToHex(get(icon, primaryProperty[0].path))).to.be.eql('#121331');
+                const primaryProperty = confettiProperties.filter(c => c.name === 'primary');
+                const strokeProperty = confettiProperties.filter(c => c.name === 'stroke');
+
+                expect(lottieColorToHex(get(icon, primaryProperty[0].path))).to.be.eql('#08a88a');
+                
                 updateProperties(icon, primaryProperty, 'red');
+                updateProperties(icon, strokeProperty, 1);
+
                 resetProperties(icon, primaryProperty);
-                expect(lottieColorToHex(get(icon, primaryProperty[0].path))).to.be.eql('#121331');
+                resetProperties(icon, strokeProperty);
+
+                expect(lottieColorToHex(get(icon, primaryProperty[0].path))).to.be.eql('#08a88a');
+                expect(get(icon, strokeProperty[0].path)).to.be.eql(2);
             });
         });
     });

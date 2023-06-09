@@ -3,6 +3,13 @@ import { SIZE, loadIcon } from './helpers.js';
 
 const { expect } = chai;
 
+const LOCK_STATES = [
+    {"time":0,"duration":120,"name":"in-reveal","default":false},
+    {"time":130,"duration":60,"name":"hover-locked","default":true},
+    {"time":200,"duration":60,"name":"morph-unlocked","default":false},
+    {"time":270,"duration":60,"name":"hover-unlocked","default":false},
+];
+
 export default function () {
     describe('main', () => {
         let container = null;
@@ -18,7 +25,7 @@ export default function () {
 
             container = document.getElementById('container');
 
-            const iconData = await loadIcon('state');
+            const iconData = await loadIcon('lock');
             player = new Player(lottie.loadAnimation, container, iconData);
             player.connect();
 
@@ -56,7 +63,7 @@ export default function () {
         });
 
         it('states', async () => {
-            expect(player.states).to.be.eql(['intro', 'hover', 'loop']);
+            expect(player.states).to.be.eql(LOCK_STATES);
         });
 
         it('isPlaying', async () => {
@@ -65,6 +72,34 @@ export default function () {
 
         it('loop', async () => {
             expect(player.loop).to.be.false;
+        });
+
+        it('state frames', async () => {
+            // default state
+            expect(player.frames).to.be.eql(60);
+
+            // other state
+            player.state = 'in-reveal';
+            expect(player.frames).to.be.eql(120);
+
+            // another state
+            player.state = 'hover-unlocked';
+            expect(player.frames).to.be.eql(60);
+        });
+
+        it('reset frame with state change', async () => {
+            player.frame = 10;
+            expect(player.frame).to.be.eql(10);
+
+            // change state
+            player.state = 'in-reveal';
+            
+            expect(player.frame).to.be.eql(0);
+        });
+
+        it('frames without state', async () => {
+            player.state = null;
+            expect(player.frames).to.be.eql(331);
         });
     });
 }

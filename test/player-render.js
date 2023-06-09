@@ -18,7 +18,7 @@ export default function () {
 
             container = document.getElementById('container');
 
-            const iconData = await loadIcon('confetti');
+            const iconData = await loadIcon('lock');
             player = new Player(lottie.loadAnimation, container, iconData);
             player.connect();
 
@@ -41,7 +41,7 @@ export default function () {
 
         it('basic', async () => {
             const imageA = await getPNG(container);
-            const imageB = await loadImage('confetti-0');
+            const imageB = await loadImage('lock-0');
 
             const compare = await new Promise((resolve, reject) => {
                 resemble(imageA)
@@ -56,7 +56,7 @@ export default function () {
         it('frame', async () => {
             player.frame = 10;
             const imageC = await getPNG(container);
-            const imageD = await loadImage('confetti-10');
+            const imageD = await loadImage('lock-10');
 
             const compareB = await new Promise((resolve, reject) => {
                 resemble(imageC)
@@ -72,7 +72,7 @@ export default function () {
             player.frame = 20;
             player.colors = { primary: 'red', secondary: 'green' };
             const imageA = await getPNG(container);
-            const imageB = await loadImage('confetti-20');
+            const imageB = await loadImage('lock-20');
 
             const compare = await new Promise((resolve, reject) => {
                 resemble(imageA)
@@ -91,11 +91,10 @@ export default function () {
                     primary: 'blue',
                     secondary: 'pink',
                 },
-                scale: 40,
-                stroke: 20,
+                stroke: 3,
             });
             const imageA = await getPNG(container);
-            const imageB = await loadImage('confetti-30');
+            const imageB = await loadImage('lock-30');
 
             const compare = await new Promise((resolve, reject) => {
                 resemble(imageA)
@@ -122,7 +121,7 @@ export default function () {
 
             container = document.getElementById('container');
 
-            const iconData = await loadIcon('state');
+            const iconData = await loadIcon('lock');
             player = new Player(lottie.loadAnimation, container, iconData);
             player.connect();
 
@@ -145,7 +144,7 @@ export default function () {
 
         it('basic', async () => {
             const imageA = await getPNG(container);
-            const imageB = await loadImage('state-hover-0');
+            const imageB = await loadImage('state-hover-locked-0');
 
             const compareA = await new Promise((resolve, reject) => {
                 resemble(imageA)
@@ -156,9 +155,9 @@ export default function () {
             });
             expect(compareA.rawMisMatchPercentage).to.be.at.most(1);
 
-            player.state = 'intro';
+            player.state = 'in-reveal';
             const imageC = await getPNG(container);
-            const imageD = await loadImage('state-intro-0');
+            const imageD = await loadImage('state-in-reveal-0');
 
             const compareB = await new Promise((resolve, reject) => {
                 resemble(imageC)
@@ -169,9 +168,9 @@ export default function () {
             });
             expect(compareB.rawMisMatchPercentage).to.be.at.most(1);
 
-            player.state = 'loop';
+            player.frame = 10;
             const imageE = await getPNG(container);
-            const imageF = await loadImage('state-loop-0');
+            const imageF = await loadImage('state-in-reveal-10');
 
             const compareC = await new Promise((resolve, reject) => {
                 resemble(imageE)
@@ -181,13 +180,26 @@ export default function () {
                     });
             });
             expect(compareC.rawMisMatchPercentage).to.be.at.most(1);
+
+            player.state = 'hover-unlocked';
+            const imageG = await getPNG(container);
+            const imageH = await loadImage('state-hover-unlocked-0');
+
+            const compareD = await new Promise((resolve, reject) => {
+                resemble(imageG)
+                    .compareTo(imageH)
+                    .onComplete((data) => {
+                        resolve(data);
+                    });
+            });
+            expect(compareD.rawMisMatchPercentage).to.be.at.most(1);
         });
 
         it('frame', async () => {
-            player.frame = 10;
-
+            player.state = 'hover-unlocked';
+            player.frame = 20;
             const imageA = await getPNG(container);
-            const imageB = await loadImage('state-hover-10');
+            const imageB = await loadImage('state-hover-unlocked-20');
 
             const compareA = await new Promise((resolve, reject) => {
                 resemble(imageA)
@@ -197,32 +209,6 @@ export default function () {
                     });
             });
             expect(compareA.rawMisMatchPercentage).to.be.at.most(1);
-
-            player.state = 'intro';
-            const imageC = await getPNG(container);
-            const imageD = await loadImage('state-intro-10');
-
-            const compareB = await new Promise((resolve, reject) => {
-                resemble(imageC)
-                    .compareTo(imageD)
-                    .onComplete((data) => {
-                        resolve(data);
-                    });
-            });
-            expect(compareB.rawMisMatchPercentage).to.be.at.most(1);
-
-            player.state = 'loop';
-            const imageE = await getPNG(container);
-            const imageF = await loadImage('state-loop-10');
-
-            const compareC = await new Promise((resolve, reject) => {
-                resemble(imageE)
-                    .compareTo(imageF)
-                    .onComplete((data) => {
-                        resolve(data);
-                    });
-            });
-            expect(compareC.rawMisMatchPercentage).to.be.at.most(1);
         });
     });
 }

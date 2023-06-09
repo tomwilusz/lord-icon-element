@@ -6,7 +6,7 @@ const html = `
             <script type="module" src="/node_modules/lottie-web/build/player/lottie_svg.min.js"></script>
         </head>
         <body>
-            <lord-icon src="/icons/confetti.json"></lord-icon>
+            <lord-icon src="/icons/lock.json"></lord-icon>
             <script type="module">
                 import { defineElement } from '/dist/index.js';
 

@@ -4,6 +4,7 @@
   devices and alternative players.
 - Enhanced stroke adjustments.
 - New trigger: "in".
+- Update tests.
 
 ## v4.1.1 (2023-04-11)
 

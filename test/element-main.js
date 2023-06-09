@@ -8,7 +8,7 @@ const html = `
             <script type="module" src="/node_modules/lottie-web/build/player/lottie_svg.min.js"></script>
         </head>
         <body>
-            <lord-icon src="/icons/confetti.json"></lord-icon>
+            <lord-icon src="/icons/lock.json"></lord-icon>
             <script type="module">
                 import { defineElement } from '/dist/index.js';
                 defineElement(lottie.loadAnimation);
@@ -57,7 +57,7 @@ export default function () {
         });
 
         it('iconData', async () => {
-            const iconData = await loadIcon('confetti');
+            const iconData = await loadIcon('lock');
             expect(element.iconData).to.be.eql(iconData);
         });
 
@@ -67,7 +67,7 @@ export default function () {
             expect(element.player).not.be.undefined;
             expect(element.triggerInstance).to.be.undefined;
 
-            expect(element.src).to.be.eql('/icons/confetti.json');
+            expect(element.src).to.be.eql('/icons/lock.json');
 
             expect(element.target).to.be.null;
             expect(element.trigger).to.be.null;
@@ -78,9 +78,11 @@ export default function () {
         });
 
         it('attributes', () => {
-            element.stroke = 100;
-            expect(element.stroke).to.be.eql(100);
-            expect(element.getAttribute('stroke')).to.be.eql('100');
+            element.stroke = 3;
+            expect(element.getAttribute('stroke')).to.be.eql('3');
+
+            element.stroke = 'light';
+            expect(element.getAttribute('stroke')).to.be.eql('light');
 
             element.target = 'div';
             expect(element.target).to.be.eql('div');
@@ -90,9 +92,9 @@ export default function () {
             expect(element.trigger).to.be.eql('hover');
             expect(element.getAttribute('trigger')).to.be.eql('hover');
 
-            element.state = 'intro';
-            expect(element.state).to.be.eql('intro');
-            expect(element.getAttribute('state')).to.be.eql('intro');
+            element.state = 'in-reveal';
+            expect(element.state).to.be.eql('in-reveal');
+            expect(element.getAttribute('state')).to.be.eql('in-reveal');
 
             element.icon = 'wow';
             expect(element.icon).to.be.eql('wow');
@@ -110,11 +112,11 @@ export default function () {
             element.setAttribute('trigger', 'hover');
             expect(element.trigger).to.be.eql('hover');
 
-            element.setAttribute('state', 'intro');
-            expect(element.state).to.be.eql('intro');
+            element.setAttribute('state', 'in-reveal');
+            expect(element.state).to.be.eql('in-reveal');
 
-            element.setAttribute('stroke', '85');
-            expect(element.stroke).to.be.eql(85);
+            element.setAttribute('stroke', '2');
+            expect(element.stroke).to.be.eql('2');
 
             element.setAttribute('colors', 'primary:red');
             expect(element.colors).to.be.eql('primary:red');
@@ -127,8 +129,23 @@ export default function () {
             element.colors = 'primary:red';
             expect(element.player.colors.primary).to.be.eql('#ff0000');
 
-            element.stroke = 80;
-            expect(element.player.stroke).to.be.eql(80);
+            element.stroke = 'light';
+            expect(element.player.stroke).to.be.eql(1);
+
+            element.stroke = 'regular';
+            expect(element.player.stroke).to.be.eql(2);
+
+            element.stroke = 'bold';
+            expect(element.player.stroke).to.be.eql(3);
+
+            element.stroke = '1';
+            expect(element.player.stroke).to.be.eql(1);
+
+            element.stroke = '2';
+            expect(element.player.stroke).to.be.eql(2);
+
+            element.stroke = '3';
+            expect(element.player.stroke).to.be.eql(3);
         });
 
         it('trigger', () => {
@@ -140,14 +157,14 @@ export default function () {
         });
 
         it('change src', async () => {
-            const confettiIconData = await loadIcon('confetti');
-            const stateIconData = await loadIcon('state');
+            const lockIconData = await loadIcon('lock');
+            const puzzleIconData = await loadIcon('puzzle');
 
-            expect(element.iconData).to.be.eql(confettiIconData);
+            expect(element.iconData).to.be.eql(lockIconData);
 
             expect(element.isReady).to.be.true;
             expect(element.player).not.be.undefined;
-            element.src = '/icons/state.json';
+            element.src = '/icons/puzzle.json';
             expect(element.isReady).to.be.false;
             expect(element.player).to.be.undefined;
 
@@ -160,7 +177,7 @@ export default function () {
 
             expect(element.isReady).to.be.true;
             expect(element.player).not.be.undefined;
-            expect(element.iconData).to.be.eql(stateIconData);
+            expect(element.iconData).to.be.eql(puzzleIconData);
         });
 
         it('connected', async () => {
