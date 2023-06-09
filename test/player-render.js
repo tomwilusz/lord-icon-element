@@ -105,44 +105,8 @@ export default function () {
             });
             expect(compare.rawMisMatchPercentage).to.be.at.most(1);
         });
-    });
 
-    describe('render states', () => {
-        let container = null;
-        let player = null;
-
-        beforeEach(async () => {
-            const div = document.createElement('div');
-            div.setAttribute('id', 'container');
-            div.style.width = `${SIZE}px`;
-            div.style.height = `${SIZE}px`;
-
-            document.body.appendChild(div);
-
-            container = document.getElementById('container');
-
-            const iconData = await loadIcon('lock');
-            player = new Player(lottie.loadAnimation, container, iconData);
-            player.connect();
-
-            await new Promise((resolve, reject) => {
-                if (player.isReady) {
-                    resolve();
-                } else {
-                    player.addEventListener('ready', () => {
-                        resolve();
-                    });
-                }
-            });
-        });
-
-        afterEach(() => {
-            player.disconnect();
-            container.parentElement.removeChild(container);
-            container = null;
-        });
-
-        it('basic', async () => {
+        it('state 1', async () => {
             const imageA = await getPNG(container);
             const imageB = await loadImage('state-hover-locked-0');
 
@@ -195,11 +159,188 @@ export default function () {
             expect(compareD.rawMisMatchPercentage).to.be.at.most(1);
         });
 
-        it('frame', async () => {
+        it('state 2', async () => {
             player.state = 'hover-unlocked';
             player.frame = 20;
             const imageA = await getPNG(container);
             const imageB = await loadImage('state-hover-unlocked-20');
+
+            const compareA = await new Promise((resolve, reject) => {
+                resemble(imageA)
+                    .compareTo(imageB)
+                    .onComplete((data) => {
+                        resolve(data);
+                    });
+            });
+            expect(compareA.rawMisMatchPercentage).to.be.at.most(1);
+        });
+    });
+
+    describe('render - stroke - 1', () => {
+        let container = null;
+        let player = null;
+
+        beforeEach(async () => {
+            const div = document.createElement('div');
+            div.setAttribute('id', 'container');
+            div.style.width = `${SIZE}px`;
+            div.style.height = `${SIZE}px`;
+
+            document.body.appendChild(div);
+
+            container = document.getElementById('container');
+
+            const iconData = await loadIcon('lock');
+            player = new Player(lottie.loadAnimation, container, iconData);
+            player.connect();
+
+            await new Promise((resolve, reject) => {
+                if (player.isReady) {
+                    resolve();
+                } else {
+                    player.addEventListener('ready', () => {
+                        resolve();
+                    });
+                }
+            });
+        });
+
+        afterEach(() => {
+            player.disconnect();
+            container.parentElement.removeChild(container);
+            container = null;
+        });
+
+        it('light', async () => {
+            player.state = 'hover-unlocked';
+            player.frame = 30;
+            player.stroke = 'light';
+            const imageA = await getPNG(container);
+            const imageB = await loadImage('state-hover-unlocked-30-light');
+
+            const compareA = await new Promise((resolve, reject) => {
+                resemble(imageA)
+                    .compareTo(imageB)
+                    .onComplete((data) => {
+                        resolve(data);
+                    });
+            });
+            expect(compareA.rawMisMatchPercentage).to.be.at.most(1);
+        });
+
+        it('regular', async () => {
+            player.state = 'hover-unlocked';
+            player.frame = 30;
+            player.stroke = 'regular';
+            const imageA = await getPNG(container);
+            const imageB = await loadImage('state-hover-unlocked-30-regular');
+
+            const compareA = await new Promise((resolve, reject) => {
+                resemble(imageA)
+                    .compareTo(imageB)
+                    .onComplete((data) => {
+                        resolve(data);
+                    });
+            });
+            expect(compareA.rawMisMatchPercentage).to.be.at.most(1);
+        });
+
+        it('bold', async () => {
+            player.state = 'hover-unlocked';
+            player.frame = 30;
+            player.stroke = 'bold';
+            const imageA = await getPNG(container);
+            const imageB = await loadImage('state-hover-unlocked-30-bold');
+
+            const compareA = await new Promise((resolve, reject) => {
+                resemble(imageA)
+                    .compareTo(imageB)
+                    .onComplete((data) => {
+                        resolve(data);
+                    });
+            });
+            expect(compareA.rawMisMatchPercentage).to.be.at.most(1);
+        });
+    });
+
+    describe('render - stroke - 2', () => {
+        let container = null;
+        let player = null;
+
+        beforeEach(async () => {
+            const div = document.createElement('div');
+            div.setAttribute('id', 'container');
+            div.style.width = `${SIZE}px`;
+            div.style.height = `${SIZE}px`;
+
+            document.body.appendChild(div);
+
+            container = document.getElementById('container');
+
+            const iconData = await loadIcon('hourglass');
+            player = new Player(lottie.loadAnimation, container, iconData);
+            player.connect();
+
+            await new Promise((resolve, reject) => {
+                if (player.isReady) {
+                    resolve();
+                } else {
+                    player.addEventListener('ready', () => {
+                        resolve();
+                    });
+                }
+            });
+        });
+
+        afterEach(() => {
+            player.disconnect();
+            container.parentElement.removeChild(container);
+            container = null;
+        });
+
+        it('light', async () => {
+            player.state = 'hover-dynamic';
+            player.frame = 40;
+            player.colors.primary = 'red';
+            player.stroke = 1;
+            const imageA = await getPNG(container);
+            const imageB = await loadImage('hourglass-light');
+
+            const compareA = await new Promise((resolve, reject) => {
+                resemble(imageA)
+                    .compareTo(imageB)
+                    .onComplete((data) => {
+                        resolve(data);
+                    });
+            });
+            expect(compareA.rawMisMatchPercentage).to.be.at.most(1);
+        });
+
+        it('regular', async () => {
+            player.state = 'hover-dynamic';
+            player.frame = 40;
+            player.colors.primary = 'red';
+            player.stroke = 2;
+            const imageA = await getPNG(container);
+            const imageB = await loadImage('hourglass-regular');
+
+            const compareA = await new Promise((resolve, reject) => {
+                resemble(imageA)
+                    .compareTo(imageB)
+                    .onComplete((data) => {
+                        resolve(data);
+                    });
+            });
+            expect(compareA.rawMisMatchPercentage).to.be.at.most(1);
+        });
+
+        it('bold', async () => {
+            player.state = 'hover-dynamic';
+            player.frame = 40;
+            player.colors.primary = 'red';
+            player.stroke = 3;
+            const imageA = await getPNG(container);
+            const imageB = await loadImage('hourglass-bold');
 
             const compareA = await new Promise((resolve, reject) => {
                 resemble(imageA)
