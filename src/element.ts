@@ -350,7 +350,9 @@ export class Element<P extends IPlayer = IPlayer> extends HTMLElement {
             this.animationContainer!,
             iconData,
             { 
-                state: (this.state || undefined),
+                state: this.state || undefined,
+                stroke: this.stroke,
+                colors: parseColors(this.colors || ''),
             },
         );
 
@@ -378,15 +380,6 @@ export class Element<P extends IPlayer = IPlayer> extends HTMLElement {
 
         // connect after style
         this._player.connect();
-
-        // assign initial properties for icon
-        if (this.state || this.colors || this.stroke) {
-            this.player!.resetProperties({
-                colors: parseColors(this.colors || ''),
-                stroke: this.stroke,
-                state: this.state,
-            });
-        }
 
         // listen for ready
         this._player.addEventListener('ready', () => {

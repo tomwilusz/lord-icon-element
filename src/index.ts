@@ -1,19 +1,20 @@
 import { Element } from './element.js';
-import { IInitialPlayer, IconData } from './interfaces.js';
+import { IProperties, IconData } from './interfaces.js';
 import { AnimationLoader, Player } from './player.js';
 import { Boomerang } from './triggers/boomerang.js';
 import { Click } from './triggers/click.js';
 import { Hover } from './triggers/hover.js';
+import { In } from './triggers/in.js';
 import { LoopOnHover } from './triggers/loop-on-hover.js';
 import { Loop } from './triggers/loop.js';
 import { Morph } from './triggers/morph.js';
 import { Sequence } from './triggers/sequence.js';
-import { In } from './triggers/in.js';
 
 /**
  * Defines `lord-icon` custom element with premade triggers and {@link interfaces.PlayerFactory | player factory}.
  * 
  * This method defines the following triggers:
+ * - {@link triggers/sequence.In | in}
  * - {@link triggers/click.Click | click}
  * - {@link triggers/hover.Hover | hover}
  * - {@link triggers/loop.Loop | loop}
@@ -21,7 +22,6 @@ import { In } from './triggers/in.js';
  * - {@link triggers/morph.Morph | morph}
  * - {@link triggers/boomerang.Boomerang | boomerang}
  * - {@link triggers/sequence.Sequence | sequence}
- * - {@link triggers/sequence.In | in}
  *
  * Example of tag definition with default setup:
  * ```js
@@ -39,25 +39,25 @@ import { In } from './triggers/in.js';
  * @param animationLoader Use `loadAnimation` from `lottie-web` package.
  */
 export function defineElement(animationLoader: AnimationLoader) {
-  Element.setPlayerFactory((container: HTMLElement, iconData: IconData, initial: IInitialPlayer) => {
-    return new Player(
-      animationLoader,
-      container,
-      iconData,
-      initial,
-    );
-  });
+    Element.setPlayerFactory((container: HTMLElement, iconData: IconData, initial: IProperties) => {
+        return new Player(
+            animationLoader,
+            container,
+            iconData,
+            initial,
+        );
+    });
 
-  Element.defineTrigger('click', Click);
-  Element.defineTrigger('hover', Hover);
-  Element.defineTrigger('loop', Loop);
-  Element.defineTrigger('loop-on-hover', LoopOnHover);
-  Element.defineTrigger('morph', Morph);
-  Element.defineTrigger('boomerang', Boomerang);
-  Element.defineTrigger('sequence', Sequence);
-  Element.defineTrigger('in', In);
+    Element.defineTrigger('in', In);
+    Element.defineTrigger('click', Click);
+    Element.defineTrigger('hover', Hover);
+    Element.defineTrigger('loop', Loop);
+    Element.defineTrigger('loop-on-hover', LoopOnHover);
+    Element.defineTrigger('morph', Morph);
+    Element.defineTrigger('boomerang', Boomerang);
+    Element.defineTrigger('sequence', Sequence);
 
-  if (!customElements.get || !customElements.get('lord-icon')) {
-    customElements.define('lord-icon', Element);
-  }
+    if (!customElements.get || !customElements.get('lord-icon')) {
+        customElements.define('lord-icon', Element);
+    }
 }

@@ -1,8 +1,7 @@
 import { AnimationConfig, AnimationConfigWithData, AnimationConfigWithPath, AnimationDirection, AnimationItem } from 'lottie-web';
-import { IColors, IconData, IInitialPlayer, IPlayer, IProperties, IState, PlayerEventCallback, PlayerEventName } from './interfaces.js';
+import { IColors, IPlayer, IProperties, IState, IconData, PlayerEventCallback, PlayerEventName } from './interfaces.js';
 import { deepClone, get, isNil } from './utils/helpers.js';
 import { ILottieProperty, lottieColorToHex, rawProperties, resetProperties, updateProperties } from './utils/lottie.js';
-import { DEFAULT_STROKE } from './utils/update.js';
 
 /**
  * Type for options supported by {@link player.Player | Player}.
@@ -13,11 +12,6 @@ export type LottieOptions = Omit<AnimationConfig, 'container'>;
  * Type for `loadAnimation` method from `lottie-web` package.
  */
 export type AnimationLoader = (params: AnimationConfigWithPath | AnimationConfigWithData) => AnimationItem;
-
-/**
- * Prefix for icon states. Properties with this prefix are handled as icon states.
- */
-export const STATE_PREFIX = 'state-';
 
 /**
  * Default lottie-web options used by provided Player.
@@ -32,6 +26,11 @@ export const DEFAULT_LOTTIE_WEB_OPTIONS: Omit<AnimationConfig, 'container'> = {
         hideOnTransparent: true,
     },
 }
+
+/**
+ * Default stroke for supported icons.
+ */
+export const DEFAULT_STROKE = 2;
 
 /**
  * Create convenient proxy for manipulating colors.
@@ -112,6 +111,7 @@ export class Player implements IPlayer {
     protected _animationLoader: AnimationLoader;
     protected _container: HTMLElement;
     protected _iconData: any;
+    protected _initial: IProperties;
     protected _options: LottieOptions;
     protected _lottie?: AnimationItem;
     protected _isReady: boolean = false;
@@ -131,10 +131,11 @@ export class Player implements IPlayer {
      * @param iconData Lottie icon data.
      * @param options Options for `lottie-web`. If not provided {@link DEFAULT_LOTTIE_WEB_OPTIONS | default} will be used.
      */
-    constructor(animationLoader: AnimationLoader, container: HTMLElement, iconData: IconData, initial: IInitialPlayer, options?: LottieOptions) {
+    constructor(animationLoader: AnimationLoader, container: HTMLElement, iconData: IconData, initial: IProperties, options?: LottieOptions) {
         this._animationLoader = animationLoader;
         this._container = container;
         this._iconData = iconData;
+        this._initial = initial || {};
         this._options = options || DEFAULT_LOTTIE_WEB_OPTIONS;
 
         // parse states
@@ -174,6 +175,16 @@ export class Player implements IPlayer {
             container: this._container,
             animationData: deepClone(this._iconData),
         });
+
+        // initial colors
+        if (this._initial.colors && Object.keys(this._initial.colors).length) {
+            this.colors = this._initial.colors;
+        }
+
+        // initial stroke
+        if (this._initial.stroke) {
+            this.stroke = this._initial.stroke;
+        }
 
         this._lottie.addEventListener('complete', (e) => {
             this.triggerEvent('complete');
@@ -302,21 +313,12 @@ export class Player implements IPlayer {
         this.goToFrame(Math.max(0, this.frames));
     }
 
-    resetProperties(properties: IProperties = {}) {
-        if (!properties || typeof properties !== 'object') {
-            return;
-        }
-
-        // allows to optimize initial assign properties without redundant reset to default
-        const alreadyCustomized = this._rawProperties ? true : false;
-
+    set properties(properties: IProperties) {
         // colors
-        if (alreadyCustomized) {
-            resetProperties(
-                this._lottie,
-                this.rawProperties.filter(c => c.type === 'color'),
-            );
-        }
+        resetProperties(
+            this._lottie,
+            this.rawProperties.filter(c => c.type === 'color'),
+        );
         if (properties.colors && !isNil(properties.colors)) {
             for (const [key, value] of Object.entries(properties.colors)) {
                 updateProperties(
@@ -325,27 +327,6 @@ export class Player implements IPlayer {
                     value,
                 );
             }
-        }
-
-        // state
-        if (alreadyCustomized) {
-            resetProperties(
-                this._lottie,
-                this.rawProperties.filter(c => c.name.startsWith(STATE_PREFIX)),
-            );
-        }
-        if (!isNil(properties.state) && properties.state) {
-            const name = `${STATE_PREFIX}${properties.state.toLowerCase()}`;
-            updateProperties(
-                this._lottie,
-                this.rawProperties.filter(c => c.name.startsWith(STATE_PREFIX)),
-                0,
-            );
-            updateProperties(
-                this._lottie,
-                this.rawProperties.filter(c => c.name === name),
-                1,
-            );
         }
 
         // stroke
@@ -365,14 +346,30 @@ export class Player implements IPlayer {
                 this.rawProperties.filter(c => c.name === 'stroke'),
                 stroke,
             );
-        } else if (alreadyCustomized) {
+        } else {
             resetProperties(
                 this._lottie,
                 this.rawProperties.filter(c => c.name === 'stroke'),
             );
         }
 
+        // state
+        if (!isNil(properties.state) && properties.state) {
+            this.state = properties.state;
+        } else {
+            const defaultState = this.states.filter(c => c.default)[0]?.name || null;
+            this.state = defaultState;
+        }
+
         this.refresh();
+    }
+
+    get properties(): IProperties {
+        return {
+            colors: { ...this.colors },
+            stroke: this.stroke,
+            state: this.state,
+        };
     }
 
     set colors(colors: IColors | null) {
@@ -437,7 +434,7 @@ export class Player implements IPlayer {
                 value *= property.value / DEFAULT_STROKE;
             }
             
-            return isNaN(value) ? null : value;
+            return isNaN(value) ? null : +value;
         }
 
         return null;
@@ -539,5 +536,5 @@ export class Player implements IPlayer {
         }
 
         return this._rawProperties || [];
-    }
+    } 
 }

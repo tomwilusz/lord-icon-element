@@ -1,14 +1,10 @@
 import {
-    hexToLottieColor,
-    lottieColorToHex,
-    rawProperties,
-    resetProperties,
-    updateProperties,
-} from './dist/utils/lottie.js'
+    hexToLottieColor, lottieColorToHex, rawProperties, resetProperties, updateProperties,
+} from './dist/utils/lottie.js';
 
 import {
     get,
-} from './dist/utils/helpers.js'
+} from './dist/utils/helpers.js';
 
 const { expect } = chai;
 
@@ -48,8 +44,6 @@ export default function () {
         describe('properties', () => {
             it('basic', async () => {
                 const icon = await loadIcon('lock');
-
-                console.log('---xxx', rawProperties(icon));
 
                 expect(rawProperties(icon)).to.be.eql(LOCK_PROPERTIES);
             });

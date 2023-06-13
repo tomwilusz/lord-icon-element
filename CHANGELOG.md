@@ -1,4 +1,8 @@
-## v4.1.2 (2023-06-06)
+## v4.2.1 (2023-06-13)
+
+- New API for modify multiple properties at once inside player.
+
+## v4.2.0 (2023-06-06)
 
 - Improved support for animation markers to ensure compatibility with mobile
   devices and alternative players.

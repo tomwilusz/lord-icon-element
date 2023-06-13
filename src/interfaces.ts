@@ -60,22 +60,12 @@ export type IconLoader = (name: string) => Promise<IconData>;
  * customElements.define("lord-icon", Element);
  * ```
  */
-export type PlayerFactory = (container: HTMLElement, iconData: IconData, initial: IInitialPlayer) => IPlayer;
+export type PlayerFactory = (container: HTMLElement, iconData: IconData, initial: IProperties) => IPlayer;
 
 /**
  * Animation direction supported by {@link IPlayer | player instance}. "1" plays animation forward and "-1" plays the animation in reverse.
  */
 export type AnimationDirection = 1 | -1;
-
-/**
- * Initial player params.
- */
-export interface IInitialPlayer {
-    /**
-     * Force default state.
-     */
-    state?: string;
-}
 
 /**
  * Interface for the object that stores multiple colors.
@@ -100,8 +90,7 @@ export interface IColors {
  * Example:
  * ```js
  * {
- *     stroke: 50,
- *     scale: 50,
+ *     stroke: 'bold',
  *     colors: {
  *         primary: 'red',
  *     },
@@ -110,7 +99,7 @@ export interface IColors {
  */
 export interface IProperties {
     /**
-     * Stroke width in the range: 0-100.
+     * Stroke width in the range: 1, 2, 3, light, regular, bold.
      */
     stroke?: number | 'light' | 'regular' | 'bold' | null;
 
@@ -126,7 +115,7 @@ export interface IProperties {
 }
 
 /**
- * State details.
+ * Animation state details.
  */
 export interface IState {
     name: string;
@@ -203,11 +192,11 @@ export interface IPlayer {
     goToLastFrame(): void;
 
     /**
-     * Reset properties to default and optionally assign new one from provided param.
+     * Access to read or modify multiple properties at once. Resets to default not provided values.
      * 
-     * @param properties New properties to assign.
+     * @param properties Properties to assign.
      */
-    resetProperties(properties?: IProperties): void;
+    properties: IProperties;
 
     /**
      * This property let you find out customizable colors or update them within a processed icon.
