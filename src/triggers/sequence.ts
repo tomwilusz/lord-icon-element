@@ -20,9 +20,9 @@ export class Sequence implements ITrigger {
     protected observer: MutationObserver;
 
     constructor(
+        protected player: IPlayer,
         protected element: HTMLElement,
         protected targetElement: HTMLElement,
-        protected player: IPlayer,
     ) {
         this.observer = new MutationObserver((mutationList, observer) => {
             for (const mutation of mutationList) {

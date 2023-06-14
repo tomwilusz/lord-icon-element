@@ -2,15 +2,15 @@ import { Element } from '/dist/element.js';
 import { defineElement } from '/dist/index.js';
 
 class InScreen {
+    player;
     element;
     targetElement;
-    player;
     observer;
 
-    constructor(element, targetElement, player) {
+    constructor(player, element, targetElement) {
+        this.player = player;
         this.element = element;
         this.targetElement = targetElement;
-        this.player = player;
 
         const intersectionCallback = (entries, observer) => {
             entries.forEach((entry) => {

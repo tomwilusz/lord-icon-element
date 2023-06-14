@@ -6,19 +6,19 @@ const iconElement = document.getElementById('main-icon');
 
 iconElement.addEventListener('ready', () => {
     // initial play intro
-    iconElement.state = 'in-reveal';
-    iconElement.player.playFromBeginning();
+    iconElement.playerInstance.state = 'in-reveal';
+    iconElement.playerInstance.playFromBeginning();
 
     // store next state
     let nextState = null;
 
     // react on animation complete
-    iconElement.player.addEventListener('complete', e => {
+    iconElement.playerInstance.addEventListener('complete', e => {
         // change to assigned state
-        iconElement.state = nextState ?? 'loop-spin';
+        iconElement.playerInstance.state = nextState ?? 'loop-spin';
 
         // play from beginning
-        iconElement.player.playFromBeginning();
+        iconElement.playerInstance.playFromBeginning();
 
         // clear next state
         nextState = null;

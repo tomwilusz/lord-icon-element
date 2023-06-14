@@ -7,9 +7,9 @@ export class Loop implements ITrigger {
     private playTimeout: any = null;
 
     constructor(
+        protected player: IPlayer,
         protected element: HTMLElement,
         protected targetElement: HTMLElement,
-        protected player: IPlayer,
     ) {
     }
 

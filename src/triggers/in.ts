@@ -9,9 +9,9 @@ export class In implements ITrigger {
     private intersectionObserver: IntersectionObserver | undefined;
 
     constructor(
+        protected player: IPlayer,
         protected element: HTMLElement,
         protected targetElement: HTMLElement,
-        protected player: IPlayer,
     ) {
     }
 

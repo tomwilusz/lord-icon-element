@@ -1,7 +1,8 @@
 import { AnimationConfig, AnimationConfigWithData, AnimationConfigWithPath, AnimationDirection, AnimationItem } from 'lottie-web';
-import { IColors, IPlayer, IProperties, IState, IconData, PlayerEventCallback, PlayerEventName } from './interfaces.js';
+import { IColors, IPlayer, IProperties, IState, IconData, PlayerEventCallback, PlayerEventName, Stroke } from './interfaces.js';
 import { deepClone, get, isNil } from './utils/helpers.js';
 import { ILottieProperty, lottieColorToHex, rawProperties, resetProperties, updateProperties } from './utils/lottie.js';
+import { parseStroke } from './utils/parsers.js';
 
 /**
  * Type for options supported by {@link player.Player | Player}.
@@ -42,13 +43,13 @@ function createColorsProxy(this: Player) {
                 if (value) {
                     updateProperties(
                         this.lottie,
-                        this.rawProperties.filter(c => c.type === 'color' && c.name === property.toLowerCase()),
+                        this.rawProperties.filter(c => c.type === 'color' && c.name === property),
                         value,
                     );
                 } else {
                     resetProperties(
                         this.lottie,
-                        this.rawProperties.filter(c => c.type === 'color' && c.name === property.toLowerCase()),
+                        this.rawProperties.filter(c => c.type === 'color' && c.name === property),
                     );
                 }
                 target.refresh();
@@ -57,7 +58,7 @@ function createColorsProxy(this: Player) {
         },
         get: (target, property, receiver) => {
             for (const current of target.rawProperties) {
-                if (current.type == 'color' && typeof property === 'string' && property.toLowerCase() == current.name) {
+                if (current.type == 'color' && typeof property === 'string' && property == current.name) {
                     const data = get(this.lottie, current.path);
                     if (data) {
                         return lottieColorToHex(data);
@@ -70,7 +71,7 @@ function createColorsProxy(this: Player) {
             if (typeof property === 'string') {
                 resetProperties(
                     this.lottie,
-                    this.rawProperties.filter(c => c.type === 'color' && c.name === property.toLowerCase()),
+                    this.rawProperties.filter(c => c.type === 'color' && c.name === property),
                 );
                 target.refresh();
             }
@@ -81,7 +82,7 @@ function createColorsProxy(this: Player) {
         },
         has: (target, property) => {
             for (const current of target.rawProperties) {
-                if (current.type == 'color' && typeof property === 'string' && property.toLowerCase() == current.name ) {
+                if (current.type == 'color' && typeof property === 'string' && property == current.name ) {
                     return true;
                 }
             }
@@ -125,7 +126,6 @@ export class Player implements IPlayer {
     protected _states: IState[];
     
     /**
-     * 
      * @param animationLoader Provide `loadAnimation` here from `lottie-web`.
      * @param container DOM element in which the animation will be drawn.
      * @param iconData Lottie icon data.
@@ -148,9 +148,9 @@ export class Player implements IPlayer {
                 default: partB && partA.includes('default') ? true : false,
             };
 
-            if (newState.name === initial?.state) {
+            if (newState.name === initial.state) {
                 this._state = newState;
-            } else if (newState.default && !this._state) {
+            } else if (newState.default && isNil(initial.state)) {
                 this._state = newState;
             }
 
@@ -177,7 +177,7 @@ export class Player implements IPlayer {
         });
 
         // initial colors
-        if (this._initial.colors && Object.keys(this._initial.colors).length) {
+        if (this._initial.colors) {
             this.colors = this._initial.colors;
         }
 
@@ -314,62 +314,27 @@ export class Player implements IPlayer {
     }
 
     set properties(properties: IProperties) {
-        // colors
-        resetProperties(
-            this._lottie,
-            this.rawProperties.filter(c => c.type === 'color'),
-        );
-        if (properties.colors && !isNil(properties.colors)) {
-            for (const [key, value] of Object.entries(properties.colors)) {
-                updateProperties(
-                    this._lottie,
-                    this.rawProperties.filter(c => c.type === 'color' && c.name === key.toLowerCase()),
-                    value,
-                );
-            }
-        }
-
-        // stroke
-        if (!isNil(properties.stroke)) {
-            let stroke = properties.stroke;
-
-            if (stroke === 'light') {
-                stroke = 1;
-            } else if (stroke === 'regular') {
-                stroke = 2;
-            } else if (stroke === 'bold') {
-                stroke = 3;
-            }
-
-            updateProperties(
-                this._lottie,
-                this.rawProperties.filter(c => c.name === 'stroke'),
-                stroke,
-            );
-        } else {
-            resetProperties(
-                this._lottie,
-                this.rawProperties.filter(c => c.name === 'stroke'),
-            );
-        }
-
-        // state
-        if (!isNil(properties.state) && properties.state) {
-            this.state = properties.state;
-        } else {
-            const defaultState = this.states.filter(c => c.default)[0]?.name || null;
-            this.state = defaultState;
-        }
-
-        this.refresh();
+        this.colors = properties.colors || null;
+        this.stroke = properties.stroke || null;
+        this.state = properties.state || null;
     }
 
     get properties(): IProperties {
-        return {
-            colors: { ...this.colors },
-            stroke: this.stroke,
-            state: this.state,
-        };
+        const result: IProperties = {};
+
+        if (this.rawProperties.filter(c => c.type === 'color').length) {
+            result.colors = { ...this.colors };
+        }
+
+        if (this.rawProperties.filter(c => c.name === 'stroke' || c.name === 'stroke-layers').length) {
+            result.stroke = this.stroke!;
+        }
+
+        if (this._states.length) {
+            result.state = this.state!;
+        }
+
+        return result;
     }
 
     set colors(colors: IColors | null) {
@@ -382,7 +347,7 @@ export class Player implements IPlayer {
             for (const [key, value] of Object.entries(colors)) {
                 updateProperties(
                     this._lottie,
-                    this.rawProperties.filter(c => c.type === 'color' && c.name === key.toLowerCase()),
+                    this.rawProperties.filter(c => c.type === 'color' && c.name === key),
                     value,
                 );
             }
@@ -399,42 +364,37 @@ export class Player implements IPlayer {
         return this._colorsProxy;
     }
 
-    set stroke(stroke: number | 'light' | 'regular' | 'bold' | null) {
-        if (isNil(stroke)) {
-            resetProperties(
-                this._lottie,
-                this.rawProperties.filter(c => c.name === 'stroke' || c.name === 'stroke-layers'),
-            );
-        } else {
-            if (stroke === 'light') {
-                stroke = 1;
-            } else if (stroke === 'regular') {
-                stroke = 2;
-            } else if (stroke === 'bold') {
-                stroke = 3;
-            }
+    set stroke(stroke: Stroke | null) {
+        resetProperties(
+            this._lottie,
+            this.rawProperties.filter(c => c.name === 'stroke' || c.name === 'stroke-layers'),
+        );
 
+        const newStroke = parseStroke(stroke);
+
+        if (newStroke) {
             updateProperties(
                 this._lottie,
                 this.rawProperties.filter(c => c.name === 'stroke' || c.name === 'stroke-layers'),
-                stroke,
+                newStroke,
             );
         }
 
         this.refresh();
     }
 
-    get stroke(): number | null {
+    get stroke(): Stroke | null {
         const property = this.rawProperties.filter(c => c.name === 'stroke' || c.name === 'stroke-layers')[0];
 
         if (property) {
-            let value = get(this._lottie, property.path);
+            let value = +get(this._lottie, property.path);
 
+            // restore scale
             if (property.name === 'stroke') {
                 value *= property.value / DEFAULT_STROKE;
             }
             
-            return isNaN(value) ? null : +value;
+            return parseStroke(value) || null;
         }
 
         return null;
@@ -447,7 +407,13 @@ export class Player implements IPlayer {
 
         const isPlaying = this.isPlaying;
 
-        this._state = state ? this._states.filter(c => c.name === state)[0] : undefined;
+        this._state = undefined;
+
+        if (isNil(state)) {
+            this._state = this._states.filter(c => c.default)[0];
+        } else if (state) {
+            this._state = this._states.filter(c => c.name === state)[0];
+        }
 
         if (this._state) {
             this._lottie?.setSegment(this._state.time, this._state.time + this._state.duration);
@@ -463,7 +429,11 @@ export class Player implements IPlayer {
     }
 
     get state(): string | null {
-        return this._state?.name || null;
+        if (this._state) {
+            return this._state.name;
+        }
+
+        return '';
     }
 
     set speed(speed: number) {

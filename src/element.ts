@@ -1,7 +1,7 @@
 import { VERSION } from "./global.js";
 import { IconData, IconLoader, IPlayer, ITrigger, ITriggerConstructor, PlayerFactory } from './interfaces.js';
-import { parseColors } from "./utils/colors.js";
-import { isNil, isObjectLike } from './utils/helpers.js';
+import { isObjectLike } from './utils/helpers.js';
+import { parseColors, parseState, parseStroke } from "./utils/parsers.js";
 
 /**
  * Supported icon loading strategies by our {@link Element | Element}.
@@ -176,10 +176,10 @@ export class Element<P extends IPlayer = IPlayer> extends HTMLElement {
     protected _root?: ShadowRoot;
     protected _isConnected: boolean = false;
     protected _isReady: boolean = false;
-    protected _triggerInstance?: ITrigger;
     protected _assignedIconData?: IconData;
     protected _loadedIconData?: IconData;
-    protected _player?: IPlayer;
+    protected _triggerInstance?: ITrigger;
+    protected _playerInstance?: IPlayer;
 
     /**
      * Callback created by one of the lazy loading methods.
@@ -346,18 +346,18 @@ export class Element<P extends IPlayer = IPlayer> extends HTMLElement {
         }
 
         // create player instance
-        this._player = Element._playerFactory(
+        this._playerInstance = Element._playerFactory(
             this.animationContainer!,
             iconData,
             { 
-                state: this.state || undefined,
-                stroke: this.stroke,
-                colors: parseColors(this.colors || ''),
+                state: parseState(this.state),
+                stroke: parseStroke(this.stroke),
+                colors: parseColors(this.colors),
             },
         );
 
         // dynamic style for colors
-        const colors = Object.entries(this.player!.colors || {});
+        const colors = Object.entries(this._playerInstance!.colors || {});
         if (colors.length) {
             let styleContent = '';
 
@@ -379,17 +379,17 @@ export class Element<P extends IPlayer = IPlayer> extends HTMLElement {
         }
 
         // connect after style
-        this._player.connect();
+        this._playerInstance.connect();
 
         // listen for ready
-        this._player.addEventListener('ready', () => {
+        this._playerInstance.addEventListener('ready', () => {
             if (this._triggerInstance && this._triggerInstance.onReady) {
                 this._triggerInstance.onReady();
             }
         });
 
         // listen for refresh
-        this._player.addEventListener('refresh', () => {
+        this._playerInstance.addEventListener('refresh', () => {
             this.refresh();
 
             if (this._triggerInstance && this._triggerInstance.onRefresh) {
@@ -398,14 +398,14 @@ export class Element<P extends IPlayer = IPlayer> extends HTMLElement {
         });
 
         // listen for complete
-        this._player.addEventListener('complete', () => {
+        this._playerInstance.addEventListener('complete', () => {
             if (this._triggerInstance && this._triggerInstance.onComplete) {
                 this._triggerInstance.onComplete();
             }
         });
 
         // listen for frame
-        this._player.addEventListener('frame', () => {
+        this._playerInstance.addEventListener('frame', () => {
             if (this._triggerInstance && this._triggerInstance.onFrame) {
                 this._triggerInstance.onFrame();
             }
@@ -419,10 +419,10 @@ export class Element<P extends IPlayer = IPlayer> extends HTMLElement {
 
         // wait for player ready
         await new Promise<void>((resolve, reject) => {
-            if (this._player!.isReady) {
+            if (this._playerInstance!.isReady) {
                 resolve();
             } else {
-                this._player!.addEventListener('ready', resolve);
+                this._playerInstance!.addEventListener('ready', resolve);
             }
         });
 
@@ -453,9 +453,9 @@ export class Element<P extends IPlayer = IPlayer> extends HTMLElement {
         }
 
         // remove player
-        if (this._player) {
-            this._player.disconnect();
-            this._player = undefined;
+        if (this._playerInstance) {
+            this._playerInstance.disconnect();
+            this._playerInstance = undefined;
         }
     }
 
@@ -490,7 +490,7 @@ export class Element<P extends IPlayer = IPlayer> extends HTMLElement {
      * Notice: css variables take precedence over colors assigned by other methods!
      */
     protected movePaletteToCssVariables() {
-        for (const [key, value] of Object.entries(this.player!.colors || {})) {
+        for (const [key, value] of Object.entries(this._playerInstance!.colors || {})) {
             if (value) {
                 this.animationContainer!.style.setProperty(`--lord-icon-${key}-base`, value);
             } else {
@@ -522,10 +522,10 @@ export class Element<P extends IPlayer = IPlayer> extends HTMLElement {
             }
             this._triggerInstance = undefined;
 
-            this.player?.pause();
+            this._playerInstance?.pause();
         }
 
-        if (!this.trigger || !this._player) {
+        if (!this.trigger || !this._playerInstance) {
             return;
         }
 
@@ -537,16 +537,16 @@ export class Element<P extends IPlayer = IPlayer> extends HTMLElement {
         const targetElement = this.target ? this.closest<HTMLElement>(this.target) : null;
 
         this._triggerInstance = new TriggerClass(
+            this._playerInstance,
             this,
             targetElement || this,
-            this._player,
         );
 
         if (this._triggerInstance.onConnected) {
             this._triggerInstance.onConnected();
         }
 
-        if (this._player.isReady && this._triggerInstance.onReady) {
+        if (this._playerInstance.isReady && this._triggerInstance.onReady) {
             this._triggerInstance.onReady();
         }
     }
@@ -555,33 +555,33 @@ export class Element<P extends IPlayer = IPlayer> extends HTMLElement {
      * Colors attribute changed. Notify about new value player.
      */
     protected colorsChanged() {
-        if (!this.player) {
+        if (!this._playerInstance) {
             return;
         }
 
-        this.player.colors = parseColors(this.colors || '');
+        this._playerInstance.colors = parseColors(this.colors) || null;
     }
 
     /**
      * Stroke attribute changed. Notify about new value player.
      */
     protected strokeChanged() {
-        if (!this.player) {
+        if (!this._playerInstance) {
             return;
         }
 
-        this.player.stroke = this.stroke;
+        this._playerInstance.stroke = parseStroke(this.stroke) || null;
     }
 
     /**
      * State attribute changed. Notify about new value player.
      */
     protected stateChanged() {
-        if (!this.player) {
+        if (!this._playerInstance) {
             return;
         }
 
-        this.player.state = this.state;
+        this._playerInstance.state = this.state;
     }
 
     /**
@@ -706,7 +706,6 @@ export class Element<P extends IPlayer = IPlayer> extends HTMLElement {
         return this.getAttribute('colors');
     }
 
-
     /**
      * Set trigger value. Provide name of already defined trigger!
      */
@@ -774,18 +773,18 @@ export class Element<P extends IPlayer = IPlayer> extends HTMLElement {
     /**
      * Set stroke value (1, 2, 3, light, regular, bold).
      */
-    set stroke(value: number | 'light' | 'regular' | 'bold' | null) {
-        if (isNil(value)) {
-            this.removeAttribute('stroke');
+    set stroke(value: string | null) {
+        if (value) {
+            this.setAttribute('stroke', value);
         } else {
-            this.setAttribute('stroke', '' + value);
+            this.removeAttribute('stroke');
         }
     }
 
     /**
      * Get stroke value.
      */
-    get stroke(): any | null {
+    get stroke(): string | null {
         if (this.hasAttribute('stroke')) {
             return this.getAttribute('stroke');
         }
@@ -807,14 +806,14 @@ export class Element<P extends IPlayer = IPlayer> extends HTMLElement {
     /**
      * Access animation {@link interfaces.IPlayer | player}.
      */
-    get player(): P | undefined {
-        return this._player as any;
+    get playerInstance(): P | undefined {
+        return this._playerInstance as any;
     }
 
     /**
      * Access connected {@link interfaces.ITrigger | trigger} instance.
      */
-    get triggerInstance() {
+    get triggerInstance(): ITrigger | undefined {
         return this._triggerInstance;
     }
 

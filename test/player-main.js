@@ -10,6 +10,12 @@ const LOCK_STATES = [
     {"time":270,"duration":60,"name":"hover-unlocked","default":false},
 ];
 
+const LOCK_PROPERTIES = {
+    "colors":{"primary":"#08a88a","secondary":"#121331"},
+    "stroke":2,
+    "state":"hover-locked",
+};
+
 export default function () {
     describe('main', () => {
         let container = null;
@@ -100,6 +106,50 @@ export default function () {
         it('frames without state', async () => {
             player.state = null;
             expect(player.frames).to.be.eql(331);
+        });     
+        
+        it('properties', async () => {
+            expect(player.properties).to.be.eql(LOCK_PROPERTIES);
+        });
+    });
+
+    describe('main', () => {
+        let container = null;
+        let player = null;
+
+        beforeEach(async () => {
+            const div = document.createElement('div');
+            div.setAttribute('id', 'container');
+            div.style.width = `${SIZE}px`;
+            div.style.height = `${SIZE}px`;
+
+            document.body.appendChild(div);
+
+            container = document.getElementById('container');
+
+            const iconData = await loadIcon('lock');
+            player = new Player(lottie.loadAnimation, container, iconData);
+            player.connect();
+
+            await new Promise((resolve, reject) => {
+                if (player.isReady) {
+                    resolve();
+                } else {
+                    player.addEventListener('ready', () => {
+                        resolve();
+                    });
+                }
+            });
+        });
+
+        afterEach(() => {
+            player.disconnect();
+            container.parentElement.removeChild(container);
+            container = null;
+        });
+        
+        it('properties-alt', async () => {
+            expect(player.properties).to.be.eql(LOCK_PROPERTIES);
         });
     });
 }

@@ -7,14 +7,14 @@ const CLICK_EVENTS = [
 ];
 
 class Custom {
+    player;
     element;
     targetElement;
-    player;
 
-    constructor(element, targetElement, player) {
+    constructor(player, element, targetElement) {
+        this.player = player;
         this.element = element;
         this.targetElement = targetElement;
-        this.player = player;
         this.direction = this.reverse ? -1 : 1;
         this.onClick = this.onClick.bind(this);
     }

@@ -5,9 +5,9 @@ import { IPlayer, ITrigger } from '../interfaces.js';
  */
 export class Boomerang implements ITrigger {
     constructor(
+        protected player: IPlayer,
         protected element: HTMLElement,
         protected targetElement: HTMLElement,
-        protected player: IPlayer,
     ) {
         this.onHover = this.onHover.bind(this);
     }

@@ -1,7 +1,7 @@
 import { AnimationItem } from 'lottie-web';
 import { IconData } from '../interfaces.js';
-import { parseColor } from './colors.js';
 import { set } from './helpers.js';
+import { parseColor } from './parsers.js';
 
 /**
  * Lottie color type.

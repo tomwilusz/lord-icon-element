@@ -1,6 +1,7 @@
 ## v4.2.1 (2023-06-13)
 
 - New API for modify multiple properties at once inside player.
+- Many API changes.
 
 ## v4.2.0 (2023-06-06)
 

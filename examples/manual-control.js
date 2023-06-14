@@ -5,7 +5,7 @@ defineElement(lottie.loadAnimation);
 const lordIconElement = document.querySelector('lord-icon');
 
 function updateDescription() {
-    const text = `frame: ${Math.round(lordIconElement.player.frame)} / ${lordIconElement.player.frames}`;
+    const text = `frame: ${Math.round(lordIconElement.playerInstance.frame)} / ${lordIconElement.playerInstance.frames}`;
     document.getElementById('description').innerText = text;
 }
 
@@ -14,18 +14,18 @@ lordIconElement.addEventListener('ready', () => {
 
     let direction = 1;
 
-    lordIconElement.player.speed = 0.25;
-    lordIconElement.player.stroke = 'light';
-    lordIconElement.player.colors.primary = 'red';
-    lordIconElement.player.colors.secondary = 'pink';
+    lordIconElement.playerInstance.speed = 0.25;
+    lordIconElement.playerInstance.stroke = 'light';
+    lordIconElement.playerInstance.colors.primary = 'red';
+    lordIconElement.playerInstance.colors.secondary = 'pink';
 
-    lordIconElement.player.addEventListener('complete', () => {
+    lordIconElement.playerInstance.addEventListener('complete', () => {
         direction = -direction;
-        lordIconElement.player.direction = direction;
+        lordIconElement.playerInstance.direction = direction;
 
     });
 
-    lordIconElement.player.addEventListener('frame', () => {
+    lordIconElement.playerInstance.addEventListener('frame', () => {
         updateDescription();
     });
 });
@@ -33,34 +33,34 @@ lordIconElement.addEventListener('ready', () => {
 document.getElementById('play').addEventListener('click', e => {
     e.preventDefault();
 
-    lordIconElement.player.play();
+    lordIconElement.playerInstance.play();
 });
 
 document.getElementById('next-frames').addEventListener('click', e => {
     e.preventDefault();
 
-    lordIconElement.player.frame += 5;
+    lordIconElement.playerInstance.frame += 5;
 });
 
 document.getElementById('previous-frames').addEventListener('click', e => {
     e.preventDefault();
 
-    lordIconElement.player.frame -= 5;
+    lordIconElement.playerInstance.frame -= 5;
 });
 
 document.getElementById('switch-state').addEventListener('click', e => {
     e.preventDefault();
 
-    const states = lordIconElement.player.states.map(c => c.name);
+    const states = lordIconElement.playerInstance.states.map(c => c.name);
 
-    // lordIconElement.player.frame -= 5;
-    let index = states.indexOf(lordIconElement.player.state);
+    // lordIconElement.playerInstance.frame -= 5;
+    let index = states.indexOf(lordIconElement.playerInstance.state);
     index++;
 
     if (index >= states.length) {
         index = 0;
     }
 
-    lordIconElement.player.direction = 1;
-    lordIconElement.player.state = states[index];
+    lordIconElement.playerInstance.direction = 1;
+    lordIconElement.playerInstance.state = states[index];
 });

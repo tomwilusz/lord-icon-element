@@ -2,15 +2,15 @@ import { Element } from '/dist/element.js';
 import { defineElement } from '/dist/index.js';
 
 class Trash {
+    player;
     element;
     targetElement;
-    player;
     empty;
 
-    constructor(element, targetElement, player) {
+    constructor(player, element, targetElement) {
+        this.player = player;
         this.element = element;
         this.targetElement = targetElement;
-        this.player = player;
 
         this.empty = true;
 

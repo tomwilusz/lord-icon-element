@@ -8,9 +8,9 @@ export class LoopOnHover implements ITrigger {
     mouseIn: boolean = false;
 
     constructor(
+        protected player: IPlayer,
         protected element: HTMLElement,
         protected targetElement: HTMLElement,
-        protected player: IPlayer,
     ) {
         this.onMouseEnter = this.onMouseEnter.bind(this);
         this.onMouseLeave = this.onMouseLeave.bind(this);

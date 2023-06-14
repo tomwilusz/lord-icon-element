@@ -172,7 +172,7 @@ export function parseColor(colorName: string): string {
 }
 
 /**
- * Parse string with icon colors.
+ * Parse colors attribute.
  * 
  * Example:
  * ```js
@@ -182,7 +182,11 @@ export function parseColor(colorName: string): string {
  * @param colors Colors definied in string.
  * @returns Object with colors.
  */
-export function parseColors(colors: string): IColors {
+export function parseColors(colors: any): IColors | undefined {
+    if (!colors || typeof colors !== 'string') {
+        return undefined;
+    }
+
     const list = colors.split(',').filter(c => c).map(c => c.split(':')).filter(c => c.length == 2);
 
     return list.reduce<IColors>((p, c) => {
@@ -190,4 +194,34 @@ export function parseColors(colors: string): IColors {
         p[a.toLowerCase()] = parseColor(c[1]);
         return p;
     }, {});
+}
+
+/**
+ * Parse stroke attribute to supported range.
+ * @param value
+ * @returns 
+ */
+export function parseStroke(value: any): (1 | 2 | 3 | undefined) {
+    if (value === 'light' || value === 1 || value === '1') {
+        return 1;
+    } else if (value === 'regular' || value === 2 || value === '2') {
+        return 2;
+    } else if (value === 'bold' || value === 3 || value === '3') {
+        return 3;
+    }
+
+    return undefined;
+}
+
+/**
+ * Parse state attribute.
+ * @param value
+ * @returns
+ */
+export function parseState(value: any): (string | undefined) {
+    if (typeof value === 'string') {
+        return value;
+    }
+
+    return undefined;
 }

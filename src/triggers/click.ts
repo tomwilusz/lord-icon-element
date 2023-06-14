@@ -10,9 +10,9 @@ const CLICK_EVENTS = [
  */
 export class Click implements ITrigger {
     constructor(
+        protected player: IPlayer,
         protected element: HTMLElement,
         protected targetElement: HTMLElement,
-        protected player: IPlayer,
     ) {
         this.onClick = this.onClick.bind(this);
     }

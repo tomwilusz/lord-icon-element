@@ -68,6 +68,11 @@ export type PlayerFactory = (container: HTMLElement, iconData: IconData, initial
 export type AnimationDirection = 1 | -1;
 
 /**
+ * Supported stroke values.
+ */
+export type Stroke = 1 | 2 | 3 | 'light' | 'regular' | 'bold';
+
+/**
  * Interface for the object that stores multiple colors.
  * 
  * Example:
@@ -99,19 +104,19 @@ export interface IColors {
  */
 export interface IProperties {
     /**
-     * Stroke width in the range: 1, 2, 3, light, regular, bold.
+     * Stroke.
      */
-    stroke?: number | 'light' | 'regular' | 'bold' | null;
+    stroke?: Stroke;
 
     /**
      * State (motion type) of the icon. States allow switching between multiple animations built into a single icon file.
      */
-    state?: string | null;
+    state?: string;
 
     /**
      * Colors.
      */
-    colors?: IColors | null;
+    colors?: IColors;
 }
 
 /**
@@ -226,7 +231,7 @@ export interface IPlayer {
     /**
      * Stroke gives you the value of icon stroke width.
      */
-    stroke: number | 'light' | 'regular' | 'bold' | null;
+    stroke: Stroke | null;
 
     /**
      * This property allows to control state (motion type) of the icon.
@@ -351,9 +356,9 @@ export interface ITrigger {
  */
 export interface ITriggerConstructor {
     /**
+     * @param player Player instance.
      * @param element Our custom element. 
      * @param targetElement Target element for events listening.
-     * @param player Player instance.
      */
-    new(element: HTMLElement, targetElement: HTMLElement, player: IPlayer): ITrigger;
+    new(player: IPlayer, element: HTMLElement, targetElement: HTMLElement): ITrigger;
 }

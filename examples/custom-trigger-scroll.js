@@ -2,14 +2,14 @@ import { Element } from '/dist/element.js';
 import { defineElement } from '/dist/index.js';
 
 class Scroll {
+    player;
     element;
     targetElement;
-    player;
 
-    constructor(element, targetElement, player) {
+    constructor(player, element, targetElement) {
+        this.player = player;
         this.element = element;
         this.targetElement = targetElement;
-        this.player = player;
 
         this.scroll = this.scroll.bind(this);
     }
