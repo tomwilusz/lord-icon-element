@@ -148,9 +148,9 @@ export class Player implements IPlayer {
                 default: partB && partA.includes('default') ? true : false,
             };
 
-            if (newState.name === initial.state) {
+            if (newState.name === this._initial.state) {
                 this._state = newState;
-            } else if (newState.default && isNil(initial.state)) {
+            } else if (newState.default && isNil(this._initial.state)) {
                 this._state = newState;
             }
 

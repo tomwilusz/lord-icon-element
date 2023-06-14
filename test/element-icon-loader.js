@@ -80,10 +80,10 @@ export default function () {
             expect(element.iconData).to.be.eql(lockIconData);
 
             expect(element.isReady).to.be.true;
-            expect(element.player).not.be.undefined;
+            expect(element.playerInstance).not.be.undefined;
             element.icon = 'puzzle';
             expect(element.isReady).to.be.false;
-            expect(element.player).to.be.undefined;
+            expect(element.playerInstance).to.be.undefined;
 
             // wait for ready
             await new Promise((resolve, reject) => {
@@ -93,7 +93,7 @@ export default function () {
             });
 
             expect(element.isReady).to.be.true;
-            expect(element.player).not.be.undefined;
+            expect(element.playerInstance).not.be.undefined;
             expect(element.iconData).to.be.eql(puzzleIconData);
         });
     });

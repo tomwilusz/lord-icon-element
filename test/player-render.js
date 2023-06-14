@@ -85,7 +85,6 @@ export default function () {
         });
 
         it('resetProperties', async () => {
-            player.frame = 30;
             player.properties = {
                 colors: {
                     primary: 'blue',
@@ -93,6 +92,8 @@ export default function () {
                 },
                 stroke: 3,
             };
+            player.frame = 30;
+
             const imageA = await getPNG(container);
             const imageB = await loadImage('lock-30');
 

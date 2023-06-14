@@ -105,7 +105,13 @@ export default function () {
 
         it('frames without state', async () => {
             player.state = null;
+            expect(player.frames).to.be.eql(60);
+
+            player.state = '';
             expect(player.frames).to.be.eql(331);
+
+            player.state = null;
+            expect(player.frames).to.be.eql(60);
         });     
         
         it('properties', async () => {
@@ -127,7 +133,7 @@ export default function () {
 
             container = document.getElementById('container');
 
-            const iconData = await loadIcon('lock');
+            const iconData = await loadIcon('trash-raw');
             player = new Player(lottie.loadAnimation, container, iconData);
             player.connect();
 
@@ -149,7 +155,7 @@ export default function () {
         });
         
         it('properties-alt', async () => {
-            expect(player.properties).to.be.eql(LOCK_PROPERTIES);
+            expect(player.properties).to.be.eql({});
         });
     });
 }

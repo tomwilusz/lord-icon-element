@@ -64,7 +64,7 @@ export default function () {
         it('default instance', () => {
             expect(element.isReady).to.be.true;
 
-            expect(element.player).not.be.undefined;
+            expect(element.playerInstance).not.be.undefined;
             expect(element.triggerInstance).to.be.undefined;
 
             expect(element.src).to.be.eql('/icons/lock.json');
@@ -127,25 +127,25 @@ export default function () {
 
         it('sync with player', () => {
             element.colors = 'primary:red';
-            expect(element.player.colors.primary).to.be.eql('#ff0000');
+            expect(element.playerInstance.colors.primary).to.be.eql('#ff0000');
 
             element.stroke = 'light';
-            expect(element.player.stroke).to.be.eql(1);
+            expect(element.playerInstance.stroke).to.be.eql(1);
 
             element.stroke = 'regular';
-            expect(element.player.stroke).to.be.eql(2);
+            expect(element.playerInstance.stroke).to.be.eql(2);
 
             element.stroke = 'bold';
-            expect(element.player.stroke).to.be.eql(3);
+            expect(element.playerInstance.stroke).to.be.eql(3);
 
             element.stroke = '1';
-            expect(element.player.stroke).to.be.eql(1);
+            expect(element.playerInstance.stroke).to.be.eql(1);
 
             element.stroke = '2';
-            expect(element.player.stroke).to.be.eql(2);
+            expect(element.playerInstance.stroke).to.be.eql(2);
 
             element.stroke = '3';
-            expect(element.player.stroke).to.be.eql(3);
+            expect(element.playerInstance.stroke).to.be.eql(3);
         });
 
         it('trigger', () => {
@@ -163,10 +163,10 @@ export default function () {
             expect(element.iconData).to.be.eql(lockIconData);
 
             expect(element.isReady).to.be.true;
-            expect(element.player).not.be.undefined;
+            expect(element.playerInstance).not.be.undefined;
             element.src = '/icons/puzzle.json';
             expect(element.isReady).to.be.false;
-            expect(element.player).to.be.undefined;
+            expect(element.playerInstance).to.be.undefined;
 
             // wait for ready
             await new Promise((resolve, reject) => {
@@ -176,18 +176,18 @@ export default function () {
             });
 
             expect(element.isReady).to.be.true;
-            expect(element.player).not.be.undefined;
+            expect(element.playerInstance).not.be.undefined;
             expect(element.iconData).to.be.eql(puzzleIconData);
         });
 
         it('connected', async () => {
-            expect(element.player).not.be.undefined;
+            expect(element.playerInstance).not.be.undefined;
 
             const container = element.parentElement;
 
             // player destroyed after disconnected
             container.removeChild(element);
-            expect(element.player).to.be.undefined;
+            expect(element.playerInstance).to.be.undefined;
 
             // player created again after connected
             container.appendChild(element);
@@ -196,7 +196,7 @@ export default function () {
                     resolve();
                 });
             });
-            expect(element.player).not.be.undefined;
+            expect(element.playerInstance).not.be.undefined;
         });
     });
 }
