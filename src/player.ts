@@ -29,11 +29,6 @@ export const DEFAULT_LOTTIE_WEB_OPTIONS: Omit<AnimationConfig, 'container'> = {
 }
 
 /**
- * Default stroke for supported icons.
- */
-export const DEFAULT_STROKE = 2;
-
-/**
  * Create convenient proxy for manipulating colors.
  */
 function createColorsProxy(this: Player) {
@@ -163,17 +158,27 @@ export class Player implements IPlayer {
             throw new Error('Already connected player!');
         }
 
+        const fixedParams: any = {};
         const initialOptions: LottieOptions = {};
 
         if (this._state) {
             initialOptions.initialSegment = [this._state.time, this._state.time + this._state.duration];
         }
 
+        if (this._states.length) {
+            const firstState = this._states[0];
+            const lastState = this._states[this._states.length - 1];
+
+            // fix animation time
+            fixedParams.ip = firstState.time;
+            fixedParams.op = lastState.time + lastState.duration + 1;
+        }
+
         this._lottie = this._animationLoader({
             ...this._options,
             ...initialOptions,
             container: this._container,
-            animationData: deepClone(this._iconData),
+            animationData: Object.assign(deepClone(this._iconData), fixedParams),
         });
 
         // initial colors
@@ -388,12 +393,8 @@ export class Player implements IPlayer {
 
         if (property) {
             let value = +get(this._lottie, property.path);
-
-            // restore scale
-            if (property.name === 'stroke') {
-                value *= property.value / DEFAULT_STROKE;
-            }
             
+            // return value as any;
             return parseStroke(value) || null;
         }
 
