@@ -394,16 +394,6 @@ export class Player implements IPlayer {
         if (property) {
             let value = +get(this._lottie, property.path);
             
-            // // restore scale
-            // if (property.name === 'stroke') {
-            //     value *= property.value / 2;
-            // }
-
-            // console.log('---v', property, value)
-
-            // return value as any;
-
-            // return value as any;
             return parseStroke(value) || null;
         }
 
