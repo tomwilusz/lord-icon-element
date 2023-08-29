@@ -77,7 +77,7 @@ function createColorsProxy(this: Player) {
         },
         has: (target, property) => {
             for (const current of target.rawProperties) {
-                if (current.type == 'color' && typeof property === 'string' && property == current.name ) {
+                if (current.type == 'color' && typeof property === 'string' && property == current.name) {
                     return true;
                 }
             }
@@ -119,7 +119,7 @@ export class Player implements IPlayer {
 
     protected _state?: IState;
     protected _states: IState[];
-    
+
     /**
      * @param animationLoader Provide `loadAnimation` here from `lottie-web`.
      * @param container DOM element in which the animation will be drawn.
@@ -162,7 +162,7 @@ export class Player implements IPlayer {
         const initialOptions: LottieOptions = {};
 
         if (this._state) {
-            initialOptions.initialSegment = [this._state.time, this._state.time + this._state.duration];
+            initialOptions.initialSegment = [this._state.time, this._state.time + this._state.duration + 1];
         }
 
         if (this._states.length) {
@@ -292,7 +292,7 @@ export class Player implements IPlayer {
 
     playFromBeginning() {
         if (this._state) {
-            this._lottie!.playSegments([this._state.time, this._state.time + this._state.duration], true);
+            this._lottie!.playSegments([this._state.time, this._state.time + this._state.duration + 1], true);
         } else {
             this._lottie!.goToAndPlay(0);
         }
@@ -393,7 +393,7 @@ export class Player implements IPlayer {
 
         if (property) {
             let value = +get(this._lottie, property.path);
-            
+
             return parseStroke(value) || null;
         }
 
@@ -416,12 +416,12 @@ export class Player implements IPlayer {
         }
 
         if (this._state) {
-            this._lottie?.setSegment(this._state.time, this._state.time + this._state.duration);
+            this._lottie?.setSegment(this._state.time, this._state.time + this._state.duration + 1);
         } else {
             this._lottie!.resetSegments(true);
         }
         this.goToFirstFrame();
-        
+
         if (isPlaying) {
             this.pause();
             this.play();
@@ -483,7 +483,7 @@ export class Player implements IPlayer {
     }
 
     get frames() {
-        return this._lottie!.getDuration(true);
+        return this._lottie!.getDuration(true) - 1;
     }
 
     get duration() {
@@ -506,5 +506,5 @@ export class Player implements IPlayer {
         }
 
         return this._rawProperties || [];
-    } 
+    }
 }

@@ -349,7 +349,7 @@ export class Element<P extends IPlayer = IPlayer> extends HTMLElement {
         this._playerInstance = Element._playerFactory(
             this.animationContainer!,
             iconData,
-            { 
+            {
                 state: parseState(this.state),
                 stroke: parseStroke(this.stroke),
                 colors: parseColors(this.colors),
