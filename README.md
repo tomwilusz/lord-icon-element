@@ -1,3 +1,7 @@
+# 🚀 Project Relocation
+
+This project has been relocated to a [new repository](https://github.com/lordicondev/lordicon). We invite you to track the project at its new location, where we will continue to develop and maintain the library.
+
 # lord-icon-element
 
 This package gives developers an easy way to embed, control and customize [Lordicon](https://lordicon.com/) animated icons inside web projects.
