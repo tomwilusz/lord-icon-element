@@ -1,3 +1,8 @@
+## v4.1.2 (2023-10-10)
+
+- Project relocation.
+
+
 ## v4.1.1 (2023-04-11)
 
 - Pause animation with trigger disconnection.
